@@ -18,11 +18,8 @@ body {
   display:flex;
   flex-direction:column;
 }
-
-/* ===== 縦向き: 上から 地図→パネル ===== */
 #map-wrap { position:relative; flex:1; min-height:0; }
 #map { width:100%; height:100%; }
-
 #bottom { 
   background:#111; 
   border-top:2px solid #f0a500;
@@ -31,8 +28,6 @@ body {
   flex-direction:column;
   max-height:42dvh;
 }
-
-/* ===== 横向き: 左に地図、右にパネル ===== */
 @media (orientation: landscape) {
   body { flex-direction:row; }
   #map-wrap { flex:1; height:100dvh; }
@@ -45,8 +40,6 @@ body {
     flex-direction:column;
   }
 }
-
-/* ===== ナビ情報バー ===== */
 #nav-bar {
   background:#000;
   padding:10px 14px 8px;
@@ -59,12 +52,7 @@ body {
 #nav-name { font-size:20px; font-weight:700; color:#f0a500; line-height:1.2; }
 #nav-memo { font-size:12px; color:#aaa; margin-top:2px; }
 #nav-sub { font-size:11px; color:#555; margin-top:4px; }
-
-@media (orientation: landscape) {
-  #nav-name { font-size:16px; }
-}
-
-/* ===== 操作エリア ===== */
+@media (orientation: landscape) { #nav-name { font-size:16px; } }
 #controls {
   padding:8px 10px;
   display:flex;
@@ -73,7 +61,6 @@ body {
   border-bottom:1px solid #222;
   flex-shrink:0;
 }
-
 #search-row { display:flex; gap:6px; }
 #search-input {
   flex:1;
@@ -87,9 +74,7 @@ body {
 }
 #search-input:focus { border-color:#f0a500; }
 #search-input::placeholder { color:#444; }
-
 #btn-row { display:flex; gap:6px; }
-
 .btn {
   padding:8px 12px;
   border:none;
@@ -108,8 +93,6 @@ body {
 .btn-add-active { background:#ff4400; color:#fff; }
 #btn-add { flex:1; }
 #btn-nav { flex:1; }
-
-/* ===== ポイントリスト ===== */
 #points-wrap {
   flex:1;
   overflow-y:auto;
@@ -117,7 +100,6 @@ body {
 }
 #points-wrap::-webkit-scrollbar { width:3px; }
 #points-wrap::-webkit-scrollbar-thumb { background:#333; }
-
 .point-row {
   display:flex;
   align-items:center;
@@ -135,17 +117,14 @@ body {
   display:flex; align-items:center; justify-content:center;
   flex-shrink:0;
 }
-.point-num.cur { background:#f0a500; color:#000; border-color:#f0a500; }
+.point-num.cur { background:#f0a500; color:#000; }
 .point-num.done { border-color:#333; color:#444; }
 .point-info { flex:1; min-width:0; }
 .point-name { font-size:12px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .point-memo { font-size:10px; color:#f0a500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .point-del { background:none; border:none; color:#333; font-size:16px; cursor:pointer; padding:2px 6px; flex-shrink:0; }
 .point-del:hover { color:#ff6666; }
-
 .empty-msg { text-align:center; padding:28px 16px; color:#444; font-size:12px; line-height:2; }
-
-/* ===== GPS・追従ボタン ===== */
 #gps-badge {
   position:absolute; top:8px; left:8px; z-index:1000;
   background:rgba(0,0,0,0.75); border-radius:20px;
@@ -153,7 +132,6 @@ body {
 }
 #gps-badge.good { color:#44cc44; }
 #gps-badge.bad { color:#cc4444; }
-
 #follow-btn {
   position:absolute; bottom:12px; right:12px; z-index:1000;
   width:44px; height:44px; border-radius:50%;
@@ -162,8 +140,6 @@ body {
   display:flex; align-items:center; justify-content:center;
 }
 #follow-btn.active { background:#f0a500; color:#000; border-color:#f0a500; }
-
-/* ===== モーダル ===== */
 #modal-overlay {
   display:none; position:fixed; inset:0;
   background:rgba(0,0,0,0.8); z-index:9999;
@@ -189,23 +165,18 @@ body {
 </style>
 </head>
 <body>
-
 <div id="map-wrap">
   <div id="map"></div>
   <div id="gps-badge">📡 GPS待機中</div>
   <button id="follow-btn" onclick="toggleFollow()">🧭</button>
 </div>
-
 <div id="bottom">
-  <!-- ナビバー -->
   <div id="nav-bar">
     <div id="nav-label">次のポイントへ</div>
     <div id="nav-name">—</div>
     <div id="nav-memo"></div>
     <div id="nav-sub"></div>
   </div>
-
-  <!-- 操作 -->
   <div id="controls">
     <div id="search-row">
       <input type="text" id="search-input" placeholder="🔍 住所・場所を検索">
@@ -219,14 +190,10 @@ body {
       <button class="btn btn-red" onclick="clearAll()" title="削除">🗑</button>
     </div>
   </div>
-
-  <!-- ポイントリスト -->
   <div id="points-wrap">
     <div class="empty-msg">ポイントがありません<br>住所検索かタップで追加</div>
   </div>
 </div>
-
-<!-- モーダル -->
 <div id="modal-overlay">
   <div id="modal">
     <h3 id="modal-title">ポイントを追加</h3>
@@ -240,174 +207,84 @@ body {
     </div>
   </div>
 </div>
-
 <script>
 const MAPTILER_KEY = 'RXZt95T89eK6jTrAs2kn';
-
-// ===== 地図 =====
 const map = L.map('map', { center:[35.68,139.75], zoom:14, zoomControl:false });
 L.tileLayer(`https://api.maptiler.com/maps/jp-gsi-standard/{z}/{x}/{y}.png?key=${MAPTILER_KEY}`, {
   attribution:'© <a href="https://www.maptiler.com/">MapTiler</a> © OpenStreetMap',
   maxZoom:19, tileSize:256
 }).addTo(map);
 L.control.zoom({ position:'topright' }).addTo(map);
-
-// ===== 状態 =====
 let points=[], polyline=null, addMode=false;
 let navActive=false, navIndex=0;
 let followMode=false, gpsMarker=null, gpsCircle=null;
 let pendingLatLng=null, editingId=null;
-
-// ===== 地図タップ =====
 map.on('click', e => { if (addMode) openModal(e.latlng, null); });
-
-// ===== 追加モード =====
 function toggleAddMode() {
   addMode = !addMode;
   const btn = document.getElementById('btn-add');
-  if (addMode) {
-    btn.textContent = '✕ 追加モード終了';
-    btn.className = 'btn btn-add-active';
-  } else {
-    btn.textContent = '＋ タップ追加';
-    btn.className = 'btn btn-gray';
-  }
+  if (addMode) { btn.textContent='✕ 追加モード終了'; btn.className='btn btn-add-active'; }
+  else { btn.textContent='＋ タップ追加'; btn.className='btn btn-gray'; }
 }
-
-// ===== モーダル =====
 function openModal(latlng, id) {
-  pendingLatLng = latlng; editingId = id;
-  const isEdit = id !== null;
-  document.getElementById('modal-title').textContent = isEdit ? 'ポイントを編集' : `ポイント ${points.length+1} を追加`;
-  document.getElementById('modal-ok').textContent = isEdit ? '保存' : '追加';
-  if (isEdit) {
-    const p = points.find(x=>x.id===id);
-    document.getElementById('modal-name').value = p.name;
-    document.getElementById('modal-memo-input').value = p.memo;
-  } else {
-    document.getElementById('modal-name').value = '';
-    document.getElementById('modal-memo-input').value = '';
-  }
+  pendingLatLng=latlng; editingId=id;
+  const isEdit=id!==null;
+  document.getElementById('modal-title').textContent=isEdit?'ポイントを編集':`ポイント ${points.length+1} を追加`;
+  document.getElementById('modal-ok').textContent=isEdit?'保存':'追加';
+  if (isEdit) { const p=points.find(x=>x.id===id); document.getElementById('modal-name').value=p.name; document.getElementById('modal-memo-input').value=p.memo; }
+  else { document.getElementById('modal-name').value=''; document.getElementById('modal-memo-input').value=''; }
   document.getElementById('modal-overlay').classList.add('show');
-  setTimeout(()=>document.getElementById('modal-name').focus(), 100);
+  setTimeout(()=>document.getElementById('modal-name').focus(),100);
 }
-
-function cancelModal() {
-  document.getElementById('modal-overlay').classList.remove('show');
-  pendingLatLng=null; editingId=null;
-}
-
+function cancelModal() { document.getElementById('modal-overlay').classList.remove('show'); pendingLatLng=null; editingId=null; }
 function confirmModal() {
-  const name = document.getElementById('modal-name').value.trim();
-  const memo = document.getElementById('modal-memo-input').value.trim();
-  if (editingId !== null) {
-    const p = points.find(x=>x.id===editingId);
-    p.name = name || p.name; p.memo = memo;
-    refreshAllMarkers(); renderList();
-  } else {
-    if (!pendingLatLng) return;
-    const p = { id:Date.now(), lat:pendingLatLng.lat, lng:pendingLatLng.lng,
-                name: name||`ポイント ${points.length+1}`, memo, marker:null };
-    addMarker(p, points.length); points.push(p);
-    updatePolyline(); renderList();
-  }
+  const name=document.getElementById('modal-name').value.trim();
+  const memo=document.getElementById('modal-memo-input').value.trim();
+  if (editingId!==null) { const p=points.find(x=>x.id===editingId); p.name=name||p.name; p.memo=memo; refreshAllMarkers(); renderList(); }
+  else { if(!pendingLatLng)return; const p={id:Date.now(),lat:pendingLatLng.lat,lng:pendingLatLng.lng,name:name||`ポイント ${points.length+1}`,memo,marker:null}; addMarker(p,points.length); points.push(p); updatePolyline(); renderList(); }
   document.getElementById('modal-overlay').classList.remove('show');
   pendingLatLng=null; editingId=null;
 }
-
-document.getElementById('modal-overlay').addEventListener('click', e=>{
-  if (e.target===e.currentTarget) cancelModal();
-});
-
-// ===== マーカー =====
-function makeIcon(idx, state) {
-  const c = state==='cur' ? ['#00aaff','#fff'] : state==='done' ? ['#333','#555'] : ['#f0a500','#000'];
-  const n = idx+1;
-  const fs = n>=100?9:n>=10?11:14;
-  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="34" height="44" viewBox="0 0 34 44">
-    <path d="M17 0C7.6 0 0 7.6 0 17c0 11 17 27 17 27s17-16 17-27C34 7.6 26.4 0 17 0z" fill="${c[0]}"/>
-    <circle cx="17" cy="17" r="11" fill="#fff" opacity="0.95"/>
-    <text x="17" y="${17+fs*0.4}" text-anchor="middle" font-size="${fs}" font-weight="bold" fill="${c[0]}">${n}</text>
-  </svg>`;
-  return L.divIcon({html:svg, iconSize:[34,44], iconAnchor:[17,44], className:''});
+document.getElementById('modal-overlay').addEventListener('click',e=>{if(e.target===e.currentTarget)cancelModal();});
+function makeIcon(idx,state) {
+  const c=state==='cur'?['#00aaff','#fff']:state==='done'?['#333','#555']:['#f0a500','#000'];
+  const n=idx+1, fs=n>=100?9:n>=10?11:14;
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="34" height="44" viewBox="0 0 34 44"><path d="M17 0C7.6 0 0 7.6 0 17c0 11 17 27 17 27s17-16 17-27C34 7.6 26.4 0 17 0z" fill="${c[0]}"/><circle cx="17" cy="17" r="11" fill="#fff" opacity="0.95"/><text x="17" y="${17+fs*0.4}" text-anchor="middle" font-size="${fs}" font-weight="bold" fill="${c[0]}">${n}</text></svg>`;
+  return L.divIcon({html:svg,iconSize:[34,44],iconAnchor:[17,44],className:''});
 }
-
-function getState(idx) {
-  if (!navActive) return 'normal';
-  if (idx < navIndex) return 'done';
-  if (idx === navIndex) return 'cur';
-  return 'normal';
-}
-
-function addMarker(p, idx) {
-  const m = L.marker([p.lat,p.lng], {icon:makeIcon(idx,getState(idx)), draggable:true}).addTo(map);
-  m.bindTooltip(`<b>${idx+1}. ${p.name}</b>${p.memo?'<br><span style="color:#f0a500">'+p.memo+'</span>':''}`, {direction:'top',offset:[0,-40]});
-  m.on('click', ()=>{ if(!addMode) openModal(null, p.id); });
-  m.on('dragend', e=>{ p.lat=e.target.getLatLng().lat; p.lng=e.target.getLatLng().lng; updatePolyline(); });
+function getState(idx) { if(!navActive)return'normal'; if(idx<navIndex)return'done'; if(idx===navIndex)return'cur'; return'normal'; }
+function addMarker(p,idx) {
+  const m=L.marker([p.lat,p.lng],{icon:makeIcon(idx,getState(idx)),draggable:true}).addTo(map);
+  m.bindTooltip(`<b>${idx+1}. ${p.name}</b>${p.memo?'<br><span style="color:#f0a500">'+p.memo+'</span>':''}`,{direction:'top',offset:[0,-40]});
+  m.on('click',()=>{if(!addMode)openModal(null,p.id);});
+  m.on('dragend',e=>{p.lat=e.target.getLatLng().lat;p.lng=e.target.getLatLng().lng;updatePolyline();});
   p.marker=m;
 }
-
-function refreshAllMarkers() {
-  points.forEach((p,i)=>{
-    if(!p.marker) return;
-    p.marker.setIcon(makeIcon(i,getState(i)));
-    p.marker.setTooltipContent(`<b>${i+1}. ${p.name}</b>${p.memo?'<br><span style="color:#f0a500">'+p.memo+'</span>':''}`);
-  });
-}
-
-// ===== ポリライン（OSRM） =====
+function refreshAllMarkers() { points.forEach((p,i)=>{if(!p.marker)return;p.marker.setIcon(makeIcon(i,getState(i)));p.marker.setTooltipContent(`<b>${i+1}. ${p.name}</b>${p.memo?'<br><span style="color:#f0a500">'+p.memo+'</span>':''}`); }); }
 async function updatePolyline() {
-  if (polyline) { map.removeLayer(polyline); polyline=null; }
-  if (points.length < 2) return;
-  polyline = L.polyline(points.map(p=>[p.lat,p.lng]), {color:'#f0a500',weight:3,opacity:0.4,dashArray:'6,6'}).addTo(map);
+  if(polyline){map.removeLayer(polyline);polyline=null;}
+  if(points.length<2)return;
+  polyline=L.polyline(points.map(p=>[p.lat,p.lng]),{color:'#f0a500',weight:3,opacity:0.4,dashArray:'6,6'}).addTo(map);
   try {
-    const coords = points.map(p=>p.lng+','+p.lat).join(';');
-    const res = await fetch('https://router.project-osrm.org/route/v1/driving/'+coords+'?overview=full&geometries=geojson&continue_straight=true');
-    const data = await res.json();
-    if (data.code!=='Ok'||!data.routes.length) return;
-    if (polyline) map.removeLayer(polyline);
-    polyline = L.geoJSON(data.routes[0].geometry, {style:{color:'#f0a500',weight:5,opacity:0.85}}).addTo(map);
-  } catch(e) { console.warn('OSRM失敗',e); }
+    const coords=points.map(p=>p.lng+','+p.lat).join(';');
+    const res=await fetch('https://router.project-osrm.org/route/v1/driving/'+coords+'?overview=full&geometries=geojson&continue_straight=true');
+    const data=await res.json();
+    if(data.code!=='Ok'||!data.routes.length)return;
+    if(polyline)map.removeLayer(polyline);
+    polyline=L.geoJSON(data.routes[0].geometry,{style:{color:'#f0a500',weight:5,opacity:0.85}}).addTo(map);
+  } catch(e){console.warn('OSRM失敗',e);}
 }
-
-// ===== ポイントリスト =====
 function renderList() {
-  const el = document.getElementById('points-wrap');
-  if (!points.length) { el.innerHTML='<div class="empty-msg">ポイントがありません<br>住所検索かタップで追加</div>'; return; }
-  el.innerHTML = points.map((p,i)=>`
-    <div class="point-row">
-      <div class="point-num ${getState(i)}">${i+1}</div>
-      <div class="point-info" onclick="focusPoint(${p.id})">
-        <div class="point-name">${p.name}</div>
-        ${p.memo?`<div class="point-memo">📝 ${p.memo}</div>`:''}
-      </div>
-      <button class="point-del" onclick="deletePoint(${p.id})">✕</button>
-    </div>`).join('');
-  if (navActive) {
-    const rows = el.querySelectorAll('.point-row');
-    if (rows[navIndex]) rows[navIndex].scrollIntoView({behavior:'smooth',block:'nearest'});
-  }
+  const el=document.getElementById('points-wrap');
+  if(!points.length){el.innerHTML='<div class="empty-msg">ポイントがありません<br>住所検索かタップで追加</div>';return;}
+  el.innerHTML=points.map((p,i)=>`<div class="point-row"><div class="point-num ${getState(i)}">${i+1}</div><div class="point-info" onclick="focusPoint(${p.id})"><div class="point-name">${p.name}</div>${p.memo?`<div class="point-memo">📝 ${p.memo}</div>`:''}</div><button class="point-del" onclick="deletePoint(${p.id})">✕</button></div>`).join('');
+  if(navActive){const rows=el.querySelectorAll('.point-row');if(rows[navIndex])rows[navIndex].scrollIntoView({behavior:'smooth',block:'nearest'});}
 }
-
-function focusPoint(id) {
-  const p=points.find(x=>x.id===id);
-  if(p) map.setView([p.lat,p.lng], Math.max(map.getZoom(),16));
-}
-
-function deletePoint(id) {
-  const i=points.findIndex(x=>x.id===id);
-  if(i===-1) return;
-  map.removeLayer(points[i].marker);
-  points.splice(i,1);
-  refreshAllMarkers(); updatePolyline(); renderList();
-}
-
-// ===== 住所検索 =====
+function focusPoint(id){const p=points.find(x=>x.id===id);if(p)map.setView([p.lat,p.lng],Math.max(map.getZoom(),16));}
+function deletePoint(id){const i=points.findIndex(x=>x.id===id);if(i===-1)return;map.removeLayer(points[i].marker);points.splice(i,1);refreshAllMarkers();updatePolyline();renderList();}
 async function searchAddress() {
-  const q=document.getElementById('search-input').value.trim();
-  if(!q) return;
-  const btn=document.querySelector('#search-row .btn-orange');
-  btn.textContent='...'; btn.disabled=true;
+  const q=document.getElementById('search-input').value.trim(); if(!q)return;
+  const btn=document.querySelector('#search-row .btn-orange'); btn.textContent='...'; btn.disabled=true;
   try {
     const res=await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=1&accept-language=ja&countrycodes=jp`);
     const data=await res.json();
@@ -421,141 +298,60 @@ async function searchAddress() {
   finally{btn.textContent='検索';btn.disabled=false;}
 }
 document.getElementById('search-input').addEventListener('keydown',e=>{if(e.key==='Enter')searchAddress();});
-
-// ===== GPS =====
-function startGPS() {
-  if(!navigator.geolocation) return;
-  navigator.geolocation.watchPosition(onGPS, onGPSErr, {enableHighAccuracy:true,maximumAge:2000,timeout:10000});
-}
-
-function onGPS(pos) {
-  const {latitude:lat,longitude:lng,accuracy}=pos.coords;
+function startGPS(){if(!navigator.geolocation)return;navigator.geolocation.watchPosition(onGPS,onGPSErr,{enableHighAccuracy:true,maximumAge:2000,timeout:10000});}
+function onGPS(pos){
+  const{latitude:lat,longitude:lng,accuracy}=pos.coords;
   const b=document.getElementById('gps-badge');
   b.textContent=`📡 精度 ±${Math.round(accuracy)}m`;
-  b.className=accuracy<30?'good':accuracy<100?'':' bad';
-  if(!gpsMarker) {
-    gpsMarker=L.circleMarker([lat,lng],{radius:9,color:'#00aaff',fillColor:'#00aaff',fillOpacity:1,weight:3}).addTo(map);
-    gpsCircle=L.circle([lat,lng],{radius:accuracy,color:'#00aaff',fillColor:'#00aaff',fillOpacity:0.08,weight:1}).addTo(map);
-  } else {
-    gpsMarker.setLatLng([lat,lng]);
-    gpsCircle.setLatLng([lat,lng]).setRadius(accuracy);
-  }
-  if(followMode) map.panTo([lat,lng]);
-  if(navActive) checkProgress(lat,lng);
+  b.className=accuracy<30?'good':accuracy<100?'':'bad';
+  if(!gpsMarker){gpsMarker=L.circleMarker([lat,lng],{radius:9,color:'#00aaff',fillColor:'#00aaff',fillOpacity:1,weight:3}).addTo(map);gpsCircle=L.circle([lat,lng],{radius:accuracy,color:'#00aaff',fillColor:'#00aaff',fillOpacity:0.08,weight:1}).addTo(map);}
+  else{gpsMarker.setLatLng([lat,lng]);gpsCircle.setLatLng([lat,lng]).setRadius(accuracy);}
+  if(followMode)map.panTo([lat,lng]);
+  if(navActive)checkProgress(lat,lng);
 }
-
-function onGPSErr() {
-  const b=document.getElementById('gps-badge');
-  b.textContent='📡 GPS失敗'; b.className='bad';
-}
-
-function toggleFollow() {
-  followMode=!followMode;
-  document.getElementById('follow-btn').classList.toggle('active',followMode);
-  if(followMode&&gpsMarker) map.panTo(gpsMarker.getLatLng());
-}
-map.on('dragstart',()=>{ followMode=false; document.getElementById('follow-btn').classList.remove('active'); });
-
-// ===== ナビ =====
+function onGPSErr(){const b=document.getElementById('gps-badge');b.textContent='📡 GPS失敗';b.className='bad';}
+function toggleFollow(){followMode=!followMode;document.getElementById('follow-btn').classList.toggle('active',followMode);if(followMode&&gpsMarker)map.panTo(gpsMarker.getLatLng());}
+map.on('dragstart',()=>{followMode=false;document.getElementById('follow-btn').classList.remove('active');});
 const REACH=40;
-
-function toggleNav() { navActive?stopNav():startNav(); }
-
-function startNav() {
+function toggleNav(){navActive?stopNav():startNav();}
+function startNav(){
   if(!points.length){alert('ポイントがありません');return;}
-  navActive=true; navIndex=0;
-  const btn=document.getElementById('btn-nav');
-  btn.textContent='■ 停止'; btn.className='btn btn-nav-stop';
+  navActive=true;navIndex=0;
+  const btn=document.getElementById('btn-nav');btn.textContent='■ 停止';btn.className='btn btn-nav-stop';
   document.getElementById('nav-bar').classList.add('show');
-  followMode=true; document.getElementById('follow-btn').classList.add('active');
-  refreshAllMarkers(); renderList(); updateNavBar();
+  followMode=true;document.getElementById('follow-btn').classList.add('active');
+  refreshAllMarkers();renderList();updateNavBar();
   speak(`ナビ開始。最初は${points[0].name}。${points[0].memo||''}`);
 }
-
-function stopNav() {
+function stopNav(){
   navActive=false;
-  const btn=document.getElementById('btn-nav');
-  btn.textContent='▶ ナビ開始'; btn.className='btn btn-green';
+  const btn=document.getElementById('btn-nav');btn.textContent='▶ ナビ開始';btn.className='btn btn-green';
   document.getElementById('nav-bar').classList.remove('show');
-  refreshAllMarkers(); renderList();
+  refreshAllMarkers();renderList();
 }
-
-function updateNavBar() {
-  if(!navActive||!points.length) return;
-  const p=points[navIndex], next=points[navIndex+1];
+function updateNavBar(){
+  if(!navActive||!points.length)return;
+  const p=points[navIndex],next=points[navIndex+1];
   document.getElementById('nav-label').textContent=`${navIndex+1} / ${points.length}`;
   document.getElementById('nav-name').textContent=p.name;
   document.getElementById('nav-memo').textContent=p.memo||'';
   document.getElementById('nav-sub').textContent=next?`次: ${next.name}`:'🏁 ゴール';
 }
-
-function checkProgress(lat,lng) {
-  if(!navActive||navIndex>=points.length) return;
+function checkProgress(lat,lng){
+  if(!navActive||navIndex>=points.length)return;
   const t=points[navIndex];
-  if(calcDist(lat,lng,t.lat,t.lng)<REACH) {
-    speak(`${t.name}、到達`);
-    navIndex++;
+  if(calcDist(lat,lng,t.lat,t.lng)<REACH){
+    speak(`${t.name}、到達`);navIndex++;
     if(navIndex>=points.length){speak('ゴールです。お疲れ様でした。');stopNav();alert('🏁 ゴール！');return;}
-    refreshAllMarkers(); renderList(); updateNavBar();
+    refreshAllMarkers();renderList();updateNavBar();
     speak(`次は${points[navIndex].name}。${points[navIndex].memo||''}`);
   }
 }
-
-function calcDist(a,b,c,d){
-  const R=6371000,dL=(c-a)*Math.PI/180,dG=(d-b)*Math.PI/180;
-  const x=Math.sin(dL/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dG/2)**2;
-  return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));
-}
-
-function speak(t) {
-  if(!('speechSynthesis' in window)) return;
-  speechSynthesis.cancel();
-  const u=new SpeechSynthesisUtterance(t);
-  u.lang='ja-JP'; u.rate=0.95; speechSynthesis.speak(u);
-}
-
-// ===== 保存・読み込み =====
-function saveRoute() {
-  if(!points.length){alert('ポイントがありません');return;}
-  const data={version:1,points:points.map(p=>({lat:p.lat,lng:p.lng,name:p.name,memo:p.memo}))};
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
-  a.download=`route-${new Date().toISOString().slice(0,10)}.json`;
-  a.click();
-}
-
-function loadRoute() {
-  const input=document.createElement('input');
-  input.type='file'; input.accept='.json';
-  input.onchange=e=>{
-    const reader=new FileReader();
-    reader.onload=ev=>{
-      try {
-        const data=JSON.parse(ev.target.result);
-        clearAll(true);
-        data.points.forEach((d,i)=>{
-          const p={id:Date.now()+i,lat:d.lat,lng:d.lng,name:d.name,memo:d.memo||'',marker:null};
-          addMarker(p,i); points.push(p);
-        });
-        updatePolyline(); renderList();
-        if(points.length) map.fitBounds(points.map(p=>[p.lat,p.lng]),{padding:[40,40]});
-      } catch{alert('読み込み失敗');}
-    };
-    reader.readAsText(e.target.files[0]);
-  };
-  input.click();
-}
-
-function clearAll(silent=false) {
-  if(!silent&&points.length&&!confirm('全ポイントを削除しますか？')) return;
-  points.forEach(p=>{if(p.marker)map.removeLayer(p.marker);});
-  points=[];
-  if(polyline){map.removeLayer(polyline);polyline=null;}
-  if(navActive) stopNav();
-  renderList();
-}
-
-// ===== 起動 =====
+function calcDist(a,b,c,d){const R=6371000,dL=(c-a)*Math.PI/180,dG=(d-b)*Math.PI/180;const x=Math.sin(dL/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dG/2)**2;return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));}
+function speak(t){if(!('speechSynthesis'in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='ja-JP';u.rate=0.95;speechSynthesis.speak(u);}
+function saveRoute(){if(!points.length){alert('ポイントがありません');return;}const data={version:1,points:points.map(p=>({lat:p.lat,lng:p.lng,name:p.name,memo:p.memo}))};const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.download=`route-${new Date().toISOString().slice(0,10)}.json`;a.click();}
+function loadRoute(){const input=document.createElement('input');input.type='file';input.accept='.json';input.onchange=e=>{const reader=new FileReader();reader.onload=ev=>{try{const data=JSON.parse(ev.target.result);clearAll(true);data.points.forEach((d,i)=>{const p={id:Date.now()+i,lat:d.lat,lng:d.lng,name:d.name,memo:d.memo||'',marker:null};addMarker(p,i);points.push(p);});updatePolyline();renderList();if(points.length)map.fitBounds(points.map(p=>[p.lat,p.lng]),{padding:[40,40]});}catch{alert('読み込み失敗');}};reader.readAsText(e.target.files[0]);};input.click();}
+function clearAll(silent=false){if(!silent&&points.length&&!confirm('全ポイントを削除しますか？'))return;points.forEach(p=>{if(p.marker)map.removeLayer(p.marker);});points=[];if(polyline){map.removeLayer(polyline);polyline=null;}if(navActive)stopNav();renderList();}
 startGPS();
 renderList();
 </script>
