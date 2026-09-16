@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>マイナビ</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+body { background:#1a1a1a; color:#fff; font-family:'Helvetica Neue',Arial,sans-serif; height:100dvh; display:flex; flex-direction:column; overflow:hidden; touch-action:manipulation; }
+
+/* ===== ナビ中バー ===== */
+#nav-bar {
+  background:#000;
+  padding:14px 16px 10px;
+  border-bottom:3px solid #f0a500;
+  flex-shrink:0;
+  display:none;
+}
+#nav-bar.show { display:block; }
+#nav-direction { font-size:13px; color:#aaa; margin-bottom:3px; }
+#nav-point-name { font-size:22px; font-weight:700; color:#f0a500; line-height:1.2; }
+#nav-progress { font-size:12px; color:#666; margin-top:4px; }
+
+/* ===== 地図 ===== */
+#map { flex:1; }
+
+/* ===== 下部パネル ===== */
+#bottom-panel {
+  background:#111;
+  border-top:1px solid #333;
+  flex-shrink:0;
+}
+
+/* タブ */
+#tabs {
+  display:flex;
+  border-bottom:1px solid #333;
+}
+.tab {
+  flex:1;
+  padding:10px;
+  text-align:center;
+  font-size:12px;
+  font-weight:600;
+  color:#666;
+  cursor:pointer;
+  border-bottom:2px solid transparent;
+}
+.tab.active { color:#f0a500; border-bottom-color:#f0a500; }
+
+/* タブコンテンツ */
+.tab-content { display:none; }
+.tab-content.active { display:block; }
+
+/* ルート操作パネル */
+#panel-route {
+  padding:10px 12px;
+}
+#search-box {
+  display:flex;
+  gap:8px;
+  margin-bottom:8px;
+}
+#search-input {
+  flex:1;
+  background:#222;
+  border:1px solid #444;
+  border-radius:6px;
+  color:#fff;
+  padding:9px 12px;
+  font-size:13px;
+  outline:none;
+}
+#search-input:focus { border-color:#f0a500; }
+#search-input::placeholder { color:#555; }
+
+.btn {
+  padding:8px 14px;
+  border:none;
+  border-radius:6px;
+  font-size:12px;
+  font-weight:700;
+  cursor:pointer;
+  white-space:nowrap;
+}
+.btn-orange { background:#f0a500; color:#000; }
+.btn-orange:hover { background:#ffb820; }
+.btn-gray { background:#333; color:#ccc; }
+.btn-gray:hover { background:#444; }
+.btn-red { background:#3a0000; color:#ff6666; border:1px solid #600; }
+.btn-red:hover { background:#4a0000; }
+.btn-green { background:#004a00; color:#66ff66; border:1px solid #060; }
+.btn-green:hover { background:#005a00; }
+
+#action-btns {
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+}
+
+/* ポイントリスト */
+#panel-points {
+  max-height:180px;
+  overflow-y:auto;
+}
+#panel-points::-webkit-scrollbar { width:3px; }
+#panel-points::-webkit-scrollbar-thumb { background:#444; }
+
+.point-row {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 12px;
+  border-bottom:1px solid #222;
+}
+.point-num {
+  width:24px;
+  height:24px;
+  border-radius:50%;
+  background:#f0a500;
+  color:#000;
+  font-size:11px;
+  font-weight:700;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+}
+.point-num.current { background:#00aaff; }
+.point-name { font-size:12px; flex:1; color:#ccc; }
+.point-del { background:none; border:none; color:#555; font-size:16px; cursor:pointer; padding:0 4px; }
+.point-del:hover { color:#ff6666; }
+
+.empty-list { text-align:center; padding:24px; color:#555; font-size:12px; line-height:1.8; }
+
+/* ===== モーダル（ポイント名入力） ===== */
+#modal-overlay {
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.75);
+  z-index:9999;
+  align-items:flex-end;
+  justify-content:center;
+}
+#modal-overlay.show { display:flex; }
+#modal {
+  background:#1a1a1a;
+  border-radius:16px 16px 0 0;
+  padding:20px 20px 32px;
+  width:100%;
+  border-top:1px solid #333;
+}
+#modal h3 { font-size:14px; color:#f0a500; margin-bottom:14px; }
+#modal input, #modal textarea {
+  width:100%;
+  background:#111;
+  border:1px solid #444;
+  border-radius:8px;
+  color:#fff;
+  padding:10px 12px;
+  font-size:14px;
+  outline:none;
+  margin-bottom:12px;
+  font-family:inherit;
+}
+#modal input:focus, #modal textarea:focus { border-color:#f0a500; }
+#modal textarea { resize:none; height:64px; }
+#modal-btns { display:flex; gap:8px; }
+#modal-btns .btn { flex:1; padding:12px; font-size:14px; }
+
+/* ===== GPS精度バッジ ===== */
+#gps-badge {
+  position:absolute;
+  top:8px;
+  left:8px;
+  z-index:1000;
+  background:rgba(0,0,0,0.7);
+  border-radius:20px;
+  padding:5px 10px;
+  font-size:11px;
+  color:#aaa;
+  pointer-events:none;
+}
+#gps-badge.good { color:#66ff66; }
+#gps-badge.bad { color:#ff6666; }
+
+/* ===== 追従ボタン ===== */
+#follow-btn {
+  position:absolute;
+  bottom:8px;
+  right:8px;
+  z-index:1000;
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  border:none;
+  background:rgba(0,0,0,0.75);
+  color:#fff;
+  font-size:20px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 2px 8px rgba(0,0,0,0.5);
+}
+#follow-btn.active { background:#f0a500; color:#000; }
+
+/* 地図コンテナ相対配置用 */
+#map-wrap { position:relative; flex:1; display:flex; flex-direction:column; }
+</style>
+</head>
+<body>
+
+<!-- ナビ中バー -->
+<div id="nav-bar">
+  <div id="nav-direction">次のポイントへ</div>
+  <div id="nav-point-name">—</div>
+  <div id="nav-progress">— / — ポイント</div>
+</div>
+
+<!-- 地図 -->
+<div id="map-wrap">
+  <div id="map"></div>
+  <div id="gps-badge">📡 GPS待機中</div>
+  <button id="follow-btn" onclick="toggleFollow()">🧭</button>
+</div>
+
+<!-- 下部パネル -->
+<div id="bottom-panel">
+  <div id="tabs">
+    <div class="tab active" onclick="switchTab('route',this)">🗺 ルート</div>
+    <div class="tab" onclick="switchTab('points',this)">📍 ポイント</div>
+  </div>
+
+  <!-- ルートタブ -->
+  <div id="tab-route" class="tab-content active">
+    <div id="panel-route">
+      <div id="search-box">
+        <input type="text" id="search-input" placeholder="📍 住所・場所を検索してポイント追加">
+        <button class="btn btn-orange" onclick="searchAddress()">検索</button>
+      </div>
+      <div id="action-btns">
+        <button class="btn btn-gray" id="btn-add-mode" onclick="toggleAddMode()">＋ 地図タップで追加</button>
+        <button class="btn btn-green" id="btn-nav" onclick="toggleNav()">▶ ナビ開始</button>
+        <button class="btn btn-gray" onclick="saveRoute()">💾</button>
+        <button class="btn btn-gray" onclick="loadRoute()">📂</button>
+        <button class="btn btn-red" onclick="clearAll()">🗑</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ポイントタブ -->
+  <div id="tab-points" class="tab-content">
+    <div id="panel-points">
+      <div class="empty-list">ポイントがありません<br>ルートタブから追加してください</div>
+    </div>
+  </div>
+</div>
+
+<!-- モーダル -->
+<div id="modal-overlay">
+  <div id="modal">
+    <h3 id="modal-title">ポイントを追加</h3>
+    <input type="text" id="modal-name" placeholder="ポイント名（省略OK）">
+    <textarea id="modal-memo" placeholder="メモ（曲がり方向など）"></textarea>
+    <div id="modal-btns">
+      <button class="btn btn-gray" onclick="cancelModal()">キャンセル</button>
+      <button class="btn btn-orange" onclick="confirmModal()">追加</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const MAPTILER_KEY = 'RXZt95T89eK6jTrAs2kn';
+
+// ===== 地図初期化 =====
+const map = L.map('map', {
+  center: [35.68, 139.75],
+  zoom: 14,
+  zoomControl: false
+});
+
+L.tileLayer(`https://api.maptiler.com/maps/jp-gsi-standard/{z}/{x}/{y}.png?key=${MAPTILER_KEY}`, {
+  attribution: '© <a href="https://www.maptiler.com/">MapTiler</a> © OpenStreetMap',
+  maxZoom: 19,
+  tileSize: 256
+}).addTo(map);
+
+L.control.zoom({ position: 'topright' }).addTo(map);
+
+// ===== 状態 =====
+let points = [];        // { id, lat, lng, name, memo, marker }
+let polyline = null;
+let addMode = false;
+let navActive = false;
+let navIndex = 0;
+let followMode = false;
+let gpsMarker = null;
+let gpsCircle = null;
+let gpsWatchId = null;
+let pendingLatLng = null;  // モーダル確定待ちの座標
+let editingId = null;      // 編集中のポイントID
+
+// ===== タブ切り替え =====
+function switchTab(name, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+}
+
+// ===== 追加モード =====
+function toggleAddMode() {
+  addMode = !addMode;
+  const btn = document.getElementById('btn-add-mode');
+  if (addMode) {
+    btn.textContent = '✕ タップ追加モード終了';
+    btn.style.background = '#ff4444';
+    btn.style.color = '#fff';
+  } else {
+    btn.textContent = '＋ 地図タップで追加';
+    btn.style.background = '';
+    btn.style.color = '';
+  }
+}
+
+map.on('click', function(e) {
+  if (!addMode) return;
+  openModal(e.latlng, null);
+});
+
+// ===== モーダル =====
+function openModal(latlng, id) {
+  pendingLatLng = latlng;
+  editingId = id;
+  if (id !== null) {
+    const p = points.find(x => x.id === id);
+    document.getElementById('modal-title').textContent = 'ポイントを編集';
+    document.getElementById('modal-name').value = p.name;
+    document.getElementById('modal-memo').value = p.memo;
+    document.getElementById('modal-btns').innerHTML =
+      '<button class="btn btn-gray" onclick="cancelModal()">キャンセル</button>' +
+      '<button class="btn btn-orange" onclick="confirmModal()">保存</button>';
+  } else {
+    document.getElementById('modal-title').textContent = `ポイント ${points.length + 1} を追加`;
+    document.getElementById('modal-name').value = '';
+    document.getElementById('modal-memo').value = '';
+    document.getElementById('modal-btns').innerHTML =
+      '<button class="btn btn-gray" onclick="cancelModal()">キャンセル</button>' +
+      '<button class="btn btn-orange" onclick="confirmModal()">追加</button>';
+  }
+  document.getElementById('modal-overlay').classList.add('show');
+  setTimeout(() => document.getElementById('modal-name').focus(), 100);
+}
+
+function cancelModal() {
+  document.getElementById('modal-overlay').classList.remove('show');
+  pendingLatLng = null;
+  editingId = null;
+}
+
+function confirmModal() {
+  const name = document.getElementById('modal-name').value.trim();
+  const memo = document.getElementById('modal-memo').value.trim();
+
+  if (editingId !== null) {
+    // 編集
+    const p = points.find(x => x.id === editingId);
+    p.name = name || p.name;
+    p.memo = memo;
+    p.marker.setTooltipContent(makeTooltipHtml(p, points.indexOf(p)));
+    renderPointList();
+  } else {
+    // 新規追加
+    if (!pendingLatLng) return;
+    const id = Date.now();
+    const p = {
+      id,
+      lat: pendingLatLng.lat,
+      lng: pendingLatLng.lng,
+      name: name || `ポイント ${points.length + 1}`,
+      memo,
+      marker: null
+    };
+    addMarker(p, points.length);
+    points.push(p);
+    updatePolyline();
+    renderPointList();
+  }
+
+  document.getElementById('modal-overlay').classList.remove('show');
+  pendingLatLng = null;
+  editingId = null;
+}
+
+document.getElementById('modal-overlay').addEventListener('click', e => {
+  if (e.target === e.currentTarget) cancelModal();
+});
+
+// ===== マーカー =====
+function makeTooltipHtml(p, idx) {
+  return `<b>${idx+1}. ${p.name}</b>${p.memo ? '<br><span style="color:#f0a500">'+p.memo+'</span>' : ''}`;
+}
+
+function makeIcon(idx, isCurrent) {
+  const color = isCurrent ? '#00aaff' : '#f0a500';
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="40" viewBox="0 0 32 40">
+    <path d="M16 0 C7.2 0 0 7.2 0 16 C0 26 16 40 16 40 C16 40 32 26 32 16 C32 7.2 24.8 0 16 0Z" fill="${color}"/>
+    <circle cx="16" cy="16" r="10" fill="#fff"/>
+    <text x="16" y="21" text-anchor="middle" font-size="12" font-weight="bold" fill="${color}">${idx+1}</text>
+  </svg>`;
+  return L.divIcon({ html: svg, iconSize:[32,40], iconAnchor:[16,40], className:'' });
+}
+
+function addMarker(p, idx) {
+  const marker = L.marker([p.lat, p.lng], {
+    icon: makeIcon(idx, false),
+    draggable: true
+  }).addTo(map);
+
+  marker.bindTooltip(makeTooltipHtml(p, idx), { direction:'top', offset:[0,-36] });
+
+  marker.on('click', () => {
+    if (!addMode) openModal(null, p.id);
+  });
+
+  marker.on('dragend', e => {
+    p.lat = e.target.getLatLng().lat;
+    p.lng = e.target.getLatLng().lng;
+    updatePolyline();
+    checkRouteReturn();
+  });
+
+  p.marker = marker;
+}
+
+function refreshAllIcons() {
+  points.forEach((p, i) => {
+    if (p.marker) {
+      p.marker.setIcon(makeIcon(i, navActive && i === navIndex));
+      p.marker.setTooltipContent(makeTooltipHtml(p, i));
+    }
+  });
+}
+
+// ===== ポリライン =====
+async function updatePolyline() {
+  if (polyline) { map.removeLayer(polyline); polyline = null; }
+  if (points.length < 2) return;
+
+  // まず直線で仮表示
+  polyline = L.polyline(points.map(p => [p.lat, p.lng]), {
+    color: '#f0a500', weight: 3, opacity: 0.4, dashArray: '6,6'
+  }).addTo(map);
+
+  try {
+    // OSRMで道路沿いルートを取得
+    const coords = points.map(p => p.lng + ',' + p.lat).join(';');
+    const url = 'https://router.project-osrm.org/route/v1/driving/' + coords + '?overview=full&geometries=geojson&continue_straight=true';
+    const res = await fetch(url);
+    const data = await res.json();
+
+    if (data.code !== 'Ok' || !data.routes.length) return;
+
+    // 仮表示を消して道路沿いラインを描く
+    if (polyline) map.removeLayer(polyline);
+    polyline = L.geoJSON(data.routes[0].geometry, {
+      style: { color:'#f0a500', weight:5, opacity:0.85 }
+    }).addTo(map);
+
+  } catch(e) {
+    // OSRMが失敗したら直線のまま
+    console.warn('OSRM失敗、直線で表示', e);
+  }
+}
+
+// ===== ポイントリスト =====
+function renderPointList() {
+  const el = document.getElementById('panel-points');
+  if (points.length === 0) {
+    el.innerHTML = '<div class="empty-list">ポイントがありません<br>ルートタブから追加してください</div>';
+    return;
+  }
+  el.innerHTML = points.map((p, i) => `
+    <div class="point-row">
+      <div class="point-num ${navActive && i === navIndex ? 'current' : ''}">${i+1}</div>
+      <div class="point-name">
+        <div>${p.name}</div>
+        ${p.memo ? `<div style="font-size:11px;color:#f0a500">${p.memo}</div>` : ''}
+      </div>
+      <button class="point-del" onclick="deletePoint(${p.id})">✕</button>
+    </div>
+  `).join('');
+}
+
+function deletePoint(id) {
+  const idx = points.findIndex(x => x.id === id);
+  if (idx === -1) return;
+  map.removeLayer(points[idx].marker);
+  points.splice(idx, 1);
+  refreshAllIcons();
+  updatePolyline();
+  renderPointList();
+}
+
+// ===== 住所検索 =====
+async function searchAddress() {
+  const q = document.getElementById('search-input').value.trim();
+  if (!q) return;
+  try {
+    const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=1&accept-language=ja`);
+    const data = await res.json();
+    if (!data.length) { alert('見つかりませんでした'); return; }
+    const { lat, lon, display_name } = data[0];
+    const latlng = { lat: parseFloat(lat), lng: parseFloat(lon) };
+    map.setView([latlng.lat, latlng.lng], 16);
+    document.getElementById('modal-name').value = display_name.split('、')[0].split(',')[0];
+    openModal(latlng, null);
+    document.getElementById('search-input').value = '';
+  } catch(e) {
+    alert('検索に失敗しました');
+  }
+}
+
+document.getElementById('search-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') searchAddress();
+});
+
+// ===== GPS =====
+function startGPS() {
+  if (!navigator.geolocation) return;
+  gpsWatchId = navigator.geolocation.watchPosition(onGPS, onGPSError, {
+    enableHighAccuracy: true,
+    maximumAge: 2000,
+    timeout: 10000
+  });
+}
+
+function onGPS(pos) {
+  const { latitude: lat, longitude: lng, accuracy } = pos.coords;
+  const badge = document.getElementById('gps-badge');
+  badge.textContent = `📡 精度 ±${Math.round(accuracy)}m`;
+  badge.className = accuracy < 30 ? 'good' : accuracy < 100 ? '' : 'bad';
+
+  if (!gpsMarker) {
+    gpsMarker = L.circleMarker([lat, lng], {
+      radius: 8, color:'#00aaff', fillColor:'#00aaff', fillOpacity:0.9, weight:2
+    }).addTo(map);
+    gpsCircle = L.circle([lat, lng], {
+      radius: accuracy, color:'#00aaff', fillColor:'#00aaff', fillOpacity:0.1, weight:1
+    }).addTo(map);
+  } else {
+    gpsMarker.setLatLng([lat, lng]);
+    gpsCircle.setLatLng([lat, lng]);
+    gpsCircle.setRadius(accuracy);
+  }
+
+  if (followMode) map.panTo([lat, lng]);
+  if (navActive) checkNavProgress(lat, lng);
+}
+
+function onGPSError(e) {
+  const badge = document.getElementById('gps-badge');
+  badge.textContent = '📡 GPS取得失敗';
+  badge.className = 'bad';
+}
+
+function toggleFollow() {
+  followMode = !followMode;
+  const btn = document.getElementById('follow-btn');
+  btn.classList.toggle('active', followMode);
+  if (followMode && gpsMarker) map.panTo(gpsMarker.getLatLng());
+}
+
+map.on('dragstart', () => {
+  if (followMode) {
+    followMode = false;
+    document.getElementById('follow-btn').classList.remove('active');
+  }
+});
+
+// ===== ナビ =====
+const REACH_DIST = 30; // 30m以内で到達とみなす
+
+function toggleNav() {
+  if (!navActive) startNav();
+  else stopNav();
+}
+
+function startNav() {
+  if (points.length === 0) { alert('ポイントがありません'); return; }
+  navActive = true;
+  navIndex = 0;
+  document.getElementById('btn-nav').textContent = '■ ナビ停止';
+  document.getElementById('btn-nav').style.background = '#cc0000';
+  document.getElementById('btn-nav').style.color = '#fff';
+  document.getElementById('nav-bar').classList.add('show');
+  refreshAllIcons();
+  renderPointList();
+  updateNavBar();
+  followMode = true;
+  document.getElementById('follow-btn').classList.add('active');
+}
+
+function stopNav() {
+  navActive = false;
+  document.getElementById('btn-nav').textContent = '▶ ナビ開始';
+  document.getElementById('btn-nav').style.background = '';
+  document.getElementById('btn-nav').style.color = '';
+  document.getElementById('nav-bar').classList.remove('show');
+  refreshAllIcons();
+  renderPointList();
+}
+
+function updateNavBar() {
+  if (!navActive || navIndex >= points.length) return;
+  const p = points[navIndex];
+  const next = points[navIndex + 1];
+  document.getElementById('nav-direction').textContent = navIndex === 0 ? '出発点' : `ポイント ${navIndex + 1} へ向かっています`;
+  document.getElementById('nav-point-name').textContent = p.name + (p.memo ? ' — ' + p.memo : '');
+  document.getElementById('nav-progress').textContent = `${navIndex + 1} / ${points.length}${next ? ' → 次: ' + next.name : ' （ゴール）'}`;
+}
+
+function checkNavProgress(lat, lng) {
+  if (!navActive || navIndex >= points.length) return;
+  const target = points[navIndex];
+  const dist = calcDist(lat, lng, target.lat, target.lng);
+  if (dist < REACH_DIST) {
+    // ポイント到達
+    speak(`${target.name}に到達しました`);
+    navIndex++;
+    if (navIndex >= points.length) {
+      speak('ゴールです。お疲れ様でした。');
+      stopNav();
+      alert('🏁 ゴールに到達しました！');
+      return;
+    }
+    refreshAllIcons();
+    renderPointList();
+    updateNavBar();
+    speak(`次は ${points[navIndex].name} ${points[navIndex].memo || ''}`);
+  }
+}
+
+// ルートから外れて戻った時の処理
+function checkRouteReturn() {
+  // 現バージョンではナビ中はGPSで自動判定するため追加実装なし
+}
+
+// ===== 距離計算（ハーバーサイン） =====
+function calcDist(lat1, lng1, lat2, lng2) {
+  const R = 6371000;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLng/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+// ===== 音声 =====
+function speak(text) {
+  if (!('speechSynthesis' in window)) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'ja-JP';
+  u.rate = 1.0;
+  speechSynthesis.speak(u);
+}
+
+// ===== 保存・読み込み =====
+function saveRoute() {
+  if (points.length === 0) { alert('ポイントがありません'); return; }
+  const data = { version:1, points: points.map(p => ({ lat:p.lat, lng:p.lng, name:p.name, memo:p.memo })) };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type:'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `route-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+}
+
+function loadRoute() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  input.onchange = e => {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        clearAll(true);
+        data.points.forEach((d, i) => {
+          const p = { id: Date.now()+i, lat:d.lat, lng:d.lng, name:d.name, memo:d.memo||'', marker:null };
+          addMarker(p, i);
+          points.push(p);
+        });
+        updatePolyline();
+        renderPointList();
+        if (points.length > 0) map.fitBounds(points.map(p=>[p.lat,p.lng]), {padding:[40,40]});
+      } catch { alert('読み込み失敗'); }
+    };
+    reader.readAsText(e.target.files[0]);
+  };
+  input.click();
+}
+
+function clearAll(silent = false) {
+  if (!silent && points.length > 0 && !confirm('全ポイントを削除しますか？')) return;
+  points.forEach(p => { if(p.marker) map.removeLayer(p.marker); });
+  points = [];
+  if (polyline) { map.removeLayer(polyline); polyline = null; }
+  if (navActive) stopNav();
+  renderPointList();
+}
+
+// ===== 起動 =====
+startGPS();
+renderPointList();
+</script>
+</body>
+</html>
