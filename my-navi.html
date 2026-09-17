@@ -156,7 +156,7 @@ body { background:#0d0d0d; color:#fff; font-family:'Helvetica Neue',Arial,sans-s
     <div id="nav-memo-txt"></div>
     <div id="nav-sub"></div>
     <div id="nav-dist" style="font-size:16px;color:#ccc;margin-top:6px;display:flex;gap:16px;align-items:center;">
-      <span id="nav-dist-next" style="display:none;"></span>
+      <span id="nav-dist-next" style="color:#aaa;"></span>
       <span id="nav-dist-goal" style="color:#fff;font-weight:600;"></span>
       <button onclick="toggleDistUnit()" style="background:#222;border:1px solid #444;color:#aaa;font-size:13px;padding:3px 10px;border-radius:4px;cursor:pointer;" id="dist-unit-btn">km</button>
     </div>
@@ -251,7 +251,7 @@ function onGPS(pos){
     if(navIndex<points.length){
       const t=points[navIndex];
       const d=calcDist(lat,lng,t.lat,t.lng);
-      document.getElementById('nav-dist-next').textContent=`直線: ${formatDist(d)}`;
+      document.getElementById('nav-dist-next').textContent=`次P直線: ${formatDist(d)}`;
       // 残り = 現在地→次のポイント(直線) + 次のポイント→ゴール(道路)
       const roadRem=calcRemainingDist(); // 次のポイント以降の道路距離
       const totalRem = roadRem!==null ? d+roadRem : d;
