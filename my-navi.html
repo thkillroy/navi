@@ -45,6 +45,7 @@ body { background:#0d0d0d; color:#fff; font-family:'Helvetica Neue',Arial,sans-s
 .btn-green { background:#003a00; color:#66ff66; border:1px solid #050; }
 .btn-nav-stop { background:#cc0000; color:#fff; }
 .btn-add-active { background:#ff4400; color:#fff; }
+.btn-insert-active { background:#0066cc; color:#fff; }
 .btn-route-active { background:#0044cc; color:#fff; }
 
 /* ポイントリスト */
@@ -52,65 +53,52 @@ body { background:#0d0d0d; color:#fff; font-family:'Helvetica Neue',Arial,sans-s
 #points-wrap::-webkit-scrollbar { width:3px; }
 #points-wrap::-webkit-scrollbar-thumb { background:#333; }
 
-/* 通常ポイント行 */
-.point-row {
-  display:flex; align-items:center; gap:8px;
-  padding:8px 12px; border-bottom:1px solid #1a1a1a;
-  transition:all 0.2s;
-}
-
-/* 現在ポイント行（大きく） */
-.point-row.current-row {
-  padding:14px 12px;
-  background:#1a1200;
-  border-left:3px solid #f0a500;
-  border-bottom:1px solid #333;
-}
-
-/* 通過済み行（半透明） */
+.point-row { display:flex; align-items:center; gap:8px; padding:8px 12px; border-bottom:1px solid #1a1a1a; transition:all 0.2s; }
+.point-row.current-row { padding:14px 12px; background:#1a1200; border-left:3px solid #f0a500; border-bottom:1px solid #333; }
 .point-row.done-row { opacity:0.3; }
 
-.point-num {
-  width:26px; height:26px; border-radius:50%;
-  background:#222; border:2px solid #f0a500;
-  color:#f0a500; font-size:11px; font-weight:700;
-  display:flex; align-items:center; justify-content:center; flex-shrink:0;
-  transition:all 0.2s;
-}
-/* 現在ポイント番号（大きく） */
-.point-row.current-row .point-num {
-  width:36px; height:36px; font-size:15px;
-  background:#f0a500; color:#000; border-color:#f0a500;
-}
+/* 挿入ボタン行 */
+.insert-row { display:flex; align-items:center; justify-content:center; padding:2px 12px; }
+.insert-btn { background:#0d0d0d; border:1px dashed #333; color:#444; font-size:14px; font-weight:700; cursor:pointer; border-radius:4px; padding:2px 16px; width:100%; transition:all 0.15s; }
+.insert-btn:hover, .insert-btn.active { background:#001a33; border-color:#0066cc; color:#0099ff; }
+
+.point-num { width:26px; height:26px; border-radius:50%; background:#222; border:2px solid #f0a500; color:#f0a500; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:all 0.2s; }
+.point-row.current-row .point-num { width:36px; height:36px; font-size:15px; background:#f0a500; color:#000; border-color:#f0a500; }
 .point-num.done { border-color:#444; color:#444; background:#111; }
 
 .point-info { flex:1; min-width:0; cursor:pointer; }
-.point-name { font-size:12px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-/* 現在ポイント名（大きく） */
+.point-name { font-size:12px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:#ccc; }
 .point-row.current-row .point-name { font-size:16px; color:#f0a500; }
 .point-memo-label { font-size:10px; color:#f0a500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .point-row.current-row .point-memo-label { font-size:12px; }
 
-/* ×ボタン（全ポイント大きく） */
-.point-del {
-  background:#2a0000;
-  border:1px solid #500;
-  color:#ff6666;
-  font-size:16px;
-  font-weight:700;
-  cursor:pointer;
-  padding:6px 12px;
-  border-radius:6px;
-  flex-shrink:0;
-  min-width:44px;
-  min-height:36px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
+.point-del { background:#2a0000; border:1px solid #500; color:#ff6666; font-size:16px; font-weight:700; cursor:pointer; padding:6px 12px; border-radius:6px; flex-shrink:0; min-width:44px; min-height:36px; display:flex; align-items:center; justify-content:center; }
 .point-del:active { background:#4a0000; }
 
 .empty-msg { text-align:center; padding:20px 16px; color:#444; font-size:12px; line-height:2; }
+
+/* インライン編集ポップアップ */
+#edit-popup {
+  display:none;
+  position:fixed;
+  z-index:8000;
+  background:#1a1a1a;
+  border:1px solid #f0a500;
+  border-radius:10px;
+  padding:12px 14px;
+  width:240px;
+  box-shadow:0 8px 24px rgba(0,0,0,0.6);
+}
+#edit-popup.show { display:block; }
+#edit-popup label { font-size:10px; color:#555; display:block; margin-bottom:3px; letter-spacing:0.1em; text-transform:uppercase; }
+#edit-popup input, #edit-popup textarea {
+  width:100%; background:#0d0d0d; border:1px solid #333;
+  border-radius:6px; color:#fff; padding:7px 10px;
+  font-size:13px; outline:none; margin-bottom:8px; font-family:inherit;
+}
+#edit-popup input:focus, #edit-popup textarea:focus { border-color:#f0a500; }
+#edit-popup textarea { resize:none; height:52px; }
+#edit-popup-title { font-size:11px; color:#f0a500; font-weight:700; margin-bottom:10px; }
 
 /* モーダル */
 #modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:9999; align-items:flex-end; justify-content:center; }
@@ -118,11 +106,13 @@ body { background:#0d0d0d; color:#fff; font-family:'Helvetica Neue',Arial,sans-s
 #modal { background:#1a1a1a; border-radius:16px 16px 0 0; padding:20px 18px 36px; width:100%; max-width:500px; border-top:1px solid #333; }
 #modal h3 { font-size:14px; color:#f0a500; margin-bottom:14px; }
 #modal label { font-size:10px; color:#555; display:block; margin-bottom:4px; letter-spacing:0.1em; text-transform:uppercase; }
-#modal input, #modal textarea { width:100%; background:#0d0d0d; border:1px solid #333; border-radius:8px; color:#fff; padding:10px 12px; font-size:14px; outline:none; margin-bottom:12px; font-family:inherit; }
-#modal input:focus, #modal textarea:focus { border-color:#f0a500; }
+#modal input, #modal textarea, #modal select { width:100%; background:#0d0d0d; border:1px solid #333; border-radius:8px; color:#fff; padding:10px 12px; font-size:14px; outline:none; margin-bottom:12px; font-family:inherit; }
+#modal input:focus, #modal textarea:focus, #modal select:focus { border-color:#f0a500; }
 #modal textarea { resize:none; height:60px; }
+#modal select option { background:#1a1a1a; }
 #modal-btns { display:flex; gap:8px; }
 #modal-btns .btn { flex:1; padding:12px; font-size:14px; }
+#position-row { display:none; }
 
 /* スマホ横向き */
 @media (orientation:landscape) and (max-width:900px) {
@@ -140,11 +130,13 @@ body { background:#0d0d0d; color:#fff; font-family:'Helvetica Neue',Arial,sans-s
   #controls { flex-direction:row; align-items:center; padding:8px 16px; gap:8px; }
   #search-row { flex:1; }
   #btn-row { flex-shrink:0; flex-wrap:nowrap; }
-  #points-wrap { max-height:none; height:140px; display:flex; flex-direction:row; overflow-x:auto; overflow-y:hidden; border-top:1px solid #222; }
+  #points-wrap { max-height:none; height:160px; display:flex; flex-direction:row; overflow-x:auto; overflow-y:hidden; border-top:1px solid #222; align-items:stretch; }
   #points-wrap::-webkit-scrollbar { height:3px; }
   .point-row { flex-direction:column; align-items:flex-start; min-width:160px; max-width:160px; border-bottom:none; border-right:1px solid #1a1a1a; padding:10px 12px; gap:4px; }
   .point-row.current-row { min-width:200px; max-width:200px; padding:14px 12px; border-left:none; border-top:3px solid #f0a500; }
   .point-name { white-space:normal; font-size:11px; }
+  .insert-row { flex-direction:column; min-width:32px; max-width:32px; padding:8px 4px; border-right:1px solid #1a1a1a; }
+  .insert-btn { writing-mode:vertical-rl; padding:8px 2px; font-size:12px; width:auto; height:100%; }
   .empty-msg { min-width:300px; }
 }
 </style>
@@ -163,6 +155,11 @@ body { background:#0d0d0d; color:#fff; font-family:'Helvetica Neue',Arial,sans-s
     <div id="nav-name">—</div>
     <div id="nav-memo-txt"></div>
     <div id="nav-sub"></div>
+    <div id="nav-dist" style="font-size:11px;color:#666;margin-top:4px;display:flex;gap:12px;">
+      <span id="nav-dist-next"></span>
+      <span id="nav-dist-goal"></span>
+      <button onclick="toggleDistUnit()" style="background:none;border:1px solid #333;color:#888;font-size:10px;padding:1px 6px;border-radius:3px;cursor:pointer;" id="dist-unit-btn">km</button>
+    </div>
   </div>
   <div id="controls">
     <div id="search-row">
@@ -171,26 +168,44 @@ body { background:#0d0d0d; color:#fff; font-family:'Helvetica Neue',Arial,sans-s
     </div>
     <div id="btn-row">
       <button class="btn btn-gray" id="btn-add" onclick="toggleAddMode()">＋ タップ追加</button>
-      <button class="btn btn-gray" id="btn-route-mode" onclick="toggleRouteMode()" title="直線/道路沿い切替">🛣 道路</button>
+      <button class="btn btn-gray" id="btn-route-mode" onclick="toggleRouteMode()">🛣 道路</button>
       <button class="btn btn-green" id="btn-nav" onclick="toggleNav()">▶ ナビ開始</button>
-      <button class="btn btn-gray" id="btn-return" onclick="reverseRoute()" title="復路">🔄 復路</button>
-      <button class="btn btn-gray" onclick="saveRoute()" title="保存">💾 保存</button>
-      <button class="btn btn-gray" onclick="loadRoute()" title="読み込み">📂 読込</button>
+      <button class="btn btn-gray" onclick="reverseRoute()">🔄 復路</button>
+      <button class="btn btn-gray" onclick="saveRoute()">💾 保存</button>
+      <button class="btn btn-gray" onclick="loadRoute()">📂 読込</button>
       <button class="btn btn-red" onclick="clearAll()">🗑</button>
     </div>
   </div>
-  <div id="points-wrap">
-    <div class="empty-msg">ポイントがありません<br>住所検索かタップで追加</div>
+  <div id="points-scroll-wrap" style="position:relative;display:flex;align-items:stretch;">
+    <button id="scroll-left" onclick="scrollPoints(-1)" style="display:none;background:#222;border:none;color:#f0a500;font-size:20px;padding:0 10px;cursor:pointer;flex-shrink:0;z-index:10;">&#9664;</button>
+    <div id="points-wrap" style="flex:1;min-width:0;">
+      <div class="empty-msg">ポイントがありません<br>住所検索かタップで追加</div>
+    </div>
+    <button id="scroll-right" onclick="scrollPoints(1)" style="display:none;background:#222;border:none;color:#f0a500;font-size:20px;padding:0 10px;cursor:pointer;flex-shrink:0;z-index:10;">&#9654;</button>
   </div>
 </div>
 
+<!-- インライン編集ポップアップ -->
+<div id="edit-popup">
+  <div id="edit-popup-title"></div>
+  <label>ポイント名</label>
+  <input type="text" id="edit-popup-name" placeholder="名前（省略OK）">
+  <label>メモ</label>
+  <textarea id="edit-popup-memo" placeholder="曲がり方向など"></textarea>
+</div>
+
+<!-- モーダル -->
 <div id="modal-overlay">
   <div id="modal">
     <h3 id="modal-title"></h3>
-    <label>ポイント名</label>
+    <label>ポイント名（省略OK）</label>
     <input type="text" id="modal-name" placeholder="例: ○○工場、△△倉庫">
     <label>メモ（曲がり方向など）</label>
     <textarea id="modal-memo-input" placeholder="例: 右折して200m先&#10;門の前で停車"></textarea>
+    <div id="position-row">
+      <label id="position-label">挿入位置</label>
+      <select id="modal-position"></select>
+    </div>
     <div id="modal-btns">
       <button class="btn btn-gray" onclick="cancelModal()">キャンセル</button>
       <button class="btn btn-orange" id="modal-ok" onclick="confirmModal()">追加</button>
@@ -209,77 +224,201 @@ L.control.zoom({ position:'topright' }).addTo(map);
 
 let points=[], polylines=[], addMode=false;
 let navActive=false, navIndex=0;
-let followMode=false, gpsMarker=null, gpsCircle=null;
-let pendingLatLng=null, editingId=null;
-let useRoad=true; // true=道路沿い false=直線
+let followMode=false, gpsMarker=null, gpsCircle=null, gpsInitialized=false;
+let pendingLatLng=null, editingId=null, insertAfterIndex=null;
+let useRoad=true;
+
+// ===== 起動時に現在地へ =====
+function startGPS(){
+  if(!navigator.geolocation)return;
+  navigator.geolocation.watchPosition(onGPS, onGPSErr, {enableHighAccuracy:true, maximumAge:2000, timeout:10000});
+}
+function onGPS(pos){
+  const{latitude:lat, longitude:lng, accuracy}=pos.coords;
+  const b=document.getElementById('gps-badge');
+  b.textContent=`📡 精度 ±${Math.round(accuracy)}m`;
+  b.className=accuracy<30?'good':accuracy<100?'':'bad';
+  // 初回だけ現在地に移動
+  if(!gpsInitialized){ map.setView([lat,lng],16); gpsInitialized=true; }
+  if(!gpsMarker){
+    gpsMarker=L.circleMarker([lat,lng],{radius:9,color:'#00aaff',fillColor:'#00aaff',fillOpacity:1,weight:3}).addTo(map);
+    gpsCircle=L.circle([lat,lng],{radius:accuracy,color:'#00aaff',fillColor:'#00aaff',fillOpacity:0.08,weight:1}).addTo(map);
+  }else{ gpsMarker.setLatLng([lat,lng]); gpsCircle.setLatLng([lat,lng]).setRadius(accuracy); }
+  if(followMode)map.panTo([lat,lng]);
+  if(navActive){
+    checkProgress(lat,lng);
+    // ナビバーの距離をリアルタイム更新
+    if(navIndex<points.length){
+      const t=points[navIndex];
+      const d=calcDist(lat,lng,t.lat,t.lng);
+      document.getElementById('nav-dist-next').textContent=`直線: ${formatDist(d)}`;
+      const rem=calcRemainingDist();
+      if(rem!==null) document.getElementById('nav-dist-goal').textContent=`残り: ${formatDist(rem)}`;
+    }
+  }
+}
+function onGPSErr(){ const b=document.getElementById('gps-badge'); b.textContent='📡 GPS失敗'; b.className='bad'; }
+
+function toggleFollow(){
+  if(!followMode){
+    // followModeがOFF → 現在地に移動してON
+    followMode=true;
+    document.getElementById('follow-btn').classList.add('active');
+    if(gpsMarker) map.panTo(gpsMarker.getLatLng());
+  } else {
+    // followModeがON → 現在地にポイント追加（followModeはONのまま）
+    if(gpsMarker){
+      const ll=gpsMarker.getLatLng();
+      openModal({lat:ll.lat,lng:ll.lng},null,null);
+    }
+  }
+}
+map.on('dragstart',()=>{ followMode=false; document.getElementById('follow-btn').classList.remove('active'); document.getElementById('follow-btn').title=''; });
 
 // ===== 地図タップ =====
-map.on('click', e => { if (addMode) openModal(e.latlng, null); });
+map.on('click', e=>{
+  if(!addMode)return;
+  openModal(e.latlng, null, null); // null=挿入位置未指定（モーダルで選ぶ）
+});
 
 // ===== 追加モード =====
-function toggleAddMode() {
-  addMode = !addMode;
-  const btn = document.getElementById('btn-add');
-  if (addMode) { btn.textContent='✕ 追加終了'; btn.className='btn btn-add-active'; }
-  else { btn.textContent='＋ タップ追加'; btn.className='btn btn-gray'; }
+function toggleAddMode(){
+  addMode=!addMode;
+  const btn=document.getElementById('btn-add');
+  if(addMode){ btn.textContent='✕ 追加終了'; btn.className='btn btn-add-active'; }
+  else{ btn.textContent='＋ タップ追加'; btn.className='btn btn-gray'; insertAfterIndex=null; }
 }
 
-// ===== 道路/直線モード =====
-function toggleRouteMode() {
-  useRoad = !useRoad;
-  const btn = document.getElementById('btn-route-mode');
-  if (useRoad) { btn.textContent='🛣 道路'; btn.className='btn btn-gray'; }
-  else { btn.textContent='📏 直線'; btn.className='btn btn-route-active'; }
-  updatePolyline();
-}
-
-// ===== 復路 =====
-function reverseRoute() {
-  if (points.length < 2) { alert('ポイントが2つ以上必要です'); return; }
-  if (!confirm('ポイントの順番を逆にして復路にしますか？')) return;
-  points.reverse();
-  // navIndexリセット
-  if (navActive) { navIndex = 0; }
-  refreshAllMarkers();
-  updatePolyline();
-  renderList();
-  if (navActive) updateNavBar();
+// ===== 欄の挿入ボタン =====
+// afterIdx: この番号の「後」に挿入。-1なら先頭の前（0番目として挿入）
+function startInsertAt(afterIdx){
+  insertAfterIndex=afterIdx;
+  addMode=true;
+  // afterIdx=-1なら先頭(1番目)、afterIdx=0なら2番目、afterIdx=3なら5番目
+  const insertPos=afterIdx+2;
+  const displayPos=afterIdx===-1?1:insertPos;
+  const btn=document.getElementById('btn-add');
+  btn.textContent=`✕ ${displayPos}番目に挿入中`;
+  btn.className='btn btn-insert-active';
+  document.querySelectorAll('.insert-btn').forEach(b=>{
+    b.classList.toggle('active', parseInt(b.dataset.after)===afterIdx);
+  });
 }
 
 // ===== モーダル =====
-function openModal(latlng, id) {
-  pendingLatLng=latlng; editingId=id;
+function openModal(latlng, id, forceInsertAfter){
+  pendingLatLng=latlng;
+  editingId=id;
   const isEdit=id!==null;
-  document.getElementById('modal-title').textContent=isEdit?'ポイントを編集':`ポイント ${points.length+1} を追加`;
+  document.getElementById('modal-title').textContent=isEdit?'ポイントを編集':'ポイントを追加';
   document.getElementById('modal-ok').textContent=isEdit?'保存':'追加';
-  if (isEdit) { const p=points.find(x=>x.id===id); document.getElementById('modal-name').value=p.name; document.getElementById('modal-memo-input').value=p.memo; }
-  else { document.getElementById('modal-name').value=''; document.getElementById('modal-memo-input').value=''; }
+  if(isEdit){
+    const p=points.find(x=>x.id===id);
+    document.getElementById('modal-name').value=p.name;
+    document.getElementById('modal-memo-input').value=p.memo;
+    document.getElementById('position-row').style.display='none';
+  } else {
+    document.getElementById('modal-name').value='';
+    document.getElementById('modal-memo-input').value='';
+    // 位置選択：ポイントが2つ以上 かつ 欄の+から来ていない場合のみ表示
+    const posRow=document.getElementById('position-row');
+    const sel=document.getElementById('modal-position');
+    if(points.length>=2 && insertAfterIndex===null){
+      // 地図タップ時のみ：位置を選ばせる
+      posRow.style.display='block';
+      document.getElementById('position-label').textContent=`挿入位置（デフォルト: ${points.length+1}番目）`;
+      sel.innerHTML='';
+      // 末尾
+      const optEnd=document.createElement('option');
+      optEnd.value=points.length;
+      optEnd.textContent=`${points.length+1}番目（末尾）`;
+      optEnd.selected=true;
+      sel.appendChild(optEnd);
+      // 2番目〜N番目（挿入）
+      for(let i=1;i<points.length;i++){
+        const opt=document.createElement('option');
+        opt.value=i;
+        opt.textContent=`${i+1}番目（${i}と${i+1}の間）`;
+        sel.appendChild(opt);
+      }
+    } else if(points.length>=2 && insertAfterIndex!==null){
+      // 欄の+から来た場合：位置を表示するが変更不可（確認用）
+      const insertPos=insertAfterIndex===-1?0:insertAfterIndex+1;
+      const displayPos=insertPos+1;
+      posRow.style.display='block';
+      document.getElementById('position-label').textContent=`挿入位置`;
+      sel.innerHTML=`<option value="${insertPos}" selected>${displayPos}番目に挿入</option>`;
+    } else {
+      posRow.style.display='none';
+    }
+  }
   document.getElementById('modal-overlay').classList.add('show');
-  setTimeout(()=>document.getElementById('modal-name').focus(),100);
+  setTimeout(()=>document.getElementById('modal-ok').focus(),100);
 }
-function cancelModal() { document.getElementById('modal-overlay').classList.remove('show'); pendingLatLng=null; editingId=null; }
-function confirmModal() {
+
+function cancelModal(){
+  document.getElementById('modal-overlay').classList.remove('show');
+  pendingLatLng=null; editingId=null; insertAfterIndex=null;
+  document.querySelectorAll('.insert-btn').forEach(b=>b.classList.remove('active'));
+  // addModeは継続（キャンセルしても追加モードは維持）
+  if(addMode){
+    const btn=document.getElementById('btn-add');
+    btn.textContent='✕ 追加終了'; btn.className='btn btn-add-active';
+  }
+}
+
+function confirmModal(){
   const name=document.getElementById('modal-name').value.trim();
   const memo=document.getElementById('modal-memo-input').value.trim();
-  if (editingId!==null) {
+
+  if(editingId!==null){
     const p=points.find(x=>x.id===editingId);
-    p.name=name||p.name; p.memo=memo;
+    p.name=name; p.memo=memo;
     refreshAllMarkers(); renderList();
   } else {
     if(!pendingLatLng)return;
-    const p={id:Date.now(),lat:pendingLatLng.lat,lng:pendingLatLng.lng,name:name||`ポイント ${points.length+1}`,memo,marker:null};
-    addMarker(p,points.length); points.push(p);
-    updatePolyline(); renderList();
+    const p={id:Date.now(), lat:pendingLatLng.lat, lng:pendingLatLng.lng, name, memo, marker:null};
+
+    // 挿入位置を決定
+    let insertAt;
+    if(insertAfterIndex!==null){
+      // 欄の＋ボタンから（afterIdx=-1なら先頭、afterIdx=Nならその次）
+      insertAt=insertAfterIndex===-1?0:insertAfterIndex+1;
+    } else if(points.length>=2 && document.getElementById('position-row').style.display!=='none'){
+      // 地図タップ＋位置選択
+      insertAt=parseInt(document.getElementById('modal-position').value);
+    } else {
+      // 末尾
+      insertAt=points.length;
+    }
+
+    // 挿入
+    points.splice(insertAt,0,p);
+    // 全マーカー再描画
+    rebuildAllMarkers();
+    updatePolyline();
+    renderList();
   }
+
   document.getElementById('modal-overlay').classList.remove('show');
-  pendingLatLng=null; editingId=null;
+  const wasInsert=insertAfterIndex!==null;
+  pendingLatLng=null; editingId=null; insertAfterIndex=null;
+  // addModeは常に継続（連続追加可能）
+  // 挿入ボタンのハイライトだけ解除
+  insertAfterIndex=null;
+  document.querySelectorAll('.insert-btn').forEach(b=>b.classList.remove('active'));
+  if(addMode){
+    const btn=document.getElementById('btn-add');
+    btn.textContent='✕ 追加終了'; btn.className='btn btn-add-active';
+  }
 }
-document.getElementById('modal-overlay').addEventListener('click',e=>{if(e.target===e.currentTarget)cancelModal();});
+
+document.getElementById('modal-overlay').addEventListener('click',e=>{if(e.target===e.currentTarget)confirmModal();});
 
 // ===== マーカー =====
-function makeIcon(idx, state) {
-  const c = state==='cur' ? ['#00aaff','#fff'] : state==='done' ? ['#555','#888'] : ['#f0a500','#000'];
-  const n=idx+1, fs=n>=100?9:n>=10?11:14;
+function makeIcon(idx,state){
+  const c=state==='cur'?['#00aaff','#fff']:state==='done'?['#555','#888']:['#f0a500','#000'];
+  const n=idx+1,fs=n>=100?9:n>=10?11:14;
   const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="34" height="44" viewBox="0 0 34 44">
     <path d="M17 0C7.6 0 0 7.6 0 17c0 11 17 27 17 27s17-16 17-27C34 7.6 26.4 0 17 0z" fill="${c[0]}" opacity="${state==='done'?0.4:1}"/>
     <circle cx="17" cy="17" r="11" fill="#fff" opacity="0.95"/>
@@ -288,101 +427,135 @@ function makeIcon(idx, state) {
   return L.divIcon({html:svg,iconSize:[34,44],iconAnchor:[17,44],className:''});
 }
 
-function getState(idx) {
-  if (!navActive) return 'normal';
-  if (idx < navIndex) return 'done';
-  if (idx === navIndex) return 'cur';
-  return 'normal';
+function getState(idx){
+  if(!navActive)return'normal';
+  if(idx<navIndex)return'done';
+  if(idx===navIndex)return'cur';
+  return'normal';
 }
 
-function addMarker(p, idx) {
+function addMarker(p,idx){
   const m=L.marker([p.lat,p.lng],{icon:makeIcon(idx,getState(idx)),draggable:true}).addTo(map);
-  m.bindTooltip(`<b>${idx+1}. ${p.name}</b>${p.memo?'<br><span style="color:#f0a500">'+p.memo+'</span>':''}`,{direction:'top',offset:[0,-40]});
-  m.on('click',()=>{if(!addMode)openModal(null,p.id);});
+  m.bindTooltip(makeTooltip(p,idx),{direction:'top',offset:[0,-40]});
+  m.on('click',function(e){ L.DomEvent.stopPropagation(e); _openEditFromMarker(p.id); });
   m.on('dragend',e=>{p.lat=e.target.getLatLng().lat;p.lng=e.target.getLatLng().lng;updatePolyline();});
   p.marker=m;
 }
 
-function refreshAllMarkers() {
+function makeTooltip(p,idx){
+  return `<b>${idx+1}${p.name?' - '+p.name:''}</b>${p.memo?'<br><span style="color:#f0a500">'+p.memo+'</span>':''}`;
+}
+
+// 全マーカーを削除して再生成（挿入時に番号を正しく振り直す）
+function rebuildAllMarkers(){
+  points.forEach(p=>{if(p.marker){map.removeLayer(p.marker);p.marker=null;}});
+  points.forEach((p,i)=>addMarker(p,i));
+}
+
+function refreshAllMarkers(){
   points.forEach((p,i)=>{
     if(!p.marker)return;
     p.marker.setIcon(makeIcon(i,getState(i)));
-    p.marker.setTooltipContent(`<b>${i+1}. ${p.name}</b>${p.memo?'<br><span style="color:#f0a500">'+p.memo+'</span>':''}`);
+    p.marker.setTooltipContent(makeTooltip(p,i));
   });
 }
 
-// ===== ポリライン（セグメントごと） =====
-function clearPolylines() {
-  polylines.forEach(l=>map.removeLayer(l));
-  polylines=[];
-}
+// ===== ポリライン =====
+function clearPolylines(){ polylines.forEach(l=>map.removeLayer(l)); polylines=[]; }
 
-async function updatePolyline() {
+async function updatePolyline(){
   clearPolylines();
-  if (points.length < 2) return;
-
-  if (!useRoad) {
-    // 直線モード：全体を1本
+  if(points.length<2)return;
+  if(!useRoad){
     const line=L.polyline(points.map(p=>[p.lat,p.lng]),{color:'#f0a500',weight:4,opacity:0.85}).addTo(map);
     polylines.push(line);
     return;
   }
-
-  // 道路沿いモード：OSRM
-  // まず仮直線
   const tmp=L.polyline(points.map(p=>[p.lat,p.lng]),{color:'#f0a500',weight:3,opacity:0.3,dashArray:'6,6'}).addTo(map);
   polylines.push(tmp);
-  try {
+  try{
     const coords=points.map(p=>p.lng+','+p.lat).join(';');
     const res=await fetch('https://router.project-osrm.org/route/v1/driving/'+coords+'?overview=full&geometries=geojson&continue_straight=true');
     const data=await res.json();
     if(data.code!=='Ok'||!data.routes.length)return;
-    // 仮線を消して道路線
-    map.removeLayer(tmp);
-    polylines=polylines.filter(l=>l!==tmp);
+    map.removeLayer(tmp); polylines=polylines.filter(l=>l!==tmp);
     const line=L.geoJSON(data.routes[0].geometry,{style:{color:'#f0a500',weight:5,opacity:0.85}}).addTo(map);
     polylines.push(line);
-  } catch(e){ console.warn('OSRM失敗',e); }
+    storeSegmentDistances(data);
+    renderList(); // 距離を反映
+  }catch(e){console.warn('OSRM失敗',e);}
+}
+
+function toggleRouteMode(){
+  useRoad=!useRoad;
+  const btn=document.getElementById('btn-route-mode');
+  if(useRoad){btn.textContent='🛣 道路';btn.className='btn btn-gray';}
+  else{btn.textContent='📏 直線';btn.className='btn btn-route-active';}
+  updatePolyline();
 }
 
 // ===== ポイントリスト =====
-function renderList() {
+function renderList(){
   const el=document.getElementById('points-wrap');
   if(!points.length){el.innerHTML='<div class="empty-msg">ポイントがありません<br>住所検索かタップで追加</div>';return;}
-  el.innerHTML=points.map((p,i)=>{
+
+  let html='';
+  points.forEach((p,i)=>{
     const state=getState(i);
     const rowClass=state==='cur'?'current-row':state==='done'?'done-row':'';
     const numClass=state==='done'?'done':'';
-    return `<div class="point-row ${rowClass}">
-      <div class="point-num ${numClass}">${i+1}</div>
+    const displayName=p.name||'';
+
+    // 先頭の前に挿入ボタン（ポイントが2つ以上の時のみ）
+    if(i===0 && points.length>=2){
+      html+=`<div class="insert-row"><button class="insert-btn" data-after="-1" onclick="startInsertAt(-1)">＋</button></div>`;
+    }
+
+    const segDist = segmentDistances[i] != null ? formatDist(segmentDistances[i]) : '';
+    html+=`<div class="point-row ${rowClass}">
+      <div class="point-num ${numClass}" onclick="_suppressMapClick=true; openEditPopup(${p.id}, this)" style="cursor:pointer;">${i+1}</div>
       <div class="point-info" onclick="focusPoint(${p.id})">
-        <div class="point-name">${p.name}</div>
+        <div class="point-name">${displayName}</div>
         ${p.memo?`<div class="point-memo-label">📝 ${p.memo}</div>`:''}
+        ${segDist?`<div style="font-size:10px;color:#666;">→次: ${segDist}</div>`:''}
       </div>
       <button class="point-del" onclick="deletePoint(${p.id})">✕</button>
     </div>`;
-  }).join('');
-  // 現在ポイントまでスクロール
+
+    // ポイントとポイントの間に挿入ボタン（ポイントが2つ以上の時のみ）
+    if(i<points.length-1 && points.length>=2){
+      html+=`<div class="insert-row"><button class="insert-btn" data-after="${i}" onclick="startInsertAt(${i})">＋</button></div>`;
+    }
+  });
+
+  el.innerHTML=html;
   if(navActive){
     const rows=el.querySelectorAll('.point-row');
     if(rows[navIndex])rows[navIndex].scrollIntoView({behavior:'smooth',block:'nearest'});
   }
+  setTimeout(updateScrollBtns,50);
 }
 
-function focusPoint(id){const p=points.find(x=>x.id===id);if(p)map.setView([p.lat,p.lng],Math.max(map.getZoom(),16));}
+function focusPoint(id){
+  const p=points.find(x=>x.id===id);
+  if(!p)return;
+  followMode=false;
+  document.getElementById('follow-btn').classList.remove('active');
+  map.setView([p.lat,p.lng],Math.max(map.getZoom(),16));
+}
 
 function deletePoint(id){
   const i=points.findIndex(x=>x.id===id);
   if(i===-1)return;
   map.removeLayer(points[i].marker);
   points.splice(i,1);
-  // navIndexの調整
-  if(navActive && i < navIndex) navIndex--;
-  if(navActive && navIndex >= points.length) navIndex = Math.max(0, points.length-1);
-  refreshAllMarkers();
+  if(navActive&&i<navIndex)navIndex--;
+  if(navActive&&navIndex>=points.length)navIndex=Math.max(0,points.length-1);
+  if(points.length===0)clearPolylines();
+  rebuildAllMarkers();
   updatePolyline();
   renderList();
-  if(navActive) updateNavBar();
+  if(navActive)updateNavBar();
 }
 
 // ===== 住所検索 =====
@@ -396,37 +569,12 @@ async function searchAddress(){
     const{lat,lon,display_name}=data[0];
     map.setView([parseFloat(lat),parseFloat(lon)],17);
     document.getElementById('modal-name').value=display_name.split('、')[0].split(',')[0].trim();
-    openModal({lat:parseFloat(lat),lng:parseFloat(lon)},null);
+    openModal({lat:parseFloat(lat),lng:parseFloat(lon)},null,points.length>=2?null:points.length);
     document.getElementById('search-input').value='';
   }catch{alert('検索失敗');}
   finally{btn.textContent='検索';btn.disabled=false;}
 }
 document.getElementById('search-input').addEventListener('keydown',e=>{if(e.key==='Enter')searchAddress();});
-
-// ===== GPS =====
-function startGPS(){
-  if(!navigator.geolocation)return;
-  navigator.geolocation.watchPosition(onGPS,onGPSErr,{enableHighAccuracy:true,maximumAge:2000,timeout:10000});
-}
-function onGPS(pos){
-  const{latitude:lat,longitude:lng,accuracy}=pos.coords;
-  const b=document.getElementById('gps-badge');
-  b.textContent=`📡 精度 ±${Math.round(accuracy)}m`;
-  b.className=accuracy<30?'good':accuracy<100?'':'bad';
-  if(!gpsMarker){
-    gpsMarker=L.circleMarker([lat,lng],{radius:9,color:'#00aaff',fillColor:'#00aaff',fillOpacity:1,weight:3}).addTo(map);
-    gpsCircle=L.circle([lat,lng],{radius:accuracy,color:'#00aaff',fillColor:'#00aaff',fillOpacity:0.08,weight:1}).addTo(map);
-  }else{gpsMarker.setLatLng([lat,lng]);gpsCircle.setLatLng([lat,lng]).setRadius(accuracy);}
-  if(followMode)map.panTo([lat,lng]);
-  if(navActive)checkProgress(lat,lng);
-}
-function onGPSErr(){const b=document.getElementById('gps-badge');b.textContent='📡 GPS失敗';b.className='bad';}
-function toggleFollow(){
-  followMode=!followMode;
-  document.getElementById('follow-btn').classList.toggle('active',followMode);
-  if(followMode&&gpsMarker)map.panTo(gpsMarker.getLatLng());
-}
-map.on('dragstart',()=>{followMode=false;document.getElementById('follow-btn').classList.remove('active');});
 
 // ===== ナビ =====
 const REACH=40;
@@ -438,7 +586,8 @@ function startNav(){
   document.getElementById('nav-bar').classList.add('show');
   followMode=true;document.getElementById('follow-btn').classList.add('active');
   refreshAllMarkers();renderList();updateNavBar();
-  speak(`ナビ開始。最初は${points[0].name}。${points[0].memo||''}`);
+  const p=points[0];
+  speak(`ナビ開始。最初は${p.name||'ポイント1'}。${p.memo||''}`);
 }
 function stopNav(){
   navActive=false;
@@ -450,22 +599,39 @@ function updateNavBar(){
   if(!navActive||!points.length)return;
   const p=points[navIndex],next=points[navIndex+1];
   document.getElementById('nav-label').textContent=`${navIndex+1} / ${points.length}`;
-  document.getElementById('nav-name').textContent=p.name;
+  document.getElementById('nav-name').textContent=p.name||`ポイント ${navIndex+1}`;
   document.getElementById('nav-memo-txt').textContent=p.memo||'';
-  document.getElementById('nav-sub').textContent=next?`次: ${next.name}`:'🏁 ゴール';
+  document.getElementById('nav-sub').textContent=next?`次: ${next.name||'ポイント'+(navIndex+2)}`:'🏁 ゴール';
+  // 距離は毎秒GPS更新で更新するので空欄のみ初期化
+  document.getElementById('nav-dist-next').textContent='';
+  document.getElementById('nav-dist-goal').textContent='';
 }
 function checkProgress(lat,lng){
   if(!navActive||navIndex>=points.length)return;
   const t=points[navIndex];
   if(calcDist(lat,lng,t.lat,t.lng)<REACH){
-    speak(`${t.name}、到達`);navIndex++;
+    speak(`${t.name||'ポイント'+(navIndex+1)}、到達`);
+    navIndex++;
     if(navIndex>=points.length){speak('ゴールです。お疲れ様でした。');stopNav();alert('🏁 ゴール！');return;}
     refreshAllMarkers();renderList();updateNavBar();
-    speak(`次は${points[navIndex].name}。${points[navIndex].memo||''}`);
+    const next=points[navIndex];
+    speak(`次は${next.name||'ポイント'+(navIndex+1)}。${next.memo||''}`);
   }
 }
 function calcDist(a,b,c,d){const R=6371000,dL=(c-a)*Math.PI/180,dG=(d-b)*Math.PI/180;const x=Math.sin(dL/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dG/2)**2;return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));}
 function speak(t){if(!('speechSynthesis'in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='ja-JP';u.rate=0.95;speechSynthesis.speak(u);}
+
+// ===== 復路 =====
+function reverseRoute(){
+  if(points.length<2){alert('ポイントが2つ以上必要です');return;}
+  if(!confirm('ポイントの順番を逆にして復路にしますか？'))return;
+  points.reverse();
+  if(navActive)navIndex=0;
+  rebuildAllMarkers();
+  updatePolyline();
+  renderList();
+  if(navActive)updateNavBar();
+}
 
 // ===== 保存・読み込み =====
 function saveRoute(){
@@ -484,8 +650,7 @@ function loadRoute(){
         const data=JSON.parse(ev.target.result);
         clearAll(true);
         data.points.forEach((d,i)=>{
-          // 番号を正しく振り直す
-          const p={id:Date.now()+i,lat:d.lat,lng:d.lng,name:d.name,memo:d.memo||'',marker:null};
+          const p={id:Date.now()+i,lat:d.lat,lng:d.lng,name:d.name||'',memo:d.memo||'',marker:null};
           addMarker(p,i);points.push(p);
         });
         updatePolyline();renderList();
@@ -503,8 +668,164 @@ function clearAll(silent=false){
   renderList();
 }
 
+// ===== スクロール矢印 =====
+function updateScrollBtns(){
+  const el=document.getElementById('points-wrap');
+  const isPC=window.innerWidth>=900;
+  const btnL=document.getElementById('scroll-left');
+  const btnR=document.getElementById('scroll-right');
+  if(!isPC){btnL.style.display='none';btnR.style.display='none';return;}
+  btnL.style.display=el.scrollLeft>0?'block':'none';
+  btnR.style.display=(el.scrollLeft+el.clientWidth)<el.scrollWidth-4?'block':'none';
+}
+
+function scrollPoints(dir){
+  const el=document.getElementById('points-wrap');
+  el.scrollBy({left:dir*300,behavior:'smooth'});
+  setTimeout(updateScrollBtns,350);
+}
+
+document.getElementById('points-wrap').addEventListener('scroll',updateScrollBtns);
+window.addEventListener('resize',updateScrollBtns);
+
+// ===== マーカーからポップアップを開く =====
+let _suppressMapClick = false;
+function _openEditFromMarker(id){
+  _suppressMapClick = true;
+  openEditPopup(id, null);
+}
+
+// ===== インライン編集ポップアップ =====
+let editPopupId = null;
+
+function openEditPopup(id, anchorEl){
+  editPopupId = id;
+  const p = points.find(x=>x.id===id);
+  if(!p) return;
+
+  const popup = document.getElementById('edit-popup');
+  document.getElementById('edit-popup-title').textContent = `ポイント ${points.indexOf(p)+1}`;
+  document.getElementById('edit-popup-name').value = p.name||'';
+  document.getElementById('edit-popup-memo').value = p.memo||'';
+
+  // 位置決め：anchorElがあればその近く、なければ画面中央下
+  if(anchorEl){
+    const rect = anchorEl.getBoundingClientRect();
+    const popW = 240;
+    let left = rect.left + rect.width/2 - popW/2;
+    let top = rect.bottom + 8;
+    // 画面からはみ出し補正
+    left = Math.max(8, Math.min(left, window.innerWidth - popW - 8));
+    if(top + 160 > window.innerHeight) top = rect.top - 168;
+    popup.style.left = left + 'px';
+    popup.style.top = top + 'px';
+  } else {
+    popup.style.left = '50%';
+    popup.style.top = '60%';
+    popup.style.transform = 'translateX(-50%)';
+  }
+
+  popup.classList.add('show');
+  setTimeout(()=>document.getElementById('edit-popup-name').focus(), 100);
+
+  // 地図をそのポイントに移動（追従は一時停止）
+  followMode=false;
+  document.getElementById('follow-btn').classList.remove('active');
+  map.panTo([p.lat, p.lng]);
+
+  // 欄をそのポイントにスクロール
+  const idx = points.indexOf(p);
+  setTimeout(()=>{
+    const rows = document.querySelectorAll('.point-row');
+    if(rows[idx]){
+      rows[idx].scrollIntoView({behavior:'smooth', block:'nearest'});
+      // PCの横スクロールも対応
+      const pw = document.getElementById('points-wrap');
+      if(pw && window.innerWidth>=900){
+        const row = rows[idx];
+        pw.scrollLeft = row.offsetLeft - pw.clientWidth/2 + row.clientWidth/2;
+      }
+    }
+  }, 50);
+}
+
+function closeEditPopup(){
+  if(!editPopupId) return;
+  const p = points.find(x=>x.id===editPopupId);
+  if(p){
+    p.name = document.getElementById('edit-popup-name').value.trim();
+    p.memo = document.getElementById('edit-popup-memo').value.trim();
+    refreshAllMarkers();
+    renderList();
+  }
+  document.getElementById('edit-popup').classList.remove('show');
+  document.getElementById('edit-popup').style.transform = '';
+  editPopupId = null;
+}
+
+// ポップアップ外タップで閉じる・保存（map以外の領域のみ）
+document.addEventListener('click', e=>{
+  if(_suppressMapClick){ _suppressMapClick=false; return; }
+  const popup = document.getElementById('edit-popup');
+  if(!popup.classList.contains('show')) return;
+  if(popup.contains(e.target)) return;
+  if(map.getContainer().contains(e.target)) return;
+  closeEditPopup();
+});
+// map上のクリック（マーカー以外）でもポップアップを閉じる
+
+
+// map上のタップ（マーカー以外）でポップアップを閉じる
+map.on('click', function(){
+  if(_suppressMapClick){ _suppressMapClick=false; return; }
+  const popup = document.getElementById('edit-popup');
+  if(popup.classList.contains('show')) closeEditPopup();
+});
+
+// ===== 距離表示 =====
+let distUnit = 'km'; // 'km' or 'mi'
+let segmentDistances = []; // ポイント間の道路距離(m)
+
+function toggleDistUnit(){
+  distUnit = distUnit==='km' ? 'mi' : 'km';
+  document.getElementById('dist-unit-btn').textContent = distUnit;
+  updateNavBar();
+  renderList();
+}
+
+function formatDist(meters){
+  if(distUnit==='km'){
+    return meters < 1000
+      ? Math.round(meters) + 'm'
+      : (meters/1000).toFixed(1) + 'km';
+  } else {
+    const miles = meters / 1609.34;
+    return miles < 0.1
+      ? Math.round(meters*3.281) + 'ft'
+      : miles.toFixed(1) + 'mi';
+  }
+}
+
+// OSRMレスポンスからセグメント距離を抽出して保存
+function storeSegmentDistances(osrmData){
+  if(!osrmData || !osrmData.routes || !osrmData.routes[0]) return;
+  const legs = osrmData.routes[0].legs;
+  segmentDistances = legs.map(l=>l.distance);
+}
+
+// 残り距離を計算（navIndex以降のセグメント合計）
+function calcRemainingDist(){
+  if(!segmentDistances.length) return null;
+  let total = 0;
+  for(let i=navIndex; i<segmentDistances.length; i++){
+    total += segmentDistances[i];
+  }
+  return total;
+}
+
 startGPS();
 renderList();
+setTimeout(updateScrollBtns,100);
 </script>
 </body>
 </html>
