@@ -8,188 +8,142 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+body { background:#0d0d0d; color:#fff; font-family:'Helvetica Neue',Arial,sans-serif; height:100dvh; overflow:hidden; display:flex; flex-direction:column; }
 
-body {
-  background:#0d0d0d;
-  color:#fff;
-  font-family:'Helvetica Neue',Arial,sans-serif;
-  height:100dvh;
-  overflow:hidden;
-  display:flex;
-  flex-direction:column;
-}
-
-/* ===== 地図 ===== */
 #map-wrap { position:relative; flex:1; min-height:0; }
 #map { width:100%; height:100%; }
 
-#gps-badge {
-  position:absolute; top:8px; left:8px; z-index:1000;
-  background:rgba(0,0,0,0.75); border-radius:20px;
-  padding:5px 10px; font-size:11px; color:#666; pointer-events:none;
-}
+#gps-badge { position:absolute; top:8px; left:8px; z-index:1000; background:rgba(0,0,0,0.75); border-radius:20px; padding:5px 10px; font-size:11px; color:#666; pointer-events:none; }
 #gps-badge.good { color:#44cc44; }
 #gps-badge.bad { color:#cc4444; }
 
-#follow-btn {
-  position:absolute; bottom:12px; right:12px; z-index:1000;
-  width:44px; height:44px; border-radius:50%;
-  border:2px solid #444; background:rgba(0,0,0,0.8);
-  color:#888; font-size:22px; cursor:pointer;
-  display:flex; align-items:center; justify-content:center;
-}
+#follow-btn { position:absolute; bottom:12px; right:12px; z-index:1000; width:44px; height:44px; border-radius:50%; border:2px solid #444; background:rgba(0,0,0,0.8); color:#888; font-size:22px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
 #follow-btn.active { background:#f0a500; color:#000; border-color:#f0a500; }
 
-/* ===== 下パネル（スマホ縦・PC共通） ===== */
-#bottom {
-  background:#111;
-  border-top:2px solid #f0a500;
-  flex-shrink:0;
-  display:flex;
-  flex-direction:column;
-}
+#bottom { background:#111; border-top:2px solid #f0a500; flex-shrink:0; display:flex; flex-direction:column; }
 
-/* ===== ナビバー ===== */
-#nav-bar {
-  background:#000;
-  padding:10px 14px 8px;
-  border-bottom:2px solid #333;
-  flex-shrink:0;
-  display:none;
-}
+#nav-bar { background:#000; padding:10px 14px 8px; border-bottom:2px solid #333; flex-shrink:0; display:none; }
 #nav-bar.show { display:block; }
 #nav-label { font-size:11px; color:#666; letter-spacing:0.1em; margin-bottom:2px; }
 #nav-name { font-size:20px; font-weight:700; color:#f0a500; line-height:1.2; }
 #nav-memo-txt { font-size:12px; color:#aaa; margin-top:2px; }
 #nav-sub { font-size:11px; color:#555; margin-top:4px; }
 
-/* ===== コントロール行 ===== */
-#controls {
-  padding:8px 10px;
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-  border-bottom:1px solid #222;
-  flex-shrink:0;
-}
+#controls { padding:8px 10px; display:flex; flex-direction:column; gap:6px; border-bottom:1px solid #222; flex-shrink:0; }
 #search-row { display:flex; gap:6px; }
-#search-input {
-  flex:1; background:#1a1a1a; border:1px solid #333;
-  border-radius:6px; color:#fff; padding:8px 10px;
-  font-size:13px; outline:none;
-}
+#search-input { flex:1; background:#1a1a1a; border:1px solid #333; border-radius:6px; color:#fff; padding:8px 10px; font-size:13px; outline:none; }
 #search-input:focus { border-color:#f0a500; }
 #search-input::placeholder { color:#444; }
 #btn-row { display:flex; gap:6px; flex-wrap:wrap; }
 
-.btn {
-  padding:8px 12px; border:none; border-radius:6px;
-  font-size:12px; font-weight:700; cursor:pointer;
-  white-space:nowrap; transition:all 0.15s;
-}
+.btn { padding:8px 12px; border:none; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer; white-space:nowrap; transition:all 0.15s; }
 .btn-orange { background:#f0a500; color:#000; }
 .btn-orange:hover { background:#ffb820; }
 .btn-gray { background:#222; color:#aaa; border:1px solid #333; }
 .btn-gray:hover { background:#2a2a2a; color:#ddd; }
 .btn-red { background:#2a0000; color:#ff6666; border:1px solid #500; }
-.btn-red:hover { background:#3a0000; }
 .btn-green { background:#003a00; color:#66ff66; border:1px solid #050; }
-.btn-green:hover { background:#004a00; }
 .btn-nav-stop { background:#cc0000; color:#fff; }
 .btn-add-active { background:#ff4400; color:#fff; }
-#btn-add { flex:1; }
-#btn-nav { flex:1; }
+.btn-route-active { background:#0044cc; color:#fff; }
 
-/* ===== ポイントリスト ===== */
-#points-wrap {
-  overflow-y:auto;
-  -webkit-overflow-scrolling:touch;
-  max-height:160px;
-}
+/* ポイントリスト */
+#points-wrap { overflow-y:auto; -webkit-overflow-scrolling:touch; max-height:220px; }
 #points-wrap::-webkit-scrollbar { width:3px; }
 #points-wrap::-webkit-scrollbar-thumb { background:#333; }
 
+/* 通常ポイント行 */
 .point-row {
   display:flex; align-items:center; gap:8px;
   padding:8px 12px; border-bottom:1px solid #1a1a1a;
+  transition:all 0.2s;
 }
+
+/* 現在ポイント行（大きく） */
+.point-row.current-row {
+  padding:14px 12px;
+  background:#1a1200;
+  border-left:3px solid #f0a500;
+  border-bottom:1px solid #333;
+}
+
+/* 通過済み行（半透明） */
+.point-row.done-row { opacity:0.3; }
+
 .point-num {
   width:26px; height:26px; border-radius:50%;
   background:#222; border:2px solid #f0a500;
   color:#f0a500; font-size:11px; font-weight:700;
   display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  transition:all 0.2s;
 }
-.point-num.cur { background:#f0a500; color:#000; }
-.point-num.done { border-color:#333; color:#444; }
+/* 現在ポイント番号（大きく） */
+.point-row.current-row .point-num {
+  width:36px; height:36px; font-size:15px;
+  background:#f0a500; color:#000; border-color:#f0a500;
+}
+.point-num.done { border-color:#444; color:#444; background:#111; }
+
 .point-info { flex:1; min-width:0; cursor:pointer; }
 .point-name { font-size:12px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+/* 現在ポイント名（大きく） */
+.point-row.current-row .point-name { font-size:16px; color:#f0a500; }
 .point-memo-label { font-size:10px; color:#f0a500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.point-del { background:none; border:none; color:#333; font-size:16px; cursor:pointer; padding:2px 6px; flex-shrink:0; }
-.point-del:hover { color:#ff6666; }
+.point-row.current-row .point-memo-label { font-size:12px; }
+
+/* ×ボタン（全ポイント大きく） */
+.point-del {
+  background:#2a0000;
+  border:1px solid #500;
+  color:#ff6666;
+  font-size:16px;
+  font-weight:700;
+  cursor:pointer;
+  padding:6px 12px;
+  border-radius:6px;
+  flex-shrink:0;
+  min-width:44px;
+  min-height:36px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.point-del:active { background:#4a0000; }
+
 .empty-msg { text-align:center; padding:20px 16px; color:#444; font-size:12px; line-height:2; }
 
-/* ===== スマホ横向き ===== */
+/* モーダル */
+#modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:9999; align-items:flex-end; justify-content:center; }
+#modal-overlay.show { display:flex; }
+#modal { background:#1a1a1a; border-radius:16px 16px 0 0; padding:20px 18px 36px; width:100%; max-width:500px; border-top:1px solid #333; }
+#modal h3 { font-size:14px; color:#f0a500; margin-bottom:14px; }
+#modal label { font-size:10px; color:#555; display:block; margin-bottom:4px; letter-spacing:0.1em; text-transform:uppercase; }
+#modal input, #modal textarea { width:100%; background:#0d0d0d; border:1px solid #333; border-radius:8px; color:#fff; padding:10px 12px; font-size:14px; outline:none; margin-bottom:12px; font-family:inherit; }
+#modal input:focus, #modal textarea:focus { border-color:#f0a500; }
+#modal textarea { resize:none; height:60px; }
+#modal-btns { display:flex; gap:8px; }
+#modal-btns .btn { flex:1; padding:12px; font-size:14px; }
+
+/* スマホ横向き */
 @media (orientation:landscape) and (max-width:900px) {
   body { flex-direction:row; }
   #map-wrap { flex:1; height:100dvh; }
-  #bottom {
-    width:180px; height:100dvh;
-    border-top:none; border-left:2px solid #f0a500;
-    overflow-y:auto;
-  }
+  #bottom { width:200px; height:100dvh; border-top:none; border-left:2px solid #f0a500; overflow-y:auto; }
   #points-wrap { max-height:none; flex:1; }
   #nav-name { font-size:14px; }
+  .point-row.current-row .point-name { font-size:13px; }
 }
 
-/* ===== PC（横幅900px以上） ===== */
+/* PC */
 @media (min-width:900px) {
-  body { flex-direction:column; }
-
-  #map-wrap { flex:1; }
-
-  #bottom {
-    border-top:2px solid #f0a500;
-    flex-shrink:0;
-    height:auto;
-  }
-
-  #nav-bar { padding:8px 16px; }
   #nav-name { font-size:18px; }
-
-  /* コントロールを横並びに */
-  #controls {
-    flex-direction:row;
-    align-items:center;
-    padding:8px 16px;
-    gap:8px;
-  }
+  #controls { flex-direction:row; align-items:center; padding:8px 16px; gap:8px; }
   #search-row { flex:1; }
   #btn-row { flex-shrink:0; flex-wrap:nowrap; }
-  #btn-add { flex:none; }
-  #btn-nav { flex:none; }
-
-  /* ポイントリストを横スクロール */
-  #points-wrap {
-    max-height:none;
-    height:120px;
-    display:flex;
-    flex-direction:row;
-    overflow-x:auto;
-    overflow-y:hidden;
-    border-top:1px solid #222;
-  }
+  #points-wrap { max-height:none; height:140px; display:flex; flex-direction:row; overflow-x:auto; overflow-y:hidden; border-top:1px solid #222; }
   #points-wrap::-webkit-scrollbar { height:3px; }
-
-  .point-row {
-    flex-direction:column;
-    align-items:flex-start;
-    min-width:140px;
-    max-width:140px;
-    border-bottom:none;
-    border-right:1px solid #1a1a1a;
-    padding:10px 12px;
-    gap:4px;
-  }
+  .point-row { flex-direction:column; align-items:flex-start; min-width:160px; max-width:160px; border-bottom:none; border-right:1px solid #1a1a1a; padding:10px 12px; gap:4px; }
+  .point-row.current-row { min-width:200px; max-width:200px; padding:14px 12px; border-left:none; border-top:3px solid #f0a500; }
   .point-name { white-space:normal; font-size:11px; }
   .empty-msg { min-width:300px; }
 }
@@ -217,10 +171,12 @@ body {
     </div>
     <div id="btn-row">
       <button class="btn btn-gray" id="btn-add" onclick="toggleAddMode()">＋ タップ追加</button>
+      <button class="btn btn-gray" id="btn-route-mode" onclick="toggleRouteMode()" title="直線/道路沿い切替">🛣 道路</button>
       <button class="btn btn-green" id="btn-nav" onclick="toggleNav()">▶ ナビ開始</button>
+      <button class="btn btn-gray" id="btn-return" onclick="reverseRoute()" title="復路">🔄 復路</button>
       <button class="btn btn-gray" onclick="saveRoute()" title="保存">💾 保存</button>
       <button class="btn btn-gray" onclick="loadRoute()" title="読み込み">📂 読込</button>
-      <button class="btn btn-red" onclick="clearAll()" title="削除">🗑</button>
+      <button class="btn btn-red" onclick="clearAll()">🗑</button>
     </div>
   </div>
   <div id="points-wrap">
@@ -228,19 +184,16 @@ body {
   </div>
 </div>
 
-<!-- モーダル -->
-<div id="modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:9999;align-items:flex-end;justify-content:center;">
-  <div id="modal" style="background:#1a1a1a;border-radius:16px 16px 0 0;padding:20px 18px 36px;width:100%;max-width:500px;border-top:1px solid #333;">
-    <h3 id="modal-title" style="font-size:14px;color:#f0a500;margin-bottom:14px;"></h3>
-    <div style="font-size:10px;color:#555;margin-bottom:4px;letter-spacing:0.1em;text-transform:uppercase;">ポイント名</div>
-    <input type="text" id="modal-name" placeholder="例: ○○工場、△△倉庫"
-      style="width:100%;background:#0d0d0d;border:1px solid #333;border-radius:8px;color:#fff;padding:10px 12px;font-size:14px;outline:none;margin-bottom:12px;font-family:inherit;">
-    <div style="font-size:10px;color:#555;margin-bottom:4px;letter-spacing:0.1em;text-transform:uppercase;">メモ（曲がり方向など）</div>
-    <textarea id="modal-memo-input" placeholder="例: 右折して200m先&#10;門の前で停車"
-      style="width:100%;background:#0d0d0d;border:1px solid #333;border-radius:8px;color:#fff;padding:10px 12px;font-size:14px;outline:none;margin-bottom:12px;font-family:inherit;resize:none;height:60px;"></textarea>
-    <div style="display:flex;gap:8px;">
-      <button class="btn btn-gray" onclick="cancelModal()" style="flex:1;padding:12px;font-size:14px;">キャンセル</button>
-      <button class="btn btn-orange" id="modal-ok" onclick="confirmModal()" style="flex:1;padding:12px;font-size:14px;">追加</button>
+<div id="modal-overlay">
+  <div id="modal">
+    <h3 id="modal-title"></h3>
+    <label>ポイント名</label>
+    <input type="text" id="modal-name" placeholder="例: ○○工場、△△倉庫">
+    <label>メモ（曲がり方向など）</label>
+    <textarea id="modal-memo-input" placeholder="例: 右折して200m先&#10;門の前で停車"></textarea>
+    <div id="modal-btns">
+      <button class="btn btn-gray" onclick="cancelModal()">キャンセル</button>
+      <button class="btn btn-orange" id="modal-ok" onclick="confirmModal()">追加</button>
     </div>
   </div>
 </div>
@@ -254,13 +207,16 @@ L.tileLayer(`https://api.maptiler.com/maps/jp-gsi-standard/{z}/{x}/{y}.png?key=$
 }).addTo(map);
 L.control.zoom({ position:'topright' }).addTo(map);
 
-let points=[], polyline=null, addMode=false;
+let points=[], polylines=[], addMode=false;
 let navActive=false, navIndex=0;
 let followMode=false, gpsMarker=null, gpsCircle=null;
 let pendingLatLng=null, editingId=null;
+let useRoad=true; // true=道路沿い false=直線
 
+// ===== 地図タップ =====
 map.on('click', e => { if (addMode) openModal(e.latlng, null); });
 
+// ===== 追加モード =====
 function toggleAddMode() {
   addMode = !addMode;
   const btn = document.getElementById('btn-add');
@@ -268,6 +224,29 @@ function toggleAddMode() {
   else { btn.textContent='＋ タップ追加'; btn.className='btn btn-gray'; }
 }
 
+// ===== 道路/直線モード =====
+function toggleRouteMode() {
+  useRoad = !useRoad;
+  const btn = document.getElementById('btn-route-mode');
+  if (useRoad) { btn.textContent='🛣 道路'; btn.className='btn btn-gray'; }
+  else { btn.textContent='📏 直線'; btn.className='btn btn-route-active'; }
+  updatePolyline();
+}
+
+// ===== 復路 =====
+function reverseRoute() {
+  if (points.length < 2) { alert('ポイントが2つ以上必要です'); return; }
+  if (!confirm('ポイントの順番を逆にして復路にしますか？')) return;
+  points.reverse();
+  // navIndexリセット
+  if (navActive) { navIndex = 0; }
+  refreshAllMarkers();
+  updatePolyline();
+  renderList();
+  if (navActive) updateNavBar();
+}
+
+// ===== モーダル =====
 function openModal(latlng, id) {
   pendingLatLng=latlng; editingId=id;
   const isEdit=id!==null;
@@ -275,16 +254,10 @@ function openModal(latlng, id) {
   document.getElementById('modal-ok').textContent=isEdit?'保存':'追加';
   if (isEdit) { const p=points.find(x=>x.id===id); document.getElementById('modal-name').value=p.name; document.getElementById('modal-memo-input').value=p.memo; }
   else { document.getElementById('modal-name').value=''; document.getElementById('modal-memo-input').value=''; }
-  const mo=document.getElementById('modal-overlay');
-  mo.style.display='flex';
+  document.getElementById('modal-overlay').classList.add('show');
   setTimeout(()=>document.getElementById('modal-name').focus(),100);
 }
-
-function cancelModal() {
-  document.getElementById('modal-overlay').style.display='none';
-  pendingLatLng=null; editingId=null;
-}
-
+function cancelModal() { document.getElementById('modal-overlay').classList.remove('show'); pendingLatLng=null; editingId=null; }
 function confirmModal() {
   const name=document.getElementById('modal-name').value.trim();
   const memo=document.getElementById('modal-memo-input').value.trim();
@@ -298,22 +271,31 @@ function confirmModal() {
     addMarker(p,points.length); points.push(p);
     updatePolyline(); renderList();
   }
-  document.getElementById('modal-overlay').style.display='none';
+  document.getElementById('modal-overlay').classList.remove('show');
   pendingLatLng=null; editingId=null;
 }
-
 document.getElementById('modal-overlay').addEventListener('click',e=>{if(e.target===e.currentTarget)cancelModal();});
 
-function makeIcon(idx,state) {
-  const c=state==='cur'?['#00aaff','#fff']:state==='done'?['#333','#555']:['#f0a500','#000'];
-  const n=idx+1,fs=n>=100?9:n>=10?11:14;
-  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="34" height="44" viewBox="0 0 34 44"><path d="M17 0C7.6 0 0 7.6 0 17c0 11 17 27 17 27s17-16 17-27C34 7.6 26.4 0 17 0z" fill="${c[0]}"/><circle cx="17" cy="17" r="11" fill="#fff" opacity="0.95"/><text x="17" y="${17+fs*0.4}" text-anchor="middle" font-size="${fs}" font-weight="bold" fill="${c[0]}">${n}</text></svg>`;
+// ===== マーカー =====
+function makeIcon(idx, state) {
+  const c = state==='cur' ? ['#00aaff','#fff'] : state==='done' ? ['#555','#888'] : ['#f0a500','#000'];
+  const n=idx+1, fs=n>=100?9:n>=10?11:14;
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="34" height="44" viewBox="0 0 34 44">
+    <path d="M17 0C7.6 0 0 7.6 0 17c0 11 17 27 17 27s17-16 17-27C34 7.6 26.4 0 17 0z" fill="${c[0]}" opacity="${state==='done'?0.4:1}"/>
+    <circle cx="17" cy="17" r="11" fill="#fff" opacity="0.95"/>
+    <text x="17" y="${17+fs*0.4}" text-anchor="middle" font-size="${fs}" font-weight="bold" fill="${c[0]}">${n}</text>
+  </svg>`;
   return L.divIcon({html:svg,iconSize:[34,44],iconAnchor:[17,44],className:''});
 }
 
-function getState(idx){if(!navActive)return'normal';if(idx<navIndex)return'done';if(idx===navIndex)return'cur';return'normal';}
+function getState(idx) {
+  if (!navActive) return 'normal';
+  if (idx < navIndex) return 'done';
+  if (idx === navIndex) return 'cur';
+  return 'normal';
+}
 
-function addMarker(p,idx){
+function addMarker(p, idx) {
   const m=L.marker([p.lat,p.lng],{icon:makeIcon(idx,getState(idx)),draggable:true}).addTo(map);
   m.bindTooltip(`<b>${idx+1}. ${p.name}</b>${p.memo?'<br><span style="color:#f0a500">'+p.memo+'</span>':''}`,{direction:'top',offset:[0,-40]});
   m.on('click',()=>{if(!addMode)openModal(null,p.id);});
@@ -321,40 +303,89 @@ function addMarker(p,idx){
   p.marker=m;
 }
 
-function refreshAllMarkers(){points.forEach((p,i)=>{if(!p.marker)return;p.marker.setIcon(makeIcon(i,getState(i)));p.marker.setTooltipContent(`<b>${i+1}. ${p.name}</b>${p.memo?'<br><span style="color:#f0a500">'+p.memo+'</span>':''}`);});}
+function refreshAllMarkers() {
+  points.forEach((p,i)=>{
+    if(!p.marker)return;
+    p.marker.setIcon(makeIcon(i,getState(i)));
+    p.marker.setTooltipContent(`<b>${i+1}. ${p.name}</b>${p.memo?'<br><span style="color:#f0a500">'+p.memo+'</span>':''}`);
+  });
+}
 
-async function updatePolyline(){
-  if(polyline){map.removeLayer(polyline);polyline=null;}
-  if(points.length<2)return;
-  polyline=L.polyline(points.map(p=>[p.lat,p.lng]),{color:'#f0a500',weight:3,opacity:0.4,dashArray:'6,6'}).addTo(map);
-  try{
+// ===== ポリライン（セグメントごと） =====
+function clearPolylines() {
+  polylines.forEach(l=>map.removeLayer(l));
+  polylines=[];
+}
+
+async function updatePolyline() {
+  clearPolylines();
+  if (points.length < 2) return;
+
+  if (!useRoad) {
+    // 直線モード：全体を1本
+    const line=L.polyline(points.map(p=>[p.lat,p.lng]),{color:'#f0a500',weight:4,opacity:0.85}).addTo(map);
+    polylines.push(line);
+    return;
+  }
+
+  // 道路沿いモード：OSRM
+  // まず仮直線
+  const tmp=L.polyline(points.map(p=>[p.lat,p.lng]),{color:'#f0a500',weight:3,opacity:0.3,dashArray:'6,6'}).addTo(map);
+  polylines.push(tmp);
+  try {
     const coords=points.map(p=>p.lng+','+p.lat).join(';');
     const res=await fetch('https://router.project-osrm.org/route/v1/driving/'+coords+'?overview=full&geometries=geojson&continue_straight=true');
     const data=await res.json();
     if(data.code!=='Ok'||!data.routes.length)return;
-    if(polyline)map.removeLayer(polyline);
-    polyline=L.geoJSON(data.routes[0].geometry,{style:{color:'#f0a500',weight:5,opacity:0.85}}).addTo(map);
-  }catch(e){console.warn('OSRM失敗',e);}
+    // 仮線を消して道路線
+    map.removeLayer(tmp);
+    polylines=polylines.filter(l=>l!==tmp);
+    const line=L.geoJSON(data.routes[0].geometry,{style:{color:'#f0a500',weight:5,opacity:0.85}}).addTo(map);
+    polylines.push(line);
+  } catch(e){ console.warn('OSRM失敗',e); }
 }
 
-function renderList(){
+// ===== ポイントリスト =====
+function renderList() {
   const el=document.getElementById('points-wrap');
   if(!points.length){el.innerHTML='<div class="empty-msg">ポイントがありません<br>住所検索かタップで追加</div>';return;}
-  el.innerHTML=points.map((p,i)=>`
-    <div class="point-row">
-      <div class="point-num ${getState(i)}">${i+1}</div>
+  el.innerHTML=points.map((p,i)=>{
+    const state=getState(i);
+    const rowClass=state==='cur'?'current-row':state==='done'?'done-row':'';
+    const numClass=state==='done'?'done':'';
+    return `<div class="point-row ${rowClass}">
+      <div class="point-num ${numClass}">${i+1}</div>
       <div class="point-info" onclick="focusPoint(${p.id})">
         <div class="point-name">${p.name}</div>
         ${p.memo?`<div class="point-memo-label">📝 ${p.memo}</div>`:''}
       </div>
       <button class="point-del" onclick="deletePoint(${p.id})">✕</button>
-    </div>`).join('');
-  if(navActive){const rows=el.querySelectorAll('.point-row');if(rows[navIndex])rows[navIndex].scrollIntoView({behavior:'smooth',block:'nearest'});}
+    </div>`;
+  }).join('');
+  // 現在ポイントまでスクロール
+  if(navActive){
+    const rows=el.querySelectorAll('.point-row');
+    if(rows[navIndex])rows[navIndex].scrollIntoView({behavior:'smooth',block:'nearest'});
+  }
 }
 
 function focusPoint(id){const p=points.find(x=>x.id===id);if(p)map.setView([p.lat,p.lng],Math.max(map.getZoom(),16));}
-function deletePoint(id){const i=points.findIndex(x=>x.id===id);if(i===-1)return;map.removeLayer(points[i].marker);points.splice(i,1);refreshAllMarkers();updatePolyline();renderList();}
 
+function deletePoint(id){
+  const i=points.findIndex(x=>x.id===id);
+  if(i===-1)return;
+  map.removeLayer(points[i].marker);
+  points.splice(i,1);
+  // navIndexの調整
+  if(navActive && i < navIndex) navIndex--;
+  if(navActive && navIndex >= points.length) navIndex = Math.max(0, points.length-1);
+  refreshAllMarkers();
+  updatePolyline();
+  renderList();
+  if(navActive) updateNavBar();
+}
+
+// ===== 住所検索 =====
 async function searchAddress(){
   const q=document.getElementById('search-input').value.trim();if(!q)return;
   const btn=document.querySelector('#search-row .btn-orange');btn.textContent='...';btn.disabled=true;
@@ -372,11 +403,11 @@ async function searchAddress(){
 }
 document.getElementById('search-input').addEventListener('keydown',e=>{if(e.key==='Enter')searchAddress();});
 
+// ===== GPS =====
 function startGPS(){
   if(!navigator.geolocation)return;
   navigator.geolocation.watchPosition(onGPS,onGPSErr,{enableHighAccuracy:true,maximumAge:2000,timeout:10000});
 }
-
 function onGPS(pos){
   const{latitude:lat,longitude:lng,accuracy}=pos.coords;
   const b=document.getElementById('gps-badge');
@@ -389,9 +420,7 @@ function onGPS(pos){
   if(followMode)map.panTo([lat,lng]);
   if(navActive)checkProgress(lat,lng);
 }
-
 function onGPSErr(){const b=document.getElementById('gps-badge');b.textContent='📡 GPS失敗';b.className='bad';}
-
 function toggleFollow(){
   followMode=!followMode;
   document.getElementById('follow-btn').classList.toggle('active',followMode);
@@ -399,9 +428,9 @@ function toggleFollow(){
 }
 map.on('dragstart',()=>{followMode=false;document.getElementById('follow-btn').classList.remove('active');});
 
+// ===== ナビ =====
 const REACH=40;
 function toggleNav(){navActive?stopNav():startNav();}
-
 function startNav(){
   if(!points.length){alert('ポイントがありません');return;}
   navActive=true;navIndex=0;
@@ -411,14 +440,12 @@ function startNav(){
   refreshAllMarkers();renderList();updateNavBar();
   speak(`ナビ開始。最初は${points[0].name}。${points[0].memo||''}`);
 }
-
 function stopNav(){
   navActive=false;
   const btn=document.getElementById('btn-nav');btn.textContent='▶ ナビ開始';btn.className='btn btn-green';
   document.getElementById('nav-bar').classList.remove('show');
   refreshAllMarkers();renderList();
 }
-
 function updateNavBar(){
   if(!navActive||!points.length)return;
   const p=points[navIndex],next=points[navIndex+1];
@@ -427,7 +454,6 @@ function updateNavBar(){
   document.getElementById('nav-memo-txt').textContent=p.memo||'';
   document.getElementById('nav-sub').textContent=next?`次: ${next.name}`:'🏁 ゴール';
 }
-
 function checkProgress(lat,lng){
   if(!navActive||navIndex>=points.length)return;
   const t=points[navIndex];
@@ -438,27 +464,30 @@ function checkProgress(lat,lng){
     speak(`次は${points[navIndex].name}。${points[navIndex].memo||''}`);
   }
 }
-
 function calcDist(a,b,c,d){const R=6371000,dL=(c-a)*Math.PI/180,dG=(d-b)*Math.PI/180;const x=Math.sin(dL/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dG/2)**2;return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));}
-
 function speak(t){if(!('speechSynthesis'in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='ja-JP';u.rate=0.95;speechSynthesis.speak(u);}
 
+// ===== 保存・読み込み =====
 function saveRoute(){
   if(!points.length){alert('ポイントがありません');return;}
-  const data={version:1,points:points.map(p=>({lat:p.lat,lng:p.lng,name:p.name,memo:p.memo}))};
+  const data={version:2,points:points.map(p=>({lat:p.lat,lng:p.lng,name:p.name,memo:p.memo}))};
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
   a.download=`route-${new Date().toISOString().slice(0,10)}.json`;a.click();
 }
-
 function loadRoute(){
   const input=document.createElement('input');input.type='file';input.accept='.json';
   input.onchange=e=>{
     const reader=new FileReader();
     reader.onload=ev=>{
       try{
-        const data=JSON.parse(ev.target.result);clearAll(true);
-        data.points.forEach((d,i)=>{const p={id:Date.now()+i,lat:d.lat,lng:d.lng,name:d.name,memo:d.memo||'',marker:null};addMarker(p,i);points.push(p);});
+        const data=JSON.parse(ev.target.result);
+        clearAll(true);
+        data.points.forEach((d,i)=>{
+          // 番号を正しく振り直す
+          const p={id:Date.now()+i,lat:d.lat,lng:d.lng,name:d.name,memo:d.memo||'',marker:null};
+          addMarker(p,i);points.push(p);
+        });
         updatePolyline();renderList();
         if(points.length)map.fitBounds(points.map(p=>[p.lat,p.lng]),{padding:[40,40]});
       }catch{alert('読み込み失敗');}
@@ -466,12 +495,12 @@ function loadRoute(){
     reader.readAsText(e.target.files[0]);
   };input.click();
 }
-
 function clearAll(silent=false){
   if(!silent&&points.length&&!confirm('全ポイントを削除しますか？'))return;
   points.forEach(p=>{if(p.marker)map.removeLayer(p.marker);});
-  points=[];if(polyline){map.removeLayer(polyline);polyline=null;}
-  if(navActive)stopNav();renderList();
+  points=[];clearPolylines();
+  if(navActive)stopNav();
+  renderList();
 }
 
 startGPS();
