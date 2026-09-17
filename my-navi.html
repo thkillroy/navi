@@ -155,10 +155,10 @@ body { background:#0d0d0d; color:#fff; font-family:'Helvetica Neue',Arial,sans-s
     <div id="nav-name">—</div>
     <div id="nav-memo-txt"></div>
     <div id="nav-sub"></div>
-    <div id="nav-dist" style="font-size:11px;color:#666;margin-top:4px;display:flex;gap:12px;">
-      <span id="nav-dist-next"></span>
-      <span id="nav-dist-goal"></span>
-      <button onclick="toggleDistUnit()" style="background:none;border:1px solid #333;color:#888;font-size:10px;padding:1px 6px;border-radius:3px;cursor:pointer;" id="dist-unit-btn">km</button>
+    <div id="nav-dist" style="font-size:16px;color:#ccc;margin-top:6px;display:flex;gap:16px;align-items:center;">
+      <span id="nav-dist-next" style="color:#fff;font-weight:600;"></span>
+      <span id="nav-dist-goal" style="color:#aaa;"></span>
+      <button onclick="toggleDistUnit()" style="background:#222;border:1px solid #444;color:#aaa;font-size:13px;padding:3px 10px;border-radius:4px;cursor:pointer;" id="dist-unit-btn">km</button>
     </div>
   </div>
   <div id="controls">
@@ -517,7 +517,7 @@ function renderList(){
       <div class="point-info" onclick="focusPoint(${p.id})">
         <div class="point-name">${displayName}</div>
         ${p.memo?`<div class="point-memo-label">📝 ${p.memo}</div>`:''}
-        ${segDist?`<div style="font-size:10px;color:#666;">→次: ${segDist}</div>`:''}
+        ${segDist?`<div style="font-size:13px;color:#888;margin-top:2px;">→ ${segDist}</div>`:''}
       </div>
       <button class="point-del" onclick="deletePoint(${p.id})">✕</button>
     </div>`;
@@ -588,6 +588,14 @@ function startNav(){
   refreshAllMarkers();renderList();updateNavBar();
   const p=points[0];
   speak(`ナビ開始。最初は${p.name||'ポイント1'}。${p.memo||''}`);
+  // 開始直後に距離を即表示（GPS更新を待たずに）
+  if(gpsMarker){
+    const ll=gpsMarker.getLatLng();
+    const d=calcDist(ll.lat,ll.lng,p.lat,p.lng);
+    document.getElementById('nav-dist-next').textContent=`直線: ${formatDist(d)}`;
+    const rem=calcRemainingDist();
+    if(rem!==null) document.getElementById('nav-dist-goal').textContent=`残り: ${formatDist(rem)}`;
+  }
 }
 function stopNav(){
   navActive=false;
