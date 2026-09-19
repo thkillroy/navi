@@ -200,6 +200,11 @@ body { background:#0d0d0d; color:#fff; font-family:'Helvetica Neue',Arial,sans-s
         style="flex:1;padding:8px;background:#222;border:1px solid #333;color:#aaa;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;">新規登録</button>
     </div>
 
+    <div id="username-row" style="display:none;">
+      <label style="font-size:11px;color:#555;display:block;margin-bottom:4px;">ユーザー名</label>
+      <input type="text" id="auth-username" placeholder="例: kilroy_driver（英数字とアンダーバー）"
+        style="width:100%;background:#0d0d0d;border:1px solid #333;border-radius:8px;color:#fff;padding:10px 12px;font-size:14px;outline:none;margin-bottom:12px;font-family:inherit;">
+    </div>
     <label style="font-size:11px;color:#555;display:block;margin-bottom:4px;">メールアドレス</label>
     <input type="email" id="auth-email" placeholder="example@email.com"
       style="width:100%;background:#0d0d0d;border:1px solid #333;border-radius:8px;color:#fff;padding:10px 12px;font-size:14px;outline:none;margin-bottom:12px;font-family:inherit;">
@@ -923,6 +928,7 @@ async function initAuth(){
       // expires_atがない場合も含めて復元
       currentUser = s.user;
       authToken = s.access_token;
+      await loadUserProfile();
       updateUserBar();
       return;
     } catch(e){}
@@ -946,6 +952,7 @@ function authTab(tab){
   document.getElementById('auth-tab-signup').style.color = tab==='signup'?'#000':'#aaa';
   document.getElementById('auth-submit-btn').textContent = tab==='login'?'ログイン':'新規登録';
   document.getElementById('auth-error').style.display='none';
+  document.getElementById('username-row').style.display = tab==='signup'?'block':'none';
 }
 
 async function authSubmit(){
@@ -956,6 +963,11 @@ async function authSubmit(){
 
   if(!email || !password){ errEl.textContent='メールとパスワードを入力してください'; errEl.style.display='block'; return; }
   if(password.length < 6){ errEl.textContent='パスワードは6文字以上'; errEl.style.display='block'; return; }
+  if(currentAuthTab==='signup'){
+    const uname = document.getElementById('auth-username').value.trim();
+    if(!uname){ errEl.textContent='ユーザー名を入力してください'; errEl.style.display='block'; return; }
+    if(!/^[a-zA-Z0-9_]+$/.test(uname)){ errEl.textContent='ユーザー名は英数字とアンダーバーのみ'; errEl.style.display='block'; return; }
+  }
 
   const btn = document.getElementById('auth-submit-btn');
   btn.textContent = '...'; btn.disabled = true;
@@ -978,9 +990,23 @@ async function authSubmit(){
     currentUser = data.user;
     authToken = data.access_token;
     localStorage.setItem('navi_session', JSON.stringify(data));
+
+    // サインアップ時はprofileを作成
+    if(currentAuthTab === 'signup'){
+      const username = document.getElementById('auth-username').value.trim();
+      if(username){
+        await supabaseFetch('/rest/v1/profiles', {
+          method: 'POST',
+          prefer: 'return=minimal',
+          body: JSON.stringify({ id: currentUser.id, username })
+        });
+      }
+    }
+
+    // プロフィールを取得してusernameをcurrentUserに追加
+    await loadUserProfile();
     updateUserBar();
     closeAuthScreen();
-    // ルート一覧が開いていたらタブを更新
     const mineTab = document.getElementById('tab-mine');
     if(mineTab) mineTab.style.display='block';
   } catch(e){
@@ -1007,7 +1033,7 @@ function updateUserBar(){
     const emailEl = document.getElementById('user-email-display');
     if(emailEl) emailEl.textContent = '👤 ' + currentUser.email;
     if(btn){
-      btn.textContent = '👤 ' + currentUser.email.split('@')[0];
+      btn.textContent = '👤 ' + (currentUser.username || currentUser.email.split('@')[0]);
       btn.style.cssText = 'background:#1a2a3a;border:1px solid #2a4a6a;color:#66aaff;padding:8px 12px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;';
     }
   } else {
@@ -1025,6 +1051,16 @@ function handleAuthBtn(){
   } else {
     showAuthScreen();
   }
+}
+
+// ===== プロフィール =====
+async function loadUserProfile(){
+  if(!currentUser) return;
+  try {
+    const res = await supabaseFetch(`/rest/v1/profiles?id=eq.${currentUser.id}`);
+    const data = await res.json();
+    if(data && data[0]) currentUser.username = data[0].username;
+  } catch(e){}
 }
 
 // ===== Supabase ルート保存・読込 =====
@@ -1117,8 +1153,8 @@ async function loadRouteListTab(tab){
 
   try {
     const filter = tab==='public' 
-      ? '?is_public=eq.true&order=created_at.desc' 
-      : `?user_id=eq.${currentUser?.id}&order=created_at.desc`;
+      ? '?is_public=eq.true&order=created_at.desc&select=*,profiles(username)' 
+      : `?user_id=eq.${currentUser?.id}&order=created_at.desc&select=*,profiles(username)`;
     const res = await supabaseFetch('/rest/v1/routes' + filter);
     const data = await res.json();
 
@@ -1134,6 +1170,7 @@ async function loadRouteListTab(tab){
           <div style="font-size:11px;color:#555;margin-top:2px;">
             ${r.points.length}ポイント
             ${r.is_public ? ' · 🌐 公開' : ' · 🔒 非公開'}
+            ${r.profiles?.username ? ' · 👤 ' + r.profiles.username : ''}
             · ${new Date(r.created_at).toLocaleDateString('ja-JP')}
           </div>
         </div>
