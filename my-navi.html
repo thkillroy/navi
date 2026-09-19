@@ -290,7 +290,7 @@ body { background:#0d0d0d; color:#fff; font-family:'Helvetica Neue',Arial,sans-s
 <script>
 const MAPTILER_KEY = 'RXZt95T89eK6jTrAs2kn';
 const SUPABASE_URL = 'https://zryfljpzllnkukbitfpl.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_QRosgbERTd1CNjvkzPvE8w_m1VccXZF';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpyeWZsanB6bGxua3VrYml0ZnBsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk4MTI4NDcsImV4cCI6MjEwNTM4ODg0N30.RySxqFIiVBvwuwujMjODTkrxD3AJWD26yhqJsEojhMI';
 const map = L.map('map', { center:[35.68,139.75], zoom:14, zoomControl:false });
 L.tileLayer(`https://api.maptiler.com/maps/jp-gsi-standard/{z}/{x}/{y}.png?key=${MAPTILER_KEY}`, {
   attribution:'© <a href="https://www.maptiler.com/">MapTiler</a> © OpenStreetMap',
@@ -1003,18 +1003,24 @@ function updateUserBar(){
   const bar = document.getElementById('user-bar');
   const btn = document.getElementById('btn-auth');
   if(currentUser){
-    bar.style.display='flex';
-    document.getElementById('user-email-display').textContent = '👤 ' + currentUser.email;
-    if(btn){ btn.textContent='👤 ' + currentUser.email.split('@')[0]; btn.style.background='#1a2a3a'; btn.style.borderColor='#2a4a6a'; btn.style.color='#66aaff'; }
+    if(bar) bar.style.display='flex';
+    const emailEl = document.getElementById('user-email-display');
+    if(emailEl) emailEl.textContent = '👤 ' + currentUser.email;
+    if(btn){
+      btn.textContent = '👤 ' + currentUser.email.split('@')[0];
+      btn.style.cssText = 'background:#1a2a3a;border:1px solid #2a4a6a;color:#66aaff;padding:8px 12px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;';
+    }
   } else {
-    bar.style.display='none';
-    if(btn){ btn.textContent='👤 ログイン'; btn.style.background='#1a3a1a'; btn.style.borderColor='#0a5a0a'; btn.style.color='#66cc66'; }
+    if(bar) bar.style.display='none';
+    if(btn){
+      btn.textContent = '👤 ログイン';
+      btn.style.cssText = 'background:#1a3a1a;border:1px solid #0a5a0a;color:#66cc66;padding:8px 12px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;';
+    }
   }
 }
 
 function handleAuthBtn(){
   if(currentUser){
-    // ログイン中 → ログアウト確認
     if(confirm('ログアウトしますか？')) authLogout();
   } else {
     showAuthScreen();
