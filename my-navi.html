@@ -187,6 +187,25 @@ body { background:#0d0d0d; color:#fff; font-family:'Helvetica Neue',Arial,sans-s
   </div>
 </div>
 
+<!-- ユーザー名設定ダイアログ -->
+<div id="username-dialog" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:99998;align-items:center;justify-content:center;">
+  <div style="background:#1a1a1a;border:1px solid #333;border-radius:12px;padding:24px;width:320px;max-width:90vw;">
+    <h3 style="font-size:14px;color:#f0a500;margin-bottom:16px;">ユーザー名を設定</h3>
+    <label style="font-size:11px;color:#555;display:block;margin-bottom:5px;">ユーザー名（英数字とアンダーバー）</label>
+    <input type="text" id="new-username" placeholder="例: kilroy_driver"
+      style="width:100%;background:#0d0d0d;border:1px solid #333;border-radius:8px;color:#fff;padding:10px 12px;font-size:14px;outline:none;margin-bottom:6px;font-family:inherit;">
+    <div id="username-error" style="font-size:12px;color:#ff6666;margin-bottom:12px;display:none;"></div>
+    <div style="display:flex;gap:8px;">
+      <button onclick="document.getElementById('username-dialog').style.display='none'"
+        style="flex:1;padding:10px;background:#222;border:1px solid #333;color:#aaa;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;">キャンセル</button>
+      <button onclick="saveUsername()"
+        style="flex:1;padding:10px;background:#f0a500;border:none;color:#000;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;">保存</button>
+    </div>
+    <button onclick="authLogout(); document.getElementById('username-dialog').style.display='none';"
+      style="width:100%;padding:8px;background:none;border:none;color:#555;font-size:12px;cursor:pointer;margin-top:8px;">ログアウト</button>
+  </div>
+</div>
+
 <!-- ログイン/サインアップ画面 -->
 <div id="auth-screen" style="display:none;position:fixed;inset:0;background:#0d0d0d;z-index:99999;align-items:center;justify-content:center;flex-direction:column;">
   <div style="background:#1a1a1a;border:1px solid #333;border-radius:16px;padding:28px;width:340px;max-width:90vw;">
@@ -226,7 +245,6 @@ body { background:#0d0d0d; color:#fff; font-family:'Helvetica Neue',Arial,sans-s
 <!-- ユーザー情報バー -->
 <div id="user-bar" style="display:none;background:#000;border-bottom:1px solid #222;padding:6px 12px;align-items:center;gap:8px;flex-shrink:0;">
   <span id="user-email-display" style="font-size:11px;color:#666;flex:1;"></span>
-  <button onclick="authLogout()" style="background:none;border:1px solid #333;color:#666;font-size:11px;padding:3px 10px;border-radius:4px;cursor:pointer;">ログアウト</button>
 </div>
 
 <!-- 保存ダイアログ -->
@@ -1047,9 +1065,47 @@ function updateUserBar(){
 
 function handleAuthBtn(){
   if(currentUser){
-    if(confirm('ログアウトしますか？')) authLogout();
+    // ユーザー名設定ダイアログを開く
+    const dialog = document.getElementById('username-dialog');
+    const input = document.getElementById('new-username');
+    input.value = currentUser.username || '';
+    document.getElementById('username-error').style.display='none';
+    dialog.style.display='flex';
+    setTimeout(()=>input.focus(), 100);
   } else {
     showAuthScreen();
+  }
+}
+
+// ===== ユーザー名設定 =====
+async function saveUsername(){
+  const username = document.getElementById('new-username').value.trim();
+  const errEl = document.getElementById('username-error');
+  errEl.style.display='none';
+
+  if(!username){ errEl.textContent='ユーザー名を入力してください'; errEl.style.display='block'; return; }
+  if(!/^[a-zA-Z0-9_]+$/.test(username)){ errEl.textContent='英数字とアンダーバーのみ使用できます'; errEl.style.display='block'; return; }
+  if(username.length < 3){ errEl.textContent='3文字以上入力してください'; errEl.style.display='block'; return; }
+
+  try {
+    // upsert（あれば更新、なければ挿入）
+    const res = await supabaseFetch('/rest/v1/profiles', {
+      method: 'POST',
+      prefer: 'return=minimal,resolution=merge-duplicates',
+      body: JSON.stringify({ id: currentUser.id, username })
+    });
+    if(res.ok || res.status===201 || res.status===204){
+      currentUser.username = username;
+      updateUserBar();
+      document.getElementById('username-dialog').style.display='none';
+    } else {
+      const err = await res.json();
+      errEl.textContent = err.message?.includes('unique') ? 'そのユーザー名は使われています' : '保存失敗';
+      errEl.style.display='block';
+    }
+  } catch(e){
+    errEl.textContent='ネットワークエラー';
+    errEl.style.display='block';
   }
 }
 
