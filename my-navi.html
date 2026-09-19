@@ -915,18 +915,15 @@ let authToken = null;
 let currentAuthTab = 'login';
 
 async function initAuth(){
-  // セッションを復元
   const session = localStorage.getItem('navi_session');
   if(session){
     try {
       const s = JSON.parse(session);
-      // セッションの有効期限確認
-      if(s.expires_at && Date.now() < s.expires_at * 1000){
-        currentUser = s.user;
-        authToken = s.access_token;
-        updateUserBar();
-        return;
-      }
+      // expires_atがない場合も含めて復元
+      currentUser = s.user;
+      authToken = s.access_token;
+      updateUserBar();
+      return;
     } catch(e){}
     localStorage.removeItem('navi_session');
   }
