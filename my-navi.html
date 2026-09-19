@@ -201,7 +201,7 @@ body { background:#0d0d0d; color:#fff; font-family:'Helvetica Neue',Arial,sans-s
       <button onclick="saveUsername()"
         style="flex:1;padding:10px;background:#f0a500;border:none;color:#000;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;">保存</button>
     </div>
-    <button onclick="authLogout(); document.getElementById('username-dialog').style.display='none';"
+    <button onclick="confirmLogout()"
       style="width:100%;padding:8px;background:none;border:none;color:#555;font-size:12px;cursor:pointer;margin-top:8px;">ログアウト</button>
   </div>
 </div>
@@ -242,9 +242,9 @@ body { background:#0d0d0d; color:#fff; font-family:'Helvetica Neue',Arial,sans-s
   </div>
 </div>
 
-<!-- ユーザー情報バー -->
-<div id="user-bar" style="display:none;background:#000;border-bottom:1px solid #222;padding:6px 12px;align-items:center;gap:8px;flex-shrink:0;">
-  <span id="user-email-display" style="font-size:11px;color:#666;flex:1;"></span>
+<!-- ユーザー情報バー（非表示） -->
+<div id="user-bar" style="display:none;">
+  <span id="user-email-display"></span>
 </div>
 
 <!-- 保存ダイアログ -->
@@ -1065,7 +1065,6 @@ function updateUserBar(){
 
 function handleAuthBtn(){
   if(currentUser){
-    // ユーザー名設定ダイアログを開く
     const dialog = document.getElementById('username-dialog');
     const input = document.getElementById('new-username');
     input.value = currentUser.username || '';
@@ -1075,6 +1074,11 @@ function handleAuthBtn(){
   } else {
     showAuthScreen();
   }
+}
+
+function confirmLogout(){
+  document.getElementById('username-dialog').style.display='none';
+  if(confirm('ログアウトしますか？')) authLogout();
 }
 
 // ===== ユーザー名設定 =====
