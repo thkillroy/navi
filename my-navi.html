@@ -1213,8 +1213,8 @@ async function loadRouteListTab(tab){
 
   try {
     const filter = tab==='public' 
-      ? '?is_public=eq.true&order=created_at.desc&select=*,profiles(username)' 
-      : `?user_id=eq.${currentUser?.id}&order=created_at.desc&select=*,profiles(username)`;
+      ? '?is_public=eq.true&order=created_at.desc' 
+      : `?user_id=eq.${currentUser?.id}&order=created_at.desc`;
     const res = await supabaseFetch('/rest/v1/routes' + filter);
     const data = await res.json();
 
@@ -1230,7 +1230,7 @@ async function loadRouteListTab(tab){
           <div style="font-size:11px;color:#555;margin-top:2px;">
             ${r.points.length}ポイント
             ${r.is_public ? ' · 🌐 公開' : ' · 🔒 非公開'}
-            ${r.profiles?.username ? ' · 👤 ' + r.profiles.username : ''}
+
             · ${new Date(r.created_at).toLocaleDateString('ja-JP')}
           </div>
         </div>
