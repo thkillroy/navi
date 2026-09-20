@@ -14,8 +14,28 @@ function onGoogleMapsLoaded(){
   window._googleMapsReady = true;
   if(window._onGoogleMapsReadyCallback) window._onGoogleMapsReadyCallback();
 }
+// 初期言語を先に判定（Google Mapsのタイル言語はscriptタグのlanguageパラメータで一度だけ決まるため）
+window._SUPPORTED_LANGS = ['ja','en','zh-CN','zh-TW','ko','es','fr','th','vi'];
+window._PLACES_LANG = { ja:'ja', en:'en', 'zh-CN':'zh-CN', 'zh-TW':'zh-TW', ko:'ko', es:'es', fr:'fr', th:'th', vi:'vi' };
+function _detectInitialLangEarly(){
+  const saved = localStorage.getItem('navi_lang');
+  if(saved && window._SUPPORTED_LANGS.includes(saved)) return saved;
+  const nav = (navigator.language || 'en');
+  const exact = window._SUPPORTED_LANGS.find(l => l.toLowerCase() === nav.toLowerCase());
+  if(exact) return exact;
+  const base = nav.split('-')[0];
+  if(base === 'zh'){ return /TW|HK|MO/i.test(nav) ? 'zh-TW' : 'zh-CN'; }
+  const baseMatch = window._SUPPORTED_LANGS.find(l => l.split('-')[0] === base);
+  return baseMatch || 'en';
+}
+window._initialLang = _detectInitialLangEarly();
+(function(){
+  const s = document.createElement('script');
+  s.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyAwuYMBSE85I1VMnG34H-E8JzY114YRSYE&libraries=places&loading=async&language=' + (window._PLACES_LANG[window._initialLang] || 'en') + '&callback=onGoogleMapsLoaded';
+  s.async = true; s.defer = true;
+  document.head.appendChild(s);
+})();
 </script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAwuYMBSE85I1VMnG34H-E8JzY114YRSYE&libraries=places&loading=async&callback=onGoogleMapsLoaded" async defer></script>
 <script src="https://unpkg.com/leaflet.gridlayer.googlemutant@latest/dist/Leaflet.GoogleMutant.js"></script>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
@@ -247,7 +267,7 @@ body { background:#0d0d0d; color:#fff; font-family:'Helvetica Neue',Arial,sans-s
 
     <div id="auth-error" style="font-size:12px;color:#ff6666;margin-bottom:12px;display:none;"></div>
 
-    <button onclick="authSubmit()" id="auth-submit-btn"
+    <button onclick="authSubmit()" id="auth-submit-btn" data-i18n="login_tab"
       style="width:100%;padding:12px;background:#f0a500;border:none;color:#000;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;">ログイン</button>
     
     <button onclick="closeAuthScreen()"
@@ -382,6 +402,7 @@ ja: {
   points_count:'{n}ポイント', public_label:'公開', private_label:'非公開', load_btn:'読込',
   point_label:'ポイント {n}', google_map_not_loaded:'Googleマップが読み込まれていません',
   modal_name_placeholder:'例: ○○工場、△△倉庫', modal_memo_placeholder:'例: 右折して200m先\n門の前で停車',
+  confirm_lang_change_reload:'言語を変更すると地図が再読み込みされます。保存していないポイントは消えます。続けますか？',
 },
 en: {
   gps_waiting:'📡 Waiting for GPS', gps_error:'📡 GPS failed', gps_accuracy:'📡 Accuracy ±{m}m',
@@ -434,6 +455,7 @@ en: {
   points_count:'{n} points', public_label:'Public', private_label:'Private', load_btn:'Load',
   point_label:'Point {n}', google_map_not_loaded:'Google Maps has not loaded',
   modal_name_placeholder:'e.g. Factory A, Warehouse B', modal_memo_placeholder:'e.g. Turn right, 200m ahead\nStop at the gate',
+  confirm_lang_change_reload:'Changing language reloads the map. Unsaved points will be lost. Continue?',
 },
 'zh-CN': {
   gps_waiting:'📡 等待GPS', gps_error:'📡 GPS失败', gps_accuracy:'📡 精度 ±{m}米',
@@ -486,6 +508,7 @@ en: {
   points_count:'{n}个地点', public_label:'公开', private_label:'非公开', load_btn:'加载',
   point_label:'地点 {n}', google_map_not_loaded:'谷歌地图尚未加载',
   modal_name_placeholder:'例: A工厂、B仓库', modal_memo_placeholder:'例: 右转200米\n在大门前停车',
+  confirm_lang_change_reload:'切换语言将重新加载地图，未保存的地点会丢失。要继续吗？',
 },
 'zh-TW': {
   gps_waiting:'📡 等待GPS', gps_error:'📡 GPS失敗', gps_accuracy:'📡 精度 ±{m}公尺',
@@ -538,6 +561,7 @@ en: {
   points_count:'{n}個地點', public_label:'公開', private_label:'非公開', load_btn:'載入',
   point_label:'地點 {n}', google_map_not_loaded:'Google地圖尚未載入',
   modal_name_placeholder:'例: A工廠、B倉庫', modal_memo_placeholder:'例: 右轉200公尺\n在大門前停車',
+  confirm_lang_change_reload:'切換語言將重新載入地圖，未儲存的地點會遺失。要繼續嗎？',
 },
 ko: {
   gps_waiting:'📡 GPS 대기 중', gps_error:'📡 GPS 실패', gps_accuracy:'📡 정확도 ±{m}m',
@@ -590,6 +614,7 @@ ko: {
   points_count:'{n}개 지점', public_label:'공개', private_label:'비공개', load_btn:'불러오기',
   point_label:'지점 {n}', google_map_not_loaded:'Google 지도가 로드되지 않았습니다',
   modal_name_placeholder:'예: A공장, B창고', modal_memo_placeholder:'예: 우회전 후 200m\n정문 앞에서 정차',
+  confirm_lang_change_reload:'언어를 변경하면 지도가 새로고침됩니다. 저장하지 않은 지점은 사라집니다. 계속하시겠습니까？',
 },
 es: {
   gps_waiting:'📡 Esperando GPS', gps_error:'📡 Error de GPS', gps_accuracy:'📡 Precisión ±{m}m',
@@ -642,6 +667,7 @@ es: {
   points_count:'{n} puntos', public_label:'Pública', private_label:'Privada', load_btn:'Cargar',
   point_label:'Punto {n}', google_map_not_loaded:'Google Maps no se ha cargado',
   modal_name_placeholder:'ej: Fábrica A, Almacén B', modal_memo_placeholder:'ej: Gira a la derecha, 200m adelante\nDetente en la puerta',
+  confirm_lang_change_reload:'Cambiar el idioma recargará el mapa. Se perderán los puntos no guardados. ¿Continuar?',
 },
 fr: {
   gps_waiting:'📡 En attente du GPS', gps_error:'📡 Échec du GPS', gps_accuracy:'📡 Précision ±{m}m',
@@ -693,7 +719,8 @@ fr: {
   alert_delete_fail:'Échec de la suppression', no_routes:'Aucun itinéraire', routes_load_fail:'Échec du chargement',
   points_count:'{n} points', public_label:'Public', private_label:'Privé', load_btn:'Charger',
   point_label:'Point {n}', google_map_not_loaded:'Google Maps n\'a pas été chargé',
-  modal_name_placeholder:'ex : Usine A, Entrepôt B', modal_memo_placeholder:'ex : Tourner à droite, 200m plus loin\nS\'arrêter devant le portail'
+  modal_name_placeholder:'ex : Usine A, Entrepôt B', modal_memo_placeholder:'ex : Tourner à droite, 200m plus loin\nS\'arrêter devant le portail',
+  confirm_lang_change_reload:'Changer de langue rechargera la carte. Les points non enregistrés seront perdus. Continuer ?',
 },
 th: {
   gps_waiting:'📡 กำลังรอ GPS', gps_error:'📡 GPS ล้มเหลว', gps_accuracy:'📡 ความแม่นยำ ±{m}ม.',
@@ -746,6 +773,7 @@ th: {
   points_count:'{n} จุด', public_label:'สาธารณะ', private_label:'ส่วนตัว', load_btn:'โหลด',
   point_label:'จุด {n}', google_map_not_loaded:'Google Maps ยังไม่โหลด',
   modal_name_placeholder:'เช่น โรงงาน A, คลังสินค้า B', modal_memo_placeholder:'เช่น เลี้ยวขวา 200 ม.\nจอดที่หน้าประตู',
+  confirm_lang_change_reload:'การเปลี่ยนภาษาจะโหลดแผนที่ใหม่ จุดที่ยังไม่บันทึกจะหายไป ต้องการดำเนินการต่อหรือไม่?',
 },
 vi: {
   gps_waiting:'📡 Đang chờ GPS', gps_error:'📡 GPS lỗi', gps_accuracy:'📡 Độ chính xác ±{m}m',
@@ -798,6 +826,7 @@ vi: {
   points_count:'{n} điểm', public_label:'Công khai', private_label:'Riêng tư', load_btn:'Tải',
   point_label:'Điểm {n}', google_map_not_loaded:'Google Maps chưa tải xong',
   modal_name_placeholder:'vd: Nhà máy A, Kho B', modal_memo_placeholder:'vd: Rẽ phải, 200m phía trước\nDừng trước cổng',
+  confirm_lang_change_reload:'Đổi ngôn ngữ sẽ tải lại bản đồ. Các điểm chưa lưu sẽ bị mất. Tiếp tục?',
 }
 };
 
@@ -806,17 +835,8 @@ const SPEECH_LOCALE = { ja:'ja-JP', en:'en-US', 'zh-CN':'zh-CN', 'zh-TW':'zh-TW'
 const PLACES_LANG = { ja:'ja', en:'en', 'zh-CN':'zh-CN', 'zh-TW':'zh-TW', ko:'ko', es:'es', fr:'fr', th:'th', vi:'vi' };
 
 function detectInitialLang(){
-  const saved = localStorage.getItem('navi_lang');
-  if(saved && SUPPORTED_LANGS.includes(saved)) return saved;
-  const nav = (navigator.language || 'en');
-  const exact = SUPPORTED_LANGS.find(l => l.toLowerCase() === nav.toLowerCase());
-  if(exact) return exact;
-  const base = nav.split('-')[0];
-  if(base === 'zh'){
-    return /TW|HK|MO/i.test(nav) ? 'zh-TW' : 'zh-CN';
-  }
-  const baseMatch = SUPPORTED_LANGS.find(l => l.split('-')[0] === base);
-  return baseMatch || 'en';
+  // headで既に判定済み（Google Mapsのlanguageパラメータと一致させるため）
+  return window._initialLang || 'en';
 }
 let currentLang = detectInitialLang();
 
@@ -849,11 +869,14 @@ function applyStaticTranslations(){
 
 function setLanguage(lang){
   if(!SUPPORTED_LANGS.includes(lang)) return;
-  currentLang = lang;
+  if(lang === currentLang) return;
+  if(points.length && !confirm(t('confirm_lang_change_reload'))){
+    const sel = document.getElementById('lang-select');
+    if(sel) sel.value = currentLang;
+    return;
+  }
   localStorage.setItem('navi_lang', lang);
-  const sel = document.getElementById('lang-select');
-  if(sel) sel.value = lang;
-  applyStaticTranslations();
+  location.reload();
 }
 
 function initLangSelector(){
@@ -1337,7 +1360,31 @@ function checkProgress(lat,lng){
   }
 }
 function calcDist(a,b,c,d){const R=6371000,dL=(c-a)*Math.PI/180,dG=(d-b)*Math.PI/180;const x=Math.sin(dL/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dG/2)**2;return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));}
-function speak(txt){if(!('speechSynthesis'in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(txt);u.lang=SPEECH_LOCALE[currentLang]||'en-US';u.rate=0.95;speechSynthesis.speak(u);}
+let _cachedVoices = [];
+function _refreshVoices(){ _cachedVoices = ('speechSynthesis' in window) ? speechSynthesis.getVoices() : []; }
+if('speechSynthesis' in window){
+  _refreshVoices();
+  speechSynthesis.onvoiceschanged = _refreshVoices;
+}
+function _findVoiceForLocale(locale){
+  if(!_cachedVoices.length) _refreshVoices();
+  const exact = _cachedVoices.find(v => v.lang.toLowerCase() === locale.toLowerCase());
+  if(exact) return exact;
+  const prefix = locale.split('-')[0].toLowerCase();
+  return _cachedVoices.find(v => v.lang.toLowerCase().startsWith(prefix)) || null;
+}
+function speak(txt){
+  if(!('speechSynthesis'in window))return;
+  const locale = SPEECH_LOCALE[currentLang]||'en-US';
+  const voice = _findVoiceForLocale(locale);
+  if(!voice){ console.warn('この言語に対応した音声が端末に見つかりません:', locale); return; }
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(txt);
+  u.voice = voice;
+  u.lang = voice.lang;
+  u.rate=0.95;
+  speechSynthesis.speak(u);
+}
 
 // ===== 復路 =====
 function reverseRoute(){
