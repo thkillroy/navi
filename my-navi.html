@@ -185,7 +185,7 @@ body { background:#0d0d0d; color:#fff; font-family:'Helvetica Neue',Arial,sans-s
     <div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;" data-i18n="map_type_label">地図の種類</div>
     <div style="display:flex;gap:6px;margin-bottom:14px;">
       <button class="maptype-btn active" id="maptype-roadmap" onclick="setMapType('roadmap')" style="flex:1;padding:6px 4px;font-size:11px;border-radius:6px;cursor:pointer;" data-i18n="map_type_default">標準</button>
-      <button class="maptype-btn" id="maptype-satellite" onclick="setMapType('satellite')" style="flex:1;padding:6px 4px;font-size:11px;border-radius:6px;cursor:pointer;" data-i18n="map_type_satellite">航空写真</button>
+      <button class="maptype-btn" id="maptype-satellite" onclick="setMapType('hybrid')" style="flex:1;padding:6px 4px;font-size:11px;border-radius:6px;cursor:pointer;" data-i18n="map_type_satellite">航空写真</button>
       <button class="maptype-btn" id="maptype-terrain" onclick="setMapType('terrain')" style="flex:1;padding:6px 4px;font-size:11px;border-radius:6px;cursor:pointer;" data-i18n="map_type_terrain">地形</button>
     </div>
     <div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;" data-i18n="layers_label">表示</div>
@@ -1338,7 +1338,8 @@ function setMapType(type){
   if(bicyclingLayerOn) googleLayer.addGoogleLayer('BicyclingLayer');
   ['roadmap','satellite','terrain'].forEach(t=>{
     const btn = document.getElementById('maptype-'+t);
-    if(btn) btn.classList.toggle('active', t===currentMapType);
+    const matches = (t === currentMapType) || (t === 'satellite' && currentMapType === 'hybrid');
+    if(btn) btn.classList.toggle('active', matches);
   });
 }
 
