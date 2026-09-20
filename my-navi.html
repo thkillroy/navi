@@ -1009,15 +1009,25 @@ async function authSubmit(){
     authToken = data.access_token;
     localStorage.setItem('navi_session', JSON.stringify(data));
 
-    // サインアップ時はprofileを作成
+    // サインアップ時はprofileを作成（エラーハンドリング追加）
     if(currentAuthTab === 'signup'){
       const username = document.getElementById('auth-username').value.trim();
       if(username){
-        await supabaseFetch('/rest/v1/profiles', {
+        const profileRes = await supabaseFetch('/rest/v1/profiles', {
           method: 'POST',
           prefer: 'return=minimal',
           body: JSON.stringify({ id: currentUser.id, username })
         });
+        if(!profileRes.ok){
+          const err = await profileRes.json();
+          errEl.textContent = err.message?.includes('unique') ? 'そのユーザー名は使われています' : 'ユーザー名の保存に失敗しました';
+          errEl.style.display='block';
+          // プロフィール作成失敗なので認証状態をリセット
+          currentUser = null;
+          authToken = null;
+          localStorage.removeItem('navi_session');
+          return;
+        }
       }
     }
 
