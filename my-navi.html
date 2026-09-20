@@ -50,6 +50,8 @@ body { background:#0d0d0d; color:#fff; font-family:'Helvetica Neue',Arial,sans-s
 
 #follow-btn { position:absolute; bottom:12px; right:12px; z-index:1000; width:44px; height:44px; border-radius:50%; border:2px solid #444; background:rgba(0,0,0,0.8); color:#888; font-size:22px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
 #follow-btn.active { background:#f0a500; color:#000; border-color:#f0a500; }
+.maptype-btn { background:#222; border:1px solid #444; color:#aaa; }
+.maptype-btn.active { background:#f0a500; border-color:#f0a500; color:#000; font-weight:700; }
 
 #bottom { background:#111; border-top:2px solid #f0a500; flex-shrink:0; display:flex; flex-direction:column; }
 
@@ -178,9 +180,26 @@ body { background:#0d0d0d; color:#fff; font-family:'Helvetica Neue',Arial,sans-s
   <div id="map"></div>
   <div id="gps-badge" data-i18n="gps_waiting">📡 GPS待機中</div>
   <button id="follow-btn" onclick="toggleFollow()">🧭</button>
+  <button id="map-controls-btn" onclick="toggleMapControlsPanel()" style="position:absolute;bottom:12px;left:12px;z-index:1000;width:40px;height:40px;border-radius:8px;border:2px solid #444;background:rgba(0,0,0,0.85);color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;">🗺️</button>
+  <div id="map-controls-panel" style="display:none;position:absolute;bottom:58px;left:12px;z-index:1000;background:rgba(20,20,20,0.95);border:1px solid #444;border-radius:10px;padding:12px;width:200px;box-shadow:0 4px 16px rgba(0,0,0,0.5);">
+    <div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;" data-i18n="map_type_label">地図の種類</div>
+    <div style="display:flex;gap:6px;margin-bottom:14px;">
+      <button class="maptype-btn active" id="maptype-roadmap" onclick="setMapType('roadmap')" style="flex:1;padding:6px 4px;font-size:11px;border-radius:6px;cursor:pointer;" data-i18n="map_type_default">標準</button>
+      <button class="maptype-btn" id="maptype-satellite" onclick="setMapType('satellite')" style="flex:1;padding:6px 4px;font-size:11px;border-radius:6px;cursor:pointer;" data-i18n="map_type_satellite">航空写真</button>
+      <button class="maptype-btn" id="maptype-terrain" onclick="setMapType('terrain')" style="flex:1;padding:6px 4px;font-size:11px;border-radius:6px;cursor:pointer;" data-i18n="map_type_terrain">地形</button>
+    </div>
+    <div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;" data-i18n="layers_label">表示</div>
+    <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:#ddd;margin-bottom:8px;cursor:pointer;">
+      <input type="checkbox" id="layer-traffic-check" onchange="toggleTraffic()" style="width:16px;height:16px;cursor:pointer;">
+      <span data-i18n="traffic_label">渋滞</span>
+    </label>
+    <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:#ddd;cursor:pointer;">
+      <input type="checkbox" id="layer-biking-check" onchange="toggleBicycling()" style="width:16px;height:16px;cursor:pointer;">
+      <span data-i18n="biking_label">自転車</span>
+    </label>
+  </div>
 </div>
 
-<div id="user-bar-wrap" style="flex-shrink:0;"></div>
 <div id="bottom">
   <div id="nav-bar">
     <div id="nav-label" data-i18n="nav_label_next">次のポイントへ</div>
@@ -197,12 +216,10 @@ body { background:#0d0d0d; color:#fff; font-family:'Helvetica Neue',Arial,sans-s
     <div id="search-row">
       <input type="text" id="search-input" data-i18n-placeholder="search_placeholder" placeholder="🔍 住所・場所を検索">
       <button class="btn btn-orange" onclick="searchAddress()" data-i18n="search_btn">検索</button>
-      <select id="lang-select" style="background:#1a1a1a;color:#fff;border:1px solid #333;border-radius:6px;padding:8px 6px;font-size:12px;"></select>
     </div>
     <div id="btn-row">
       <button class="btn btn-gray" id="btn-add" onclick="toggleAddMode()" data-i18n="add_point_btn">＋ タップ追加</button>
       <button class="btn btn-gray" id="btn-route-mode" onclick="toggleRouteMode()" data-i18n="route_mode_road">🛣 道路</button>
-      <button class="btn btn-gray" id="btn-traffic" onclick="toggleTraffic()" data-i18n="traffic_btn">🚦 渋滞</button>
       <button class="btn btn-green" id="btn-nav" onclick="toggleNav()" data-i18n="nav_start_btn">▶ ナビ開始</button>
       <button class="btn btn-gray" onclick="reverseRoute()" data-i18n="reverse_route_btn">🔄 復路</button>
       <button class="btn btn-gray" onclick="showSaveDialog()" data-i18n="save_btn">💾 保存</button>
@@ -220,22 +237,38 @@ body { background:#0d0d0d; color:#fff; font-family:'Helvetica Neue',Arial,sans-s
   </div>
 </div>
 
-<!-- ユーザー名設定ダイアログ -->
-<div id="username-dialog" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:99998;align-items:center;justify-content:center;">
-  <div style="background:#1a1a1a;border:1px solid #333;border-radius:12px;padding:24px;width:320px;max-width:90vw;">
-    <h3 style="font-size:14px;color:#f0a500;margin-bottom:16px;" data-i18n="username_dialog_title">ユーザー名を設定</h3>
+<!-- ユーザー設定ダイアログ -->
+<div id="username-dialog" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:99998;align-items:center;justify-content:center;overflow-y:auto;padding:20px 0;">
+  <div style="background:#1a1a1a;border:1px solid #333;border-radius:12px;padding:24px;width:340px;max-width:90vw;">
+    <h3 style="font-size:14px;color:#f0a500;margin-bottom:16px;" data-i18n="settings_title">ユーザー設定</h3>
+
+    <label style="font-size:11px;color:#555;display:block;margin-bottom:5px;" data-i18n="email_label">メールアドレス</label>
+    <div id="settings-email-display" style="width:100%;background:#0d0d0d;border:1px solid #222;border-radius:8px;color:#888;padding:10px 12px;font-size:14px;margin-bottom:18px;box-sizing:border-box;"></div>
+
     <label style="font-size:11px;color:#555;display:block;margin-bottom:5px;" data-i18n="username_label">ユーザー名（英数字とアンダーバー）</label>
     <input type="text" id="new-username" data-i18n-placeholder="username_placeholder" placeholder="例: kilroy_driver"
-      style="width:100%;background:#0d0d0d;border:1px solid #333;border-radius:8px;color:#fff;padding:10px 12px;font-size:14px;outline:none;margin-bottom:6px;font-family:inherit;">
+      style="width:100%;background:#0d0d0d;border:1px solid #333;border-radius:8px;color:#fff;padding:10px 12px;font-size:14px;outline:none;margin-bottom:6px;font-family:inherit;box-sizing:border-box;">
     <div id="username-error" style="font-size:12px;color:#ff6666;margin-bottom:12px;display:none;"></div>
+    <button onclick="saveUsername()"
+      style="width:100%;padding:10px;background:#f0a500;border:none;color:#000;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:20px;" data-i18n="save_btn2">保存</button>
+
+    <label style="font-size:11px;color:#555;display:block;margin-bottom:5px;" data-i18n="lang_setting_label">言語</label>
+    <select id="lang-select" style="width:100%;background:#0d0d0d;border:1px solid #333;border-radius:8px;color:#fff;padding:10px 12px;font-size:14px;margin-bottom:20px;box-sizing:border-box;"></select>
+
+    <label style="font-size:11px;color:#555;display:block;margin-bottom:5px;" data-i18n="new_password_label">新しいパスワード</label>
+    <input type="password" id="new-password" data-i18n-placeholder="password_placeholder" placeholder="6文字以上"
+      style="width:100%;background:#0d0d0d;border:1px solid #333;border-radius:8px;color:#fff;padding:10px 12px;font-size:14px;outline:none;margin-bottom:6px;font-family:inherit;box-sizing:border-box;">
+    <div id="password-error" style="font-size:12px;color:#ff6666;margin-bottom:6px;display:none;"></div>
+    <div id="password-success" style="font-size:12px;color:#66cc66;margin-bottom:6px;display:none;"></div>
+    <button onclick="changePassword()"
+      style="width:100%;padding:10px;background:#222;border:1px solid #444;color:#fff;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:20px;" data-i18n="change_password_btn">パスワードを変更</button>
+
     <div style="display:flex;gap:8px;">
       <button onclick="document.getElementById('username-dialog').style.display='none'"
         style="flex:1;padding:10px;background:#222;border:1px solid #333;color:#aaa;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;" data-i18n="cancel_btn">キャンセル</button>
-      <button onclick="saveUsername()"
-        style="flex:1;padding:10px;background:#f0a500;border:none;color:#000;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;" data-i18n="save_btn2">保存</button>
+      <button onclick="confirmLogout()"
+        style="flex:1;padding:10px;background:#2a0000;border:1px solid #500;color:#ff6666;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;" data-i18n="logout_btn">ログアウト</button>
     </div>
-    <button onclick="confirmLogout()"
-      style="width:100%;padding:8px;background:none;border:none;color:#555;font-size:12px;cursor:pointer;margin-top:8px;" data-i18n="logout_btn">ログアウト</button>
   </div>
 </div>
 
@@ -263,7 +296,11 @@ body { background:#0d0d0d; color:#fff; font-family:'Helvetica Neue',Arial,sans-s
     
     <label style="font-size:11px;color:#555;display:block;margin-bottom:4px;" data-i18n="password_label">パスワード</label>
     <input type="password" id="auth-password" data-i18n-placeholder="password_placeholder" placeholder="6文字以上"
-      style="width:100%;background:#0d0d0d;border:1px solid #333;border-radius:8px;color:#fff;padding:10px 12px;font-size:14px;outline:none;margin-bottom:16px;font-family:inherit;">
+      style="width:100%;background:#0d0d0d;border:1px solid #333;border-radius:8px;color:#fff;padding:10px 12px;font-size:14px;outline:none;margin-bottom:8px;font-family:inherit;">
+
+    <div id="forgot-password-link" style="text-align:right;margin-bottom:16px;">
+      <a href="#" onclick="showForgotPassword();return false;" style="font-size:11px;color:#888;text-decoration:underline;" data-i18n="forgot_password_link">パスワードをお忘れですか？</a>
+    </div>
 
     <div id="auth-error" style="font-size:12px;color:#ff6666;margin-bottom:12px;display:none;"></div>
 
@@ -275,9 +312,22 @@ body { background:#0d0d0d; color:#fff; font-family:'Helvetica Neue',Arial,sans-s
   </div>
 </div>
 
-<!-- ユーザー情報バー（非表示） -->
-<div id="user-bar" style="display:none;">
-  <span id="user-email-display"></span>
+<!-- パスワード再設定ダイアログ -->
+<div id="forgot-password-dialog" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:99999;align-items:center;justify-content:center;">
+  <div style="background:#1a1a1a;border:1px solid #333;border-radius:12px;padding:24px;width:320px;max-width:90vw;">
+    <h3 style="font-size:14px;color:#f0a500;margin-bottom:16px;" data-i18n="forgot_password_title">パスワード再設定</h3>
+    <label style="font-size:11px;color:#555;display:block;margin-bottom:4px;" data-i18n="email_label">メールアドレス</label>
+    <input type="email" id="forgot-password-email" placeholder="example@email.com"
+      style="width:100%;background:#0d0d0d;border:1px solid #333;border-radius:8px;color:#fff;padding:10px 12px;font-size:14px;outline:none;margin-bottom:12px;font-family:inherit;box-sizing:border-box;">
+    <div id="forgot-password-error" style="font-size:12px;color:#ff6666;margin-bottom:12px;display:none;"></div>
+    <div id="forgot-password-success" style="font-size:12px;color:#66cc66;margin-bottom:12px;display:none;"></div>
+    <div style="display:flex;gap:8px;">
+      <button onclick="document.getElementById('forgot-password-dialog').style.display='none'"
+        style="flex:1;padding:10px;background:#222;border:1px solid #333;color:#aaa;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;" data-i18n="cancel_btn">キャンセル</button>
+      <button onclick="sendPasswordReset()"
+        style="flex:1;padding:10px;background:#f0a500;border:none;color:#000;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;" data-i18n="send_reset_btn">送信</button>
+    </div>
+  </div>
 </div>
 
 <!-- 保存ダイアログ -->
@@ -403,6 +453,7 @@ ja: {
   point_label:'ポイント {n}', google_map_not_loaded:'Googleマップが読み込まれていません',
   modal_name_placeholder:'例: ○○工場、△△倉庫', modal_memo_placeholder:'例: 右折して200m先\n門の前で停車',
   confirm_lang_change_reload:'言語を変更すると地図が再読み込みされます。保存していないポイントは消えます。続けますか？',
+  settings_title:'ユーザー設定', lang_setting_label:'言語', new_password_label:'新しいパスワード', change_password_btn:'パスワードを変更', password_change_success:'パスワードを変更しました', forgot_password_link:'パスワードをお忘れですか？', forgot_password_title:'パスワード再設定', send_reset_btn:'送信', password_reset_sent:'パスワード再設定メールを送信しました', map_type_label:'地図の種類', map_type_default:'標準', map_type_satellite:'航空写真', map_type_terrain:'地形', layers_label:'表示', biking_label:'自転車', traffic_label:'渋滞',
 },
 en: {
   gps_waiting:'📡 Waiting for GPS', gps_error:'📡 GPS failed', gps_accuracy:'📡 Accuracy ±{m}m',
@@ -456,6 +507,7 @@ en: {
   point_label:'Point {n}', google_map_not_loaded:'Google Maps has not loaded',
   modal_name_placeholder:'e.g. Factory A, Warehouse B', modal_memo_placeholder:'e.g. Turn right, 200m ahead\nStop at the gate',
   confirm_lang_change_reload:'Changing language reloads the map. Unsaved points will be lost. Continue?',
+  settings_title:'User Settings', lang_setting_label:'Language', new_password_label:'New password', change_password_btn:'Change password', password_change_success:'Password changed', forgot_password_link:'Forgot password?', forgot_password_title:'Reset password', send_reset_btn:'Send', password_reset_sent:'Password reset email sent', map_type_label:'Map type', map_type_default:'Default', map_type_satellite:'Satellite', map_type_terrain:'Terrain', layers_label:'Layers', biking_label:'Biking', traffic_label:'Traffic',
 },
 'zh-CN': {
   gps_waiting:'📡 等待GPS', gps_error:'📡 GPS失败', gps_accuracy:'📡 精度 ±{m}米',
@@ -509,6 +561,7 @@ en: {
   point_label:'地点 {n}', google_map_not_loaded:'谷歌地图尚未加载',
   modal_name_placeholder:'例: A工厂、B仓库', modal_memo_placeholder:'例: 右转200米\n在大门前停车',
   confirm_lang_change_reload:'切换语言将重新加载地图，未保存的地点会丢失。要继续吗？',
+  settings_title:'用户设置', lang_setting_label:'语言', new_password_label:'新密码', change_password_btn:'修改密码', password_change_success:'密码已修改', forgot_password_link:'忘记密码？', forgot_password_title:'重置密码', send_reset_btn:'发送', password_reset_sent:'密码重置邮件已发送', map_type_label:'地图类型', map_type_default:'标准', map_type_satellite:'卫星', map_type_terrain:'地形', layers_label:'图层', biking_label:'自行车', traffic_label:'路况',
 },
 'zh-TW': {
   gps_waiting:'📡 等待GPS', gps_error:'📡 GPS失敗', gps_accuracy:'📡 精度 ±{m}公尺',
@@ -562,6 +615,7 @@ en: {
   point_label:'地點 {n}', google_map_not_loaded:'Google地圖尚未載入',
   modal_name_placeholder:'例: A工廠、B倉庫', modal_memo_placeholder:'例: 右轉200公尺\n在大門前停車',
   confirm_lang_change_reload:'切換語言將重新載入地圖，未儲存的地點會遺失。要繼續嗎？',
+  settings_title:'使用者設定', lang_setting_label:'語言', new_password_label:'新密碼', change_password_btn:'修改密碼', password_change_success:'密碼已修改', forgot_password_link:'忘記密碼？', forgot_password_title:'重設密碼', send_reset_btn:'傳送', password_reset_sent:'密碼重設郵件已寄出', map_type_label:'地圖類型', map_type_default:'標準', map_type_satellite:'衛星', map_type_terrain:'地形', layers_label:'圖層', biking_label:'自行車', traffic_label:'路況',
 },
 ko: {
   gps_waiting:'📡 GPS 대기 중', gps_error:'📡 GPS 실패', gps_accuracy:'📡 정확도 ±{m}m',
@@ -615,6 +669,7 @@ ko: {
   point_label:'지점 {n}', google_map_not_loaded:'Google 지도가 로드되지 않았습니다',
   modal_name_placeholder:'예: A공장, B창고', modal_memo_placeholder:'예: 우회전 후 200m\n정문 앞에서 정차',
   confirm_lang_change_reload:'언어를 변경하면 지도가 새로고침됩니다. 저장하지 않은 지점은 사라집니다. 계속하시겠습니까？',
+  settings_title:'사용자 설정', lang_setting_label:'언어', new_password_label:'새 비밀번호', change_password_btn:'비밀번호 변경', password_change_success:'비밀번호가 변경되었습니다', forgot_password_link:'비밀번호를 잊으셨나요?', forgot_password_title:'비밀번호 재설정', send_reset_btn:'보내기', password_reset_sent:'비밀번호 재설정 이메일을 보냈습니다', map_type_label:'지도 종류', map_type_default:'기본', map_type_satellite:'위성', map_type_terrain:'지형', layers_label:'레이어', biking_label:'자전거', traffic_label:'교통정보',
 },
 es: {
   gps_waiting:'📡 Esperando GPS', gps_error:'📡 Error de GPS', gps_accuracy:'📡 Precisión ±{m}m',
@@ -668,6 +723,7 @@ es: {
   point_label:'Punto {n}', google_map_not_loaded:'Google Maps no se ha cargado',
   modal_name_placeholder:'ej: Fábrica A, Almacén B', modal_memo_placeholder:'ej: Gira a la derecha, 200m adelante\nDetente en la puerta',
   confirm_lang_change_reload:'Cambiar el idioma recargará el mapa. Se perderán los puntos no guardados. ¿Continuar?',
+  settings_title:'Configuración de usuario', lang_setting_label:'Idioma', new_password_label:'Nueva contraseña', change_password_btn:'Cambiar contraseña', password_change_success:'Contraseña cambiada', forgot_password_link:'¿Olvidaste tu contraseña?', forgot_password_title:'Restablecer contraseña', send_reset_btn:'Enviar', password_reset_sent:'Se envió el correo de restablecimiento', map_type_label:'Tipo de mapa', map_type_default:'Estándar', map_type_satellite:'Satélite', map_type_terrain:'Relieve', layers_label:'Capas', biking_label:'Bicicleta', traffic_label:'Tráfico',
 },
 fr: {
   gps_waiting:'📡 En attente du GPS', gps_error:'📡 Échec du GPS', gps_accuracy:'📡 Précision ±{m}m',
@@ -721,6 +777,7 @@ fr: {
   point_label:'Point {n}', google_map_not_loaded:'Google Maps n\'a pas été chargé',
   modal_name_placeholder:'ex : Usine A, Entrepôt B', modal_memo_placeholder:'ex : Tourner à droite, 200m plus loin\nS\'arrêter devant le portail',
   confirm_lang_change_reload:'Changer de langue rechargera la carte. Les points non enregistrés seront perdus. Continuer ?',
+  settings_title:'Paramètres utilisateur', lang_setting_label:'Langue', new_password_label:'Nouveau mot de passe', change_password_btn:'Changer le mot de passe', password_change_success:'Mot de passe modifié', forgot_password_link:'Mot de passe oublié ?', forgot_password_title:'Réinitialiser le mot de passe', send_reset_btn:'Envoyer', password_reset_sent:'E-mail de réinitialisation envoyé', map_type_label:'Type de carte', map_type_default:'Standard', map_type_satellite:'Satellite', map_type_terrain:'Relief', layers_label:'Calques', biking_label:'Vélo', traffic_label:'Trafic',
 },
 th: {
   gps_waiting:'📡 กำลังรอ GPS', gps_error:'📡 GPS ล้มเหลว', gps_accuracy:'📡 ความแม่นยำ ±{m}ม.',
@@ -774,6 +831,7 @@ th: {
   point_label:'จุด {n}', google_map_not_loaded:'Google Maps ยังไม่โหลด',
   modal_name_placeholder:'เช่น โรงงาน A, คลังสินค้า B', modal_memo_placeholder:'เช่น เลี้ยวขวา 200 ม.\nจอดที่หน้าประตู',
   confirm_lang_change_reload:'การเปลี่ยนภาษาจะโหลดแผนที่ใหม่ จุดที่ยังไม่บันทึกจะหายไป ต้องการดำเนินการต่อหรือไม่?',
+  settings_title:'การตั้งค่าผู้ใช้', lang_setting_label:'ภาษา', new_password_label:'รหัสผ่านใหม่', change_password_btn:'เปลี่ยนรหัสผ่าน', password_change_success:'เปลี่ยนรหัสผ่านแล้ว', forgot_password_link:'ลืมรหัสผ่าน?', forgot_password_title:'รีเซ็ตรหัสผ่าน', send_reset_btn:'ส่ง', password_reset_sent:'ส่งอีเมลรีเซ็ตรหัสผ่านแล้ว', map_type_label:'ประเภทแผนที่', map_type_default:'มาตรฐาน', map_type_satellite:'ดาวเทียม', map_type_terrain:'ภูมิประเทศ', layers_label:'เลเยอร์', biking_label:'จักรยาน', traffic_label:'การจราจร',
 },
 de: {
   gps_waiting:'📡 Warte auf GPS', gps_error:'📡 GPS-Fehler', gps_accuracy:'📡 Genauigkeit ±{m}m',
@@ -826,7 +884,8 @@ de: {
   points_count:'{n} Punkte', public_label:'Öffentlich', private_label:'Privat', load_btn:'Laden',
   point_label:'Punkt {n}', google_map_not_loaded:'Google Maps wurde nicht geladen',
   modal_name_placeholder:'z. B. Fabrik A, Lager B', modal_memo_placeholder:'z. B. Rechts abbiegen, 200m voraus\nAm Tor anhalten',
-  confirm_lang_change_reload:'Sprachwechsel lädt die Karte neu. Nicht gespeicherte Punkte gehen verloren. Fortfahren?'
+  confirm_lang_change_reload:'Sprachwechsel lädt die Karte neu. Nicht gespeicherte Punkte gehen verloren. Fortfahren?',
+  settings_title:'Benutzereinstellungen', lang_setting_label:'Sprache', new_password_label:'Neues Passwort', change_password_btn:'Passwort ändern', password_change_success:'Passwort geändert', forgot_password_link:'Passwort vergessen?', forgot_password_title:'Passwort zurücksetzen', send_reset_btn:'Senden', password_reset_sent:'E-Mail zum Zurücksetzen gesendet', map_type_label:'Kartentyp', map_type_default:'Standard', map_type_satellite:'Satellit', map_type_terrain:'Gelände', layers_label:'Ebenen', biking_label:'Fahrrad', traffic_label:'Verkehr'
 },
 ru: {
   gps_waiting:'📡 Ожидание GPS', gps_error:'📡 Ошибка GPS', gps_accuracy:'📡 Точность ±{m}м',
@@ -879,7 +938,8 @@ ru: {
   points_count:'{n} точек', public_label:'Публичный', private_label:'Приватный', load_btn:'Загрузить',
   point_label:'Точка {n}', google_map_not_loaded:'Google Maps не загружен',
   modal_name_placeholder:'напр. Завод A, Склад B', modal_memo_placeholder:'напр. Поворот направо, через 200м\nОстановиться у ворот',
-  confirm_lang_change_reload:'Смена языка перезагрузит карту. Несохранённые точки будут потеряны. Продолжить?'
+  confirm_lang_change_reload:'Смена языка перезагрузит карту. Несохранённые точки будут потеряны. Продолжить?',
+  settings_title:'Настройки пользователя', lang_setting_label:'Язык', new_password_label:'Новый пароль', change_password_btn:'Изменить пароль', password_change_success:'Пароль изменён', forgot_password_link:'Забыли пароль?', forgot_password_title:'Сброс пароля', send_reset_btn:'Отправить', password_reset_sent:'Письмо для сброса пароля отправлено', map_type_label:'Тип карты', map_type_default:'Обычная', map_type_satellite:'Спутник', map_type_terrain:'Рельеф', layers_label:'Слои', biking_label:'Велосипед', traffic_label:'Пробки'
 },
 pt: {
   gps_waiting:'📡 Aguardando GPS', gps_error:'📡 Falha no GPS', gps_accuracy:'📡 Precisão ±{m}m',
@@ -932,7 +992,8 @@ pt: {
   points_count:'{n} pontos', public_label:'Pública', private_label:'Privada', load_btn:'Carregar',
   point_label:'Ponto {n}', google_map_not_loaded:'O Google Maps não foi carregado',
   modal_name_placeholder:'ex: Fábrica A, Depósito B', modal_memo_placeholder:'ex: Vire à direita, 200m à frente\nPare no portão',
-  confirm_lang_change_reload:'Mudar o idioma recarregará o mapa. Pontos não salvos serão perdidos. Continuar?'
+  confirm_lang_change_reload:'Mudar o idioma recarregará o mapa. Pontos não salvos serão perdidos. Continuar?',
+  settings_title:'Configurações do usuário', lang_setting_label:'Idioma', new_password_label:'Nova senha', change_password_btn:'Alterar senha', password_change_success:'Senha alterada', forgot_password_link:'Esqueceu a senha?', forgot_password_title:'Redefinir senha', send_reset_btn:'Enviar', password_reset_sent:'E-mail de redefinição enviado', map_type_label:'Tipo de mapa', map_type_default:'Padrão', map_type_satellite:'Satélite', map_type_terrain:'Relevo', layers_label:'Camadas', biking_label:'Bicicleta', traffic_label:'Trânsito'
 },
 ar: {
   gps_waiting:'📡 في انتظار GPS', gps_error:'📡 فشل GPS', gps_accuracy:'📡 الدقة ±{m} م',
@@ -985,7 +1046,8 @@ ar: {
   points_count:'{n} نقطة', public_label:'عام', private_label:'خاص', load_btn:'تحميل',
   point_label:'نقطة {n}', google_map_not_loaded:'لم يتم تحميل خرائط Google',
   modal_name_placeholder:'مثال: مصنع A، مستودع B', modal_memo_placeholder:'مثال: انعطف يمينًا، بعد 200م\nتوقف عند البوابة',
-  confirm_lang_change_reload:'سيؤدي تغيير اللغة إلى إعادة تحميل الخريطة. ستُفقد النقاط غير المحفوظة. متابعة؟'
+  confirm_lang_change_reload:'سيؤدي تغيير اللغة إلى إعادة تحميل الخريطة. ستُفقد النقاط غير المحفوظة. متابعة؟',
+  settings_title:'إعدادات المستخدم', lang_setting_label:'اللغة', new_password_label:'كلمة مرور جديدة', change_password_btn:'تغيير كلمة المرور', password_change_success:'تم تغيير كلمة المرور', forgot_password_link:'هل نسيت كلمة المرور؟', forgot_password_title:'إعادة تعيين كلمة المرور', send_reset_btn:'إرسال', password_reset_sent:'تم إرسال بريد إعادة التعيين', map_type_label:'نوع الخريطة', map_type_default:'عادي', map_type_satellite:'قمر صناعي', map_type_terrain:'التضاريس', layers_label:'الطبقات', biking_label:'الدراجات', traffic_label:'حركة المرور'
 },
 it: {
   gps_waiting:'📡 In attesa del GPS', gps_error:'📡 GPS non riuscito', gps_accuracy:'📡 Precisione ±{m}m',
@@ -1038,7 +1100,8 @@ it: {
   points_count:'{n} punti', public_label:'Pubblico', private_label:'Privato', load_btn:'Carica',
   point_label:'Punto {n}', google_map_not_loaded:'Google Maps non è stato caricato',
   modal_name_placeholder:'es. Fabbrica A, Magazzino B', modal_memo_placeholder:'es. Gira a destra, 200m avanti\nFermati al cancello',
-  confirm_lang_change_reload:'Il cambio di lingua ricaricherà la mappa. I punti non salvati andranno persi. Continuare?'
+  confirm_lang_change_reload:'Il cambio di lingua ricaricherà la mappa. I punti non salvati andranno persi. Continuare?',
+  settings_title:'Impostazioni utente', lang_setting_label:'Lingua', new_password_label:'Nuova password', change_password_btn:'Cambia password', password_change_success:'Password modificata', forgot_password_link:'Password dimenticata?', forgot_password_title:'Reimposta password', send_reset_btn:'Invia', password_reset_sent:'E-mail di reimpostazione inviata', map_type_label:'Tipo di mappa', map_type_default:'Predefinito', map_type_satellite:'Satellite', map_type_terrain:'Rilievo', layers_label:'Livelli', biking_label:'Bicicletta', traffic_label:'Traffico'
 },
 id: {
   gps_waiting:'📡 Menunggu GPS', gps_error:'📡 GPS gagal', gps_accuracy:'📡 Akurasi ±{m}m',
@@ -1091,7 +1154,8 @@ id: {
   points_count:'{n} titik', public_label:'Publik', private_label:'Pribadi', load_btn:'Muat',
   point_label:'Titik {n}', google_map_not_loaded:'Google Maps belum dimuat',
   modal_name_placeholder:'contoh: Pabrik A, Gudang B', modal_memo_placeholder:'contoh: Belok kanan, 200m di depan\nBerhenti di gerbang',
-  confirm_lang_change_reload:'Mengubah bahasa akan memuat ulang peta. Titik yang belum disimpan akan hilang. Lanjutkan?'
+  confirm_lang_change_reload:'Mengubah bahasa akan memuat ulang peta. Titik yang belum disimpan akan hilang. Lanjutkan?',
+  settings_title:'Pengaturan pengguna', lang_setting_label:'Bahasa', new_password_label:'Kata sandi baru', change_password_btn:'Ubah kata sandi', password_change_success:'Kata sandi diubah', forgot_password_link:'Lupa kata sandi?', forgot_password_title:'Atur ulang kata sandi', send_reset_btn:'Kirim', password_reset_sent:'Email reset kata sandi terkirim', map_type_label:'Jenis peta', map_type_default:'Standar', map_type_satellite:'Satelit', map_type_terrain:'Medan', layers_label:'Lapisan', biking_label:'Sepeda', traffic_label:'Lalu lintas'
 },
 vi: {
   gps_waiting:'📡 Đang chờ GPS', gps_error:'📡 GPS lỗi', gps_accuracy:'📡 Độ chính xác ±{m}m',
@@ -1145,6 +1209,7 @@ vi: {
   point_label:'Điểm {n}', google_map_not_loaded:'Google Maps chưa tải xong',
   modal_name_placeholder:'vd: Nhà máy A, Kho B', modal_memo_placeholder:'vd: Rẽ phải, 200m phía trước\nDừng trước cổng',
   confirm_lang_change_reload:'Đổi ngôn ngữ sẽ tải lại bản đồ. Các điểm chưa lưu sẽ bị mất. Tiếp tục?',
+  settings_title:'Cài đặt người dùng', lang_setting_label:'Ngôn ngữ', new_password_label:'Mật khẩu mới', change_password_btn:'Đổi mật khẩu', password_change_success:'Đã đổi mật khẩu', forgot_password_link:'Quên mật khẩu?', forgot_password_title:'Đặt lại mật khẩu', send_reset_btn:'Gửi', password_reset_sent:'Đã gửi email đặt lại mật khẩu', map_type_label:'Loại bản đồ', map_type_default:'Mặc định', map_type_satellite:'Vệ tinh', map_type_terrain:'Địa hình', layers_label:'Lớp', biking_label:'Xe đạp', traffic_label:'Giao thông',
 }
 };
 
@@ -1211,6 +1276,8 @@ const map = L.map('map', { center:[35.68,139.75], zoom:14, zoomControl:false });
 let googleLayer = null;
 let usingGoogleMap = false;
 let trafficLayerOn = false;
+let bicyclingLayerOn = false;
+let currentMapType = 'roadmap';
 
 function useMapTilerFallback(){
   if(usingGoogleMap) return;
@@ -1222,7 +1289,7 @@ function useMapTilerFallback(){
 
 function initGoogleLayer(){
   try{
-    googleLayer = L.gridLayer.googleMutant({ type:'roadmap' }).addTo(map);
+    googleLayer = L.gridLayer.googleMutant({ type: currentMapType }).addTo(map);
     usingGoogleMap = true;
   }catch(e){
     console.warn('Googleマップ読み込み失敗、MapTilerにフォールバック', e);
@@ -1237,18 +1304,50 @@ if(window._googleMapsReady){
 // 4秒待ってGoogleが読み込まれなければMapTilerに切り替え
 setTimeout(()=>{ if(!usingGoogleMap) useMapTilerFallback(); }, 4000);
 
-function toggleTraffic(){
-  if(!usingGoogleMap || !googleLayer){ alert(t('google_map_not_loaded')); return; }
-  trafficLayerOn = !trafficLayerOn;
-  const btn=document.getElementById('btn-traffic');
-  if(trafficLayerOn){
-    googleLayer.addGoogleLayer('TrafficLayer');
-    btn.className='btn btn-route-active';
-  } else {
-    googleLayer.removeGoogleLayer('TrafficLayer');
-    btn.className='btn btn-gray';
-  }
+// ===== 地図コントロールパネル（地図の種類・レイヤー） =====
+function toggleMapControlsPanel(){
+  const panel = document.getElementById('map-controls-panel');
+  panel.style.display = panel.style.display==='none' ? 'block' : 'none';
 }
+
+function setMapType(type){
+  if(!usingGoogleMap){ alert(t('google_map_not_loaded')); return; }
+  if(type === currentMapType) return;
+  currentMapType = type;
+  // 地形・航空写真・標準はGoogleMutantの type を切り替えるためレイヤーを作り直す
+  if(googleLayer){ map.removeLayer(googleLayer); }
+  googleLayer = L.gridLayer.googleMutant({ type: currentMapType }).addTo(map);
+  // 切り替え後もオン中のレイヤー（渋滞・自転車）を再適用
+  if(trafficLayerOn) googleLayer.addGoogleLayer('TrafficLayer');
+  if(bicyclingLayerOn) googleLayer.addGoogleLayer('BicyclingLayer');
+  ['roadmap','satellite','terrain'].forEach(t=>{
+    const btn = document.getElementById('maptype-'+t);
+    if(btn) btn.classList.toggle('active', t===currentMapType);
+  });
+}
+
+function toggleTraffic(){
+  if(!usingGoogleMap || !googleLayer){ alert(t('google_map_not_loaded')); document.getElementById('layer-traffic-check').checked=false; return; }
+  trafficLayerOn = document.getElementById('layer-traffic-check').checked;
+  if(trafficLayerOn){ googleLayer.addGoogleLayer('TrafficLayer'); }
+  else { googleLayer.removeGoogleLayer('TrafficLayer'); }
+}
+
+function toggleBicycling(){
+  if(!usingGoogleMap || !googleLayer){ alert(t('google_map_not_loaded')); document.getElementById('layer-biking-check').checked=false; return; }
+  bicyclingLayerOn = document.getElementById('layer-biking-check').checked;
+  if(bicyclingLayerOn){ googleLayer.addGoogleLayer('BicyclingLayer'); }
+  else { googleLayer.removeGoogleLayer('BicyclingLayer'); }
+}
+
+// パネル外をクリックしたら閉じる
+document.addEventListener('click', e=>{
+  const panel = document.getElementById('map-controls-panel');
+  const btn = document.getElementById('map-controls-btn');
+  if(panel.style.display==='none') return;
+  if(panel.contains(e.target) || btn.contains(e.target)) return;
+  panel.style.display='none';
+});
 
 L.control.zoom({ position:'topright' }).addTo(map);
 
@@ -1944,6 +2043,7 @@ function authTab(tab){
   document.getElementById('auth-submit-btn').textContent = tab==='login'?t('login_tab'):t('signup_tab');
   document.getElementById('auth-error').style.display='none';
   document.getElementById('username-row').style.display = tab==='signup'?'block':'none';
+  document.getElementById('forgot-password-link').style.display = tab==='login'?'block':'none';
 }
 
 async function authSubmit(){
@@ -2027,18 +2127,13 @@ function authLogout(){
 }
 
 function updateUserBar(){
-  const bar = document.getElementById('user-bar');
   const btn = document.getElementById('btn-auth');
   if(currentUser){
-    if(bar) bar.style.display='flex';
-    const emailEl = document.getElementById('user-email-display');
-    if(emailEl) emailEl.textContent = '👤 ' + currentUser.email;
     if(btn){
       btn.textContent = '👤 ' + (currentUser.username || currentUser.email.split('@')[0]);
       btn.style.cssText = 'background:#1a2a3a;border:1px solid #2a4a6a;color:#66aaff;padding:8px 12px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;';
     }
   } else {
-    if(bar) bar.style.display='none';
     if(btn){
       btn.textContent = t('login_btn');
       btn.style.cssText = 'background:#1a3a1a;border:1px solid #0a5a0a;color:#66cc66;padding:8px 12px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;';
@@ -2052,6 +2147,12 @@ function handleAuthBtn(){
     const input = document.getElementById('new-username');
     input.value = currentUser.username || '';
     document.getElementById('username-error').style.display='none';
+    document.getElementById('settings-email-display').textContent = currentUser.email || '';
+    document.getElementById('new-password').value = '';
+    document.getElementById('password-error').style.display='none';
+    document.getElementById('password-success').style.display='none';
+    const langSel = document.getElementById('lang-select');
+    if(langSel) langSel.value = currentLang;
     dialog.style.display='flex';
     setTimeout(()=>input.focus(), 100);
   } else {
@@ -2062,6 +2163,71 @@ function handleAuthBtn(){
 function confirmLogout(){
   document.getElementById('username-dialog').style.display='none';
   if(confirm(t('confirm_logout'))) authLogout();
+}
+
+// ===== パスワード変更（ログイン中） =====
+async function changePassword(){
+  const pw = document.getElementById('new-password').value;
+  const errEl = document.getElementById('password-error');
+  const okEl = document.getElementById('password-success');
+  errEl.style.display='none'; okEl.style.display='none';
+  if(!pw || pw.length < 6){ errEl.textContent = t('err_password_min'); errEl.style.display='block'; return; }
+  try{
+    const res = await fetch(SUPABASE_URL + '/auth/v1/user', {
+      method: 'PUT',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + authToken,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ password: pw })
+    });
+    if(res.ok){
+      okEl.textContent = t('password_change_success');
+      okEl.style.display='block';
+      document.getElementById('new-password').value='';
+    } else {
+      const err = await res.json();
+      errEl.textContent = err.msg || err.message || t('err_network');
+      errEl.style.display='block';
+    }
+  }catch(e){
+    errEl.textContent = t('err_network');
+    errEl.style.display='block';
+  }
+}
+
+// ===== パスワード再設定（未ログイン・ログイン画面から） =====
+function showForgotPassword(){
+  document.getElementById('forgot-password-email').value = document.getElementById('auth-email').value || '';
+  document.getElementById('forgot-password-error').style.display='none';
+  document.getElementById('forgot-password-success').style.display='none';
+  document.getElementById('forgot-password-dialog').style.display='flex';
+}
+
+async function sendPasswordReset(){
+  const email = document.getElementById('forgot-password-email').value.trim();
+  const errEl = document.getElementById('forgot-password-error');
+  const okEl = document.getElementById('forgot-password-success');
+  errEl.style.display='none'; okEl.style.display='none';
+  if(!email){ errEl.textContent = t('err_email_password_required'); errEl.style.display='block'; return; }
+  try{
+    const res = await fetch(SUPABASE_URL + '/auth/v1/recover', {
+      method: 'POST',
+      headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+    if(res.ok){
+      okEl.textContent = t('password_reset_sent');
+      okEl.style.display='block';
+    } else {
+      errEl.textContent = t('err_network');
+      errEl.style.display='block';
+    }
+  }catch(e){
+    errEl.textContent = t('err_network');
+    errEl.style.display='block';
+  }
 }
 
 // ===== ユーザー名設定 =====
