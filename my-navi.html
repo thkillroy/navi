@@ -330,7 +330,17 @@ body { background:#0d0d0d; color:#fff; font-family:'Helvetica Neue',Arial,sans-s
   </div>
 </div>
 
-<!-- 保存ダイアログ -->
+<!-- 新しいパスワード設定ダイアログ（メールのリンクから遷移した時に表示） -->
+<div id="set-new-password-dialog" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:99999;align-items:center;justify-content:center;">
+  <div style="background:#1a1a1a;border:1px solid #333;border-radius:12px;padding:24px;width:320px;max-width:90vw;">
+    <h3 style="font-size:14px;color:#f0a500;margin-bottom:16px;" data-i18n="new_password_label">新しいパスワード</h3>
+    <input type="password" id="set-new-password" data-i18n-placeholder="password_placeholder" placeholder="6文字以上"
+      style="width:100%;background:#0d0d0d;border:1px solid #333;border-radius:8px;color:#fff;padding:10px 12px;font-size:14px;outline:none;margin-bottom:6px;font-family:inherit;box-sizing:border-box;">
+    <div id="set-new-password-error" style="font-size:12px;color:#ff6666;margin-bottom:12px;display:none;"></div>
+    <button onclick="submitNewPassword()"
+      style="width:100%;padding:10px;background:#f0a500;border:none;color:#000;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;" data-i18n="change_password_btn">パスワードを変更</button>
+  </div>
+</div>
 <div id="save-dialog" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:9999;align-items:center;justify-content:center;">
   <div style="background:#1a1a1a;border:1px solid #333;border-radius:12px;padding:24px;width:320px;max-width:90vw;">
     <h3 style="font-size:14px;color:#f0a500;margin-bottom:16px;" data-i18n="save_route_title">ルートを保存</h3>
@@ -2212,16 +2222,70 @@ async function sendPasswordReset(){
   errEl.style.display='none'; okEl.style.display='none';
   if(!email){ errEl.textContent = t('err_email_password_required'); errEl.style.display='block'; return; }
   try{
+    const redirectTo = window.location.origin + window.location.pathname;
     const res = await fetch(SUPABASE_URL + '/auth/v1/recover', {
       method: 'POST',
       headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email })
+      body: JSON.stringify({ email, redirect_to: redirectTo })
     });
     if(res.ok){
       okEl.textContent = t('password_reset_sent');
       okEl.style.display='block';
     } else {
       errEl.textContent = t('err_network');
+      errEl.style.display='block';
+    }
+  }catch(e){
+    errEl.textContent = t('err_network');
+    errEl.style.display='block';
+  }
+}
+
+// ===== パスワード再設定リンクからの遷移を検知して、新パスワード入力画面を出す =====
+function checkPasswordRecovery(){
+  const hash = window.location.hash;
+  if(!hash || !hash.includes('access_token')) return;
+  const params = new URLSearchParams(hash.substring(1));
+  const accessToken = params.get('access_token');
+  const type = params.get('type');
+  if(accessToken && type === 'recovery'){
+    window._recoveryAccessToken = accessToken;
+    // URLからトークンを消す（履歴やリロードに残さないため）
+    history.replaceState(null, '', window.location.pathname + window.location.search);
+    showSetNewPasswordDialog();
+  }
+}
+
+function showSetNewPasswordDialog(){
+  document.getElementById('set-new-password-error').style.display='none';
+  document.getElementById('set-new-password').value='';
+  document.getElementById('set-new-password-dialog').style.display='flex';
+}
+
+async function submitNewPassword(){
+  const pw = document.getElementById('set-new-password').value;
+  const errEl = document.getElementById('set-new-password-error');
+  errEl.style.display='none';
+  if(!pw || pw.length < 6){ errEl.textContent = t('err_password_min'); errEl.style.display='block'; return; }
+  try{
+    const res = await fetch(SUPABASE_URL + '/auth/v1/user', {
+      method: 'PUT',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + window._recoveryAccessToken,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ password: pw })
+    });
+    if(res.ok){
+      document.getElementById('set-new-password-dialog').style.display='none';
+      window._recoveryAccessToken = null;
+      alert(t('password_change_success'));
+      showAuthScreen();
+      authTab('login');
+    } else {
+      const err = await res.json();
+      errEl.textContent = err.msg || err.message || t('err_network');
       errEl.style.display='block';
     }
   }catch(e){
@@ -2428,6 +2492,7 @@ async function deleteFromSupabase(id){
 
 initLangSelector();
 applyStaticTranslations();
+checkPasswordRecovery();
 initAuth();
 startGPS();
 renderList();
