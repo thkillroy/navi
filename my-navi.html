@@ -6,6 +6,16 @@
 <title>マイナビ</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAwuYMBSE85I1VMnG34H-E8JzY114YRSYE&libraries=places&loading=async&callback=onGoogleMapsLoaded" async defer></script>
+<script src="https://unpkg.com/leaflet.gridlayer.googlemutant@latest/Leaflet.GoogleMutant.js"></script>
+<script>
+// Google Mapsの読み込み完了を検知（async読み込みなので実行順が前後する可能性があるため）
+window._googleMapsReady = false;
+function onGoogleMapsLoaded(){
+  window._googleMapsReady = true;
+  if(window._onGoogleMapsReadyCallback) window._onGoogleMapsReadyCallback();
+}
+</script>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 body { background:#0d0d0d; color:#fff; font-family:'Helvetica Neue',Arial,sans-serif; height:100dvh; overflow:hidden; display:flex; flex-direction:column; }
@@ -170,6 +180,7 @@ body { background:#0d0d0d; color:#fff; font-family:'Helvetica Neue',Arial,sans-s
     <div id="btn-row">
       <button class="btn btn-gray" id="btn-add" onclick="toggleAddMode()">＋ タップ追加</button>
       <button class="btn btn-gray" id="btn-route-mode" onclick="toggleRouteMode()">🛣 道路</button>
+      <button class="btn btn-gray" id="btn-traffic" onclick="toggleTraffic()">🚦 渋滞</button>
       <button class="btn btn-green" id="btn-nav" onclick="toggleNav()">▶ ナビ開始</button>
       <button class="btn btn-gray" onclick="reverseRoute()">🔄 復路</button>
       <button class="btn btn-gray" onclick="showSaveDialog()">💾 保存</button>
@@ -315,10 +326,50 @@ const MAPTILER_KEY = 'RXZt95T89eK6jTrAs2kn';
 const SUPABASE_URL = 'https://zryfljpzllnkukbitfpl.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpyeWZsanB6bGxua3VrYml0ZnBsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk4MTI4NDcsImV4cCI6MjEwNTM4ODg0N30.RySxqFIiVBvwuwujMjODTkrxD3AJWD26yhqJsEojhMI';
 const map = L.map('map', { center:[35.68,139.75], zoom:14, zoomControl:false });
-L.tileLayer(`https://api.maptiler.com/maps/jp-gsi-standard/{z}/{x}/{y}.png?key=${MAPTILER_KEY}`, {
-  attribution:'© <a href="https://www.maptiler.com/">MapTiler</a> © OpenStreetMap',
-  maxZoom:19, tileSize:256
-}).addTo(map);
+
+// ===== 地図タイル：Googleマップ（失敗/上限到達時はMapTilerにフォールバック） =====
+let googleLayer = null;
+let usingGoogleMap = false;
+let trafficLayerOn = false;
+
+function useMapTilerFallback(){
+  if(usingGoogleMap) return;
+  L.tileLayer(`https://api.maptiler.com/maps/jp-gsi-standard/{z}/{x}/{y}.png?key=${MAPTILER_KEY}`, {
+    attribution:'© <a href="https://www.maptiler.com/">MapTiler</a> © OpenStreetMap',
+    maxZoom:19, tileSize:256
+  }).addTo(map);
+}
+
+function initGoogleLayer(){
+  try{
+    googleLayer = L.gridLayer.googleMutant({ type:'roadmap' }).addTo(map);
+    usingGoogleMap = true;
+  }catch(e){
+    console.warn('Googleマップ読み込み失敗、MapTilerにフォールバック', e);
+    useMapTilerFallback();
+  }
+}
+if(window._googleMapsReady){
+  initGoogleLayer();
+} else {
+  window._onGoogleMapsReadyCallback = initGoogleLayer;
+}
+// 4秒待ってGoogleが読み込まれなければMapTilerに切り替え
+setTimeout(()=>{ if(!usingGoogleMap) useMapTilerFallback(); }, 4000);
+
+function toggleTraffic(){
+  if(!usingGoogleMap || !googleLayer){ alert('Googleマップが読み込まれていません'); return; }
+  trafficLayerOn = !trafficLayerOn;
+  const btn=document.getElementById('btn-traffic');
+  if(trafficLayerOn){
+    googleLayer.addGoogleLayer('TrafficLayer');
+    btn.className='btn btn-route-active';
+  } else {
+    googleLayer.removeGoogleLayer('TrafficLayer');
+    btn.className='btn btn-gray';
+  }
+}
+
 L.control.zoom({ position:'topright' }).addTo(map);
 
 let points=[], polylines=[], addMode=false;
@@ -659,21 +710,40 @@ function deletePoint(id){
   if(navActive)updateNavBar();
 }
 
-// ===== 住所検索 =====
+// ===== 施設・住所検索（Google Places API） =====
 async function searchAddress(){
   const q=document.getElementById('search-input').value.trim();if(!q)return;
   const btn=document.querySelector('#search-row .btn-orange');btn.textContent='...';btn.disabled=true;
   try{
-    const res=await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=1&accept-language=ja&countrycodes=jp`);
-    const data=await res.json();
-    if(!data.length){alert('見つかりませんでした');return;}
-    const{lat,lon,display_name}=data[0];
-    map.setView([parseFloat(lat),parseFloat(lon)],17);
-    document.getElementById('modal-name').value=display_name.split('、')[0].split(',')[0].trim();
-    openModal({lat:parseFloat(lat),lng:parseFloat(lon)},null,points.length>=2?null:points.length);
+    if(!window.google || !google.maps || !google.maps.places){
+      alert('検索機能の準備中です。少し待って再試行してください');
+      return;
+    }
+    const { Place } = await google.maps.importLibrary('places');
+    const center = map.getCenter();
+    const request = {
+      textQuery: q,
+      fields: ['displayName','location'],
+      locationBias: { lat: center.lat, lng: center.lng },
+      maxResultCount: 1,
+      language: 'ja',
+      region: 'jp'
+    };
+    const { places } = await Place.searchByText(request);
+    if(!places || !places.length){ alert('見つかりませんでした'); return; }
+    const place = places[0];
+    const lat = place.location.lat();
+    const lng = place.location.lng();
+    map.setView([lat,lng],17);
+    document.getElementById('modal-name').value = place.displayName || '';
+    openModal({lat,lng}, null, points.length>=2?null:points.length);
     document.getElementById('search-input').value='';
-  }catch{alert('検索失敗');}
-  finally{btn.textContent='検索';btn.disabled=false;}
+  }catch(e){
+    console.error(e);
+    alert('検索失敗');
+  } finally {
+    btn.textContent='検索';btn.disabled=false;
+  }
 }
 document.getElementById('search-input').addEventListener('keydown',e=>{if(e.key==='Enter')searchAddress();});
 
