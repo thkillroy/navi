@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="ja" translate="no">
 <head>
+<meta name="google" content="notranslate">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>マイナビ</title>
@@ -151,7 +152,7 @@ body { background:#0d0d0d; color:#fff; font-family:'Helvetica Neue',Arial,sans-s
 }
 </style>
 </head>
-<body>
+<body class="notranslate" translate="no">
 
 <div id="map-wrap">
   <div id="map"></div>
@@ -308,9 +309,9 @@ body { background:#0d0d0d; color:#fff; font-family:'Helvetica Neue',Arial,sans-s
   <div id="modal">
     <h3 id="modal-title"></h3>
     <label data-i18n="point_name_label2">ポイント名（省略OK）</label>
-    <input type="text" id="modal-name" placeholder="例: ○○工場、△△倉庫">
+    <input type="text" id="modal-name" data-i18n-placeholder="modal_name_placeholder" placeholder="例: ○○工場、△△倉庫">
     <label data-i18n="memo_label2">メモ（曲がり方向など）</label>
-    <textarea id="modal-memo-input" placeholder="例: 右折して200m先&#10;門の前で停車"></textarea>
+    <textarea id="modal-memo-input" data-i18n-placeholder="modal_memo_placeholder" placeholder="例: 右折して200m先&#10;門の前で停車"></textarea>
     <div id="position-row">
       <label id="position-label" data-i18n="insert_pos_label">挿入位置</label>
       <select id="modal-position"></select>
@@ -379,7 +380,8 @@ ja: {
   alert_load_route_fail:'読み込み失敗: {err}', confirm_delete_route:'このルートを削除しますか？',
   alert_delete_fail:'削除失敗', no_routes:'ルートがありません', routes_load_fail:'読み込み失敗',
   points_count:'{n}ポイント', public_label:'公開', private_label:'非公開', load_btn:'読込',
-  point_label:'ポイント {n}', google_map_not_loaded:'Googleマップが読み込まれていません'
+  point_label:'ポイント {n}', google_map_not_loaded:'Googleマップが読み込まれていません',
+  modal_name_placeholder:'例: ○○工場、△△倉庫', modal_memo_placeholder:'例: 右折して200m先\n門の前で停車',
 },
 en: {
   gps_waiting:'📡 Waiting for GPS', gps_error:'📡 GPS failed', gps_accuracy:'📡 Accuracy ±{m}m',
@@ -430,7 +432,8 @@ en: {
   alert_load_route_fail:'Failed to load: {err}', confirm_delete_route:'Delete this route?',
   alert_delete_fail:'Delete failed', no_routes:'No routes', routes_load_fail:'Failed to load',
   points_count:'{n} points', public_label:'Public', private_label:'Private', load_btn:'Load',
-  point_label:'Point {n}', google_map_not_loaded:'Google Maps has not loaded'
+  point_label:'Point {n}', google_map_not_loaded:'Google Maps has not loaded',
+  modal_name_placeholder:'e.g. Factory A, Warehouse B', modal_memo_placeholder:'e.g. Turn right, 200m ahead\nStop at the gate',
 },
 'zh-CN': {
   gps_waiting:'📡 等待GPS', gps_error:'📡 GPS失败', gps_accuracy:'📡 精度 ±{m}米',
@@ -481,7 +484,8 @@ en: {
   alert_load_route_fail:'加载失败: {err}', confirm_delete_route:'要删除此路线吗？',
   alert_delete_fail:'删除失败', no_routes:'暂无路线', routes_load_fail:'加载失败',
   points_count:'{n}个地点', public_label:'公开', private_label:'非公开', load_btn:'加载',
-  point_label:'地点 {n}', google_map_not_loaded:'谷歌地图尚未加载'
+  point_label:'地点 {n}', google_map_not_loaded:'谷歌地图尚未加载',
+  modal_name_placeholder:'例: A工厂、B仓库', modal_memo_placeholder:'例: 右转200米\n在大门前停车',
 },
 'zh-TW': {
   gps_waiting:'📡 等待GPS', gps_error:'📡 GPS失敗', gps_accuracy:'📡 精度 ±{m}公尺',
@@ -532,7 +536,8 @@ en: {
   alert_load_route_fail:'載入失敗: {err}', confirm_delete_route:'要刪除此路線嗎？',
   alert_delete_fail:'刪除失敗', no_routes:'尚無路線', routes_load_fail:'載入失敗',
   points_count:'{n}個地點', public_label:'公開', private_label:'非公開', load_btn:'載入',
-  point_label:'地點 {n}', google_map_not_loaded:'Google地圖尚未載入'
+  point_label:'地點 {n}', google_map_not_loaded:'Google地圖尚未載入',
+  modal_name_placeholder:'例: A工廠、B倉庫', modal_memo_placeholder:'例: 右轉200公尺\n在大門前停車',
 },
 ko: {
   gps_waiting:'📡 GPS 대기 중', gps_error:'📡 GPS 실패', gps_accuracy:'📡 정확도 ±{m}m',
@@ -583,7 +588,8 @@ ko: {
   alert_load_route_fail:'불러오기 실패: {err}', confirm_delete_route:'이 경로를 삭제하시겠습니까？',
   alert_delete_fail:'삭제 실패', no_routes:'경로가 없습니다', routes_load_fail:'불러오기 실패',
   points_count:'{n}개 지점', public_label:'공개', private_label:'비공개', load_btn:'불러오기',
-  point_label:'지점 {n}', google_map_not_loaded:'Google 지도가 로드되지 않았습니다'
+  point_label:'지점 {n}', google_map_not_loaded:'Google 지도가 로드되지 않았습니다',
+  modal_name_placeholder:'예: A공장, B창고', modal_memo_placeholder:'예: 우회전 후 200m\n정문 앞에서 정차',
 },
 es: {
   gps_waiting:'📡 Esperando GPS', gps_error:'📡 Error de GPS', gps_accuracy:'📡 Precisión ±{m}m',
@@ -634,7 +640,8 @@ es: {
   alert_load_route_fail:'Error al cargar: {err}', confirm_delete_route:'¿Eliminar esta ruta?',
   alert_delete_fail:'Error al eliminar', no_routes:'Sin rutas', routes_load_fail:'Error al cargar',
   points_count:'{n} puntos', public_label:'Pública', private_label:'Privada', load_btn:'Cargar',
-  point_label:'Punto {n}', google_map_not_loaded:'Google Maps no se ha cargado'
+  point_label:'Punto {n}', google_map_not_loaded:'Google Maps no se ha cargado',
+  modal_name_placeholder:'ej: Fábrica A, Almacén B', modal_memo_placeholder:'ej: Gira a la derecha, 200m adelante\nDetente en la puerta',
 },
 fr: {
   gps_waiting:'📡 En attente du GPS', gps_error:'📡 Échec du GPS', gps_accuracy:'📡 Précision ±{m}m',
@@ -685,7 +692,8 @@ fr: {
   alert_load_route_fail:'Échec du chargement : {err}', confirm_delete_route:'Supprimer cet itinéraire ?',
   alert_delete_fail:'Échec de la suppression', no_routes:'Aucun itinéraire', routes_load_fail:'Échec du chargement',
   points_count:'{n} points', public_label:'Public', private_label:'Privé', load_btn:'Charger',
-  point_label:'Point {n}', google_map_not_loaded:'Google Maps n\'a pas été chargé'
+  point_label:'Point {n}', google_map_not_loaded:'Google Maps n\'a pas été chargé',
+  modal_name_placeholder:'ex : Usine A, Entrepôt B', modal_memo_placeholder:'ex : Tourner à droite, 200m plus loin\nS\'arrêter devant le portail'
 },
 th: {
   gps_waiting:'📡 กำลังรอ GPS', gps_error:'📡 GPS ล้มเหลว', gps_accuracy:'📡 ความแม่นยำ ±{m}ม.',
@@ -736,7 +744,8 @@ th: {
   alert_load_route_fail:'โหลดล้มเหลว: {err}', confirm_delete_route:'ต้องการลบเส้นทางนี้หรือไม่?',
   alert_delete_fail:'ลบล้มเหลว', no_routes:'ไม่มีเส้นทาง', routes_load_fail:'โหลดล้มเหลว',
   points_count:'{n} จุด', public_label:'สาธารณะ', private_label:'ส่วนตัว', load_btn:'โหลด',
-  point_label:'จุด {n}', google_map_not_loaded:'Google Maps ยังไม่โหลด'
+  point_label:'จุด {n}', google_map_not_loaded:'Google Maps ยังไม่โหลด',
+  modal_name_placeholder:'เช่น โรงงาน A, คลังสินค้า B', modal_memo_placeholder:'เช่น เลี้ยวขวา 200 ม.\nจอดที่หน้าประตู',
 },
 vi: {
   gps_waiting:'📡 Đang chờ GPS', gps_error:'📡 GPS lỗi', gps_accuracy:'📡 Độ chính xác ±{m}m',
@@ -787,7 +796,8 @@ vi: {
   alert_load_route_fail:'Tải thất bại: {err}', confirm_delete_route:'Xóa lộ trình này?',
   alert_delete_fail:'Xóa thất bại', no_routes:'Không có lộ trình', routes_load_fail:'Tải thất bại',
   points_count:'{n} điểm', public_label:'Công khai', private_label:'Riêng tư', load_btn:'Tải',
-  point_label:'Điểm {n}', google_map_not_loaded:'Google Maps chưa tải xong'
+  point_label:'Điểm {n}', google_map_not_loaded:'Google Maps chưa tải xong',
+  modal_name_placeholder:'vd: Nhà máy A, Kho B', modal_memo_placeholder:'vd: Rẽ phải, 200m phía trước\nDừng trước cổng',
 }
 };
 
