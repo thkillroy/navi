@@ -155,14 +155,14 @@ body { background:#0d0d0d; color:#fff; font-family:'Helvetica Neue',Arial,sans-s
 
 <div id="map-wrap">
   <div id="map"></div>
-  <div id="gps-badge">📡 GPS待機中</div>
+  <div id="gps-badge" data-i18n="gps_waiting">📡 GPS待機中</div>
   <button id="follow-btn" onclick="toggleFollow()">🧭</button>
 </div>
 
 <div id="user-bar-wrap" style="flex-shrink:0;"></div>
 <div id="bottom">
   <div id="nav-bar">
-    <div id="nav-label">次のポイントへ</div>
+    <div id="nav-label" data-i18n="nav_label_next">次のポイントへ</div>
     <div id="nav-name">—</div>
     <div id="nav-memo-txt"></div>
     <div id="nav-sub"></div>
@@ -174,17 +174,18 @@ body { background:#0d0d0d; color:#fff; font-family:'Helvetica Neue',Arial,sans-s
   </div>
   <div id="controls">
     <div id="search-row">
-      <input type="text" id="search-input" placeholder="🔍 住所・場所を検索">
-      <button class="btn btn-orange" onclick="searchAddress()">検索</button>
+      <input type="text" id="search-input" data-i18n-placeholder="search_placeholder" placeholder="🔍 住所・場所を検索">
+      <button class="btn btn-orange" onclick="searchAddress()" data-i18n="search_btn">検索</button>
+      <select id="lang-select" style="background:#1a1a1a;color:#fff;border:1px solid #333;border-radius:6px;padding:8px 6px;font-size:12px;"></select>
     </div>
     <div id="btn-row">
-      <button class="btn btn-gray" id="btn-add" onclick="toggleAddMode()">＋ タップ追加</button>
-      <button class="btn btn-gray" id="btn-route-mode" onclick="toggleRouteMode()">🛣 道路</button>
-      <button class="btn btn-gray" id="btn-traffic" onclick="toggleTraffic()">🚦 渋滞</button>
-      <button class="btn btn-green" id="btn-nav" onclick="toggleNav()">▶ ナビ開始</button>
-      <button class="btn btn-gray" onclick="reverseRoute()">🔄 復路</button>
-      <button class="btn btn-gray" onclick="showSaveDialog()">💾 保存</button>
-      <button class="btn btn-gray" onclick="showRouteList()">📂 ルート一覧</button>
+      <button class="btn btn-gray" id="btn-add" onclick="toggleAddMode()" data-i18n="add_point_btn">＋ タップ追加</button>
+      <button class="btn btn-gray" id="btn-route-mode" onclick="toggleRouteMode()" data-i18n="route_mode_road">🛣 道路</button>
+      <button class="btn btn-gray" id="btn-traffic" onclick="toggleTraffic()" data-i18n="traffic_btn">🚦 渋滞</button>
+      <button class="btn btn-green" id="btn-nav" onclick="toggleNav()" data-i18n="nav_start_btn">▶ ナビ開始</button>
+      <button class="btn btn-gray" onclick="reverseRoute()" data-i18n="reverse_route_btn">🔄 復路</button>
+      <button class="btn btn-gray" onclick="showSaveDialog()" data-i18n="save_btn">💾 保存</button>
+      <button class="btn btn-gray" onclick="showRouteList()" data-i18n="route_list_btn">📂 ルート一覧</button>
       <button class="btn btn-gray" id="btn-auth" onclick="handleAuthBtn()" style="background:#1a3a1a;border-color:#0a5a0a;color:#66cc66;">👤 ログイン</button>
       <button class="btn btn-red" onclick="clearAll()">🗑</button>
     </div>
@@ -192,7 +193,7 @@ body { background:#0d0d0d; color:#fff; font-family:'Helvetica Neue',Arial,sans-s
   <div id="points-scroll-wrap" style="position:relative;display:flex;align-items:stretch;">
     <button id="scroll-left" onclick="scrollPoints(-1)" style="display:none;background:#222;border:none;color:#f0a500;font-size:20px;padding:0 10px;cursor:pointer;flex-shrink:0;z-index:10;">&#9664;</button>
     <div id="points-wrap" style="flex:1;min-width:0;">
-      <div class="empty-msg">ポイントがありません<br>住所検索かタップで追加</div>
+      <div class="empty-msg"><span data-i18n="empty_points_msg">ポイントがありません</span><br><span data-i18n="empty_points_sub">住所検索かタップで追加</span></div>
     </div>
     <button id="scroll-right" onclick="scrollPoints(1)" style="display:none;background:#222;border:none;color:#f0a500;font-size:20px;padding:0 10px;cursor:pointer;flex-shrink:0;z-index:10;">&#9654;</button>
   </div>
@@ -201,46 +202,46 @@ body { background:#0d0d0d; color:#fff; font-family:'Helvetica Neue',Arial,sans-s
 <!-- ユーザー名設定ダイアログ -->
 <div id="username-dialog" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:99998;align-items:center;justify-content:center;">
   <div style="background:#1a1a1a;border:1px solid #333;border-radius:12px;padding:24px;width:320px;max-width:90vw;">
-    <h3 style="font-size:14px;color:#f0a500;margin-bottom:16px;">ユーザー名を設定</h3>
-    <label style="font-size:11px;color:#555;display:block;margin-bottom:5px;">ユーザー名（英数字とアンダーバー）</label>
-    <input type="text" id="new-username" placeholder="例: kilroy_driver"
+    <h3 style="font-size:14px;color:#f0a500;margin-bottom:16px;" data-i18n="username_dialog_title">ユーザー名を設定</h3>
+    <label style="font-size:11px;color:#555;display:block;margin-bottom:5px;" data-i18n="username_label">ユーザー名（英数字とアンダーバー）</label>
+    <input type="text" id="new-username" data-i18n-placeholder="username_placeholder" placeholder="例: kilroy_driver"
       style="width:100%;background:#0d0d0d;border:1px solid #333;border-radius:8px;color:#fff;padding:10px 12px;font-size:14px;outline:none;margin-bottom:6px;font-family:inherit;">
     <div id="username-error" style="font-size:12px;color:#ff6666;margin-bottom:12px;display:none;"></div>
     <div style="display:flex;gap:8px;">
       <button onclick="document.getElementById('username-dialog').style.display='none'"
-        style="flex:1;padding:10px;background:#222;border:1px solid #333;color:#aaa;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;">キャンセル</button>
+        style="flex:1;padding:10px;background:#222;border:1px solid #333;color:#aaa;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;" data-i18n="cancel_btn">キャンセル</button>
       <button onclick="saveUsername()"
-        style="flex:1;padding:10px;background:#f0a500;border:none;color:#000;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;">保存</button>
+        style="flex:1;padding:10px;background:#f0a500;border:none;color:#000;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;" data-i18n="save_btn2">保存</button>
     </div>
     <button onclick="confirmLogout()"
-      style="width:100%;padding:8px;background:none;border:none;color:#555;font-size:12px;cursor:pointer;margin-top:8px;">ログアウト</button>
+      style="width:100%;padding:8px;background:none;border:none;color:#555;font-size:12px;cursor:pointer;margin-top:8px;" data-i18n="logout_btn">ログアウト</button>
   </div>
 </div>
 
 <!-- ログイン/サインアップ画面 -->
 <div id="auth-screen" style="display:none;position:fixed;inset:0;background:#0d0d0d;z-index:99999;align-items:center;justify-content:center;flex-direction:column;">
   <div style="background:#1a1a1a;border:1px solid #333;border-radius:16px;padding:28px;width:340px;max-width:90vw;">
-    <h2 style="font-size:18px;color:#f0a500;margin-bottom:6px;text-align:center;">🗺 マイナビ</h2>
-    <p style="font-size:12px;color:#555;text-align:center;margin-bottom:20px;">ルートを保存するにはログインが必要です</p>
+    <h2 style="font-size:18px;color:#f0a500;margin-bottom:6px;text-align:center;" data-i18n="app_title">🗺 マイナビ</h2>
+    <p style="font-size:12px;color:#555;text-align:center;margin-bottom:20px;" data-i18n="auth_subtitle">ルートを保存するにはログインが必要です</p>
     
     <div style="display:flex;gap:8px;margin-bottom:16px;">
       <button onclick="authTab('login')" id="auth-tab-login" 
-        style="flex:1;padding:8px;background:#f0a500;border:none;color:#000;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;">ログイン</button>
+        style="flex:1;padding:8px;background:#f0a500;border:none;color:#000;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;" data-i18n="login_tab">ログイン</button>
       <button onclick="authTab('signup')" id="auth-tab-signup"
-        style="flex:1;padding:8px;background:#222;border:1px solid #333;color:#aaa;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;">新規登録</button>
+        style="flex:1;padding:8px;background:#222;border:1px solid #333;color:#aaa;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;" data-i18n="signup_tab">新規登録</button>
     </div>
 
     <div id="username-row" style="display:none;">
-      <label style="font-size:11px;color:#555;display:block;margin-bottom:4px;">ユーザー名</label>
-      <input type="text" id="auth-username" placeholder="例: kilroy_driver（英数字とアンダーバー）"
+      <label style="font-size:11px;color:#555;display:block;margin-bottom:4px;" data-i18n="auth_username_label">ユーザー名</label>
+      <input type="text" id="auth-username" data-i18n-placeholder="auth_username_placeholder" placeholder="例: kilroy_driver（英数字とアンダーバー）"
         style="width:100%;background:#0d0d0d;border:1px solid #333;border-radius:8px;color:#fff;padding:10px 12px;font-size:14px;outline:none;margin-bottom:12px;font-family:inherit;">
     </div>
-    <label style="font-size:11px;color:#555;display:block;margin-bottom:4px;">メールアドレス</label>
+    <label style="font-size:11px;color:#555;display:block;margin-bottom:4px;" data-i18n="email_label">メールアドレス</label>
     <input type="email" id="auth-email" placeholder="example@email.com"
       style="width:100%;background:#0d0d0d;border:1px solid #333;border-radius:8px;color:#fff;padding:10px 12px;font-size:14px;outline:none;margin-bottom:12px;font-family:inherit;">
     
-    <label style="font-size:11px;color:#555;display:block;margin-bottom:4px;">パスワード</label>
-    <input type="password" id="auth-password" placeholder="6文字以上"
+    <label style="font-size:11px;color:#555;display:block;margin-bottom:4px;" data-i18n="password_label">パスワード</label>
+    <input type="password" id="auth-password" data-i18n-placeholder="password_placeholder" placeholder="6文字以上"
       style="width:100%;background:#0d0d0d;border:1px solid #333;border-radius:8px;color:#fff;padding:10px 12px;font-size:14px;outline:none;margin-bottom:16px;font-family:inherit;">
 
     <div id="auth-error" style="font-size:12px;color:#ff6666;margin-bottom:12px;display:none;"></div>
@@ -249,7 +250,7 @@ body { background:#0d0d0d; color:#fff; font-family:'Helvetica Neue',Arial,sans-s
       style="width:100%;padding:12px;background:#f0a500;border:none;color:#000;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;">ログイン</button>
     
     <button onclick="closeAuthScreen()"
-      style="width:100%;padding:10px;background:none;border:none;color:#555;font-size:12px;cursor:pointer;margin-top:8px;">ログインせずに使う</button>
+      style="width:100%;padding:10px;background:none;border:none;color:#555;font-size:12px;cursor:pointer;margin-top:8px;" data-i18n="login_without_account">ログインせずに使う</button>
   </div>
 </div>
 
@@ -261,17 +262,17 @@ body { background:#0d0d0d; color:#fff; font-family:'Helvetica Neue',Arial,sans-s
 <!-- 保存ダイアログ -->
 <div id="save-dialog" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:9999;align-items:center;justify-content:center;">
   <div style="background:#1a1a1a;border:1px solid #333;border-radius:12px;padding:24px;width:320px;max-width:90vw;">
-    <h3 style="font-size:14px;color:#f0a500;margin-bottom:16px;">ルートを保存</h3>
-    <label style="font-size:11px;color:#555;display:block;margin-bottom:5px;">ルート名</label>
-    <input type="text" id="save-route-name" placeholder="例: 月曜ルート、○○配送コース"
+    <h3 style="font-size:14px;color:#f0a500;margin-bottom:16px;" data-i18n="save_route_title">ルートを保存</h3>
+    <label style="font-size:11px;color:#555;display:block;margin-bottom:5px;" data-i18n="route_name_label">ルート名</label>
+    <input type="text" id="save-route-name" data-i18n-placeholder="route_name_placeholder" placeholder="例: 月曜ルート、○○配送コース"
       style="width:100%;background:#0d0d0d;border:1px solid #333;border-radius:8px;color:#fff;padding:10px 12px;font-size:14px;outline:none;margin-bottom:12px;font-family:inherit;">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
       <input type="checkbox" id="save-is-public" style="width:18px;height:18px;cursor:pointer;">
-      <label for="save-is-public" style="font-size:13px;color:#aaa;cursor:pointer;">公開する（他のユーザーも見られる）</label>
+      <label for="save-is-public" style="font-size:13px;color:#aaa;cursor:pointer;" data-i18n="public_checkbox_label">公開する（他のユーザーも見られる）</label>
     </div>
     <div style="display:flex;gap:8px;">
-      <button onclick="closeSaveDialog()" style="flex:1;padding:10px;background:#222;border:1px solid #333;color:#aaa;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;">キャンセル</button>
-      <button onclick="saveToSupabase()" style="flex:1;padding:10px;background:#f0a500;border:none;color:#000;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;">保存</button>
+      <button onclick="closeSaveDialog()" style="flex:1;padding:10px;background:#222;border:1px solid #333;color:#aaa;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;" data-i18n="cancel_btn">キャンセル</button>
+      <button onclick="saveToSupabase()" style="flex:1;padding:10px;background:#f0a500;border:none;color:#000;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;" data-i18n="save_btn2">保存</button>
     </div>
   </div>
 </div>
@@ -280,15 +281,15 @@ body { background:#0d0d0d; color:#fff; font-family:'Helvetica Neue',Arial,sans-s
 <div id="route-list-dialog" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:9999;align-items:center;justify-content:center;">
   <div style="background:#1a1a1a;border:1px solid #333;border-radius:12px;padding:24px;width:360px;max-width:90vw;max-height:80vh;display:flex;flex-direction:column;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-      <h3 style="font-size:14px;color:#f0a500;">保存済みルート</h3>
+      <h3 style="font-size:14px;color:#f0a500;" data-i18n="saved_routes_title">保存済みルート</h3>
       <button onclick="closeRouteList()" style="background:none;border:none;color:#666;font-size:20px;cursor:pointer;">✕</button>
     </div>
     <div style="display:flex;gap:8px;margin-bottom:12px;">
-      <button onclick="loadRouteListTab('mine')" id="tab-mine" style="flex:1;padding:7px;background:#f0a500;border:none;color:#000;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;">自分のルート</button>
-      <button onclick="loadRouteListTab('public')" id="tab-public" style="flex:1;padding:7px;background:#222;border:1px solid #333;color:#aaa;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;">公開ルート</button>
+      <button onclick="loadRouteListTab('mine')" id="tab-mine" style="flex:1;padding:7px;background:#f0a500;border:none;color:#000;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;" data-i18n="my_routes_tab">自分のルート</button>
+      <button onclick="loadRouteListTab('public')" id="tab-public" style="flex:1;padding:7px;background:#222;border:1px solid #333;color:#aaa;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;" data-i18n="public_routes_tab">公開ルート</button>
     </div>
     <div id="route-list-items" style="overflow-y:auto;flex:1;">
-      <div style="text-align:center;padding:20px;color:#555;font-size:12px;">読み込み中...</div>
+      <div style="text-align:center;padding:20px;color:#555;font-size:12px;" data-i18n="loading">読み込み中...</div>
     </div>
   </div>
 </div>
@@ -296,26 +297,26 @@ body { background:#0d0d0d; color:#fff; font-family:'Helvetica Neue',Arial,sans-s
 <!-- インライン編集ポップアップ -->
 <div id="edit-popup">
   <div id="edit-popup-title"></div>
-  <label>ポイント名</label>
-  <input type="text" id="edit-popup-name" placeholder="名前（省略OK）">
-  <label>メモ</label>
-  <textarea id="edit-popup-memo" placeholder="曲がり方向など"></textarea>
+  <label data-i18n="point_name_label">ポイント名</label>
+  <input type="text" id="edit-popup-name" data-i18n-placeholder="point_name_placeholder" placeholder="名前（省略OK）">
+  <label data-i18n="memo_label">メモ</label>
+  <textarea id="edit-popup-memo" data-i18n-placeholder="memo_placeholder" placeholder="曲がり方向など"></textarea>
 </div>
 
 <!-- モーダル -->
 <div id="modal-overlay">
   <div id="modal">
     <h3 id="modal-title"></h3>
-    <label>ポイント名（省略OK）</label>
+    <label data-i18n="point_name_label2">ポイント名（省略OK）</label>
     <input type="text" id="modal-name" placeholder="例: ○○工場、△△倉庫">
-    <label>メモ（曲がり方向など）</label>
+    <label data-i18n="memo_label2">メモ（曲がり方向など）</label>
     <textarea id="modal-memo-input" placeholder="例: 右折して200m先&#10;門の前で停車"></textarea>
     <div id="position-row">
-      <label id="position-label">挿入位置</label>
+      <label id="position-label" data-i18n="insert_pos_label">挿入位置</label>
       <select id="modal-position"></select>
     </div>
     <div id="modal-btns">
-      <button class="btn btn-gray" onclick="cancelModal()">キャンセル</button>
+      <button class="btn btn-gray" onclick="cancelModal()" data-i18n="cancel_btn">キャンセル</button>
       <button class="btn btn-orange" id="modal-ok" onclick="confirmModal()">追加</button>
     </div>
   </div>
@@ -325,6 +326,534 @@ body { background:#0d0d0d; color:#fff; font-family:'Helvetica Neue',Arial,sans-s
 const MAPTILER_KEY = 'RXZt95T89eK6jTrAs2kn';
 const SUPABASE_URL = 'https://zryfljpzllnkukbitfpl.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpyeWZsanB6bGxua3VrYml0ZnBsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk4MTI4NDcsImV4cCI6MjEwNTM4ODg0N30.RySxqFIiVBvwuwujMjODTkrxD3AJWD26yhqJsEojhMI';
+
+// ===== 多言語対応（i18n） =====
+const SUPPORTED_LANGS = ['ja','en','zh-CN','zh-TW','ko','es','fr','th','vi'];
+const translations = {
+ja: {
+  gps_waiting:'📡 GPS待機中', gps_error:'📡 GPS失敗', gps_accuracy:'📡 精度 ±{m}m',
+  search_placeholder:'🔍 住所・場所を検索', search_btn:'検索',
+  add_point_btn:'＋ タップ追加', add_point_btn_active:'✕ 追加終了',
+  route_mode_road:'🛣 道路', route_mode_straight:'📏 直線',
+  traffic_btn:'🚦 渋滞', nav_start_btn:'▶ ナビ開始', nav_stop_btn:'■ 停止',
+  reverse_route_btn:'🔄 復路', save_btn:'💾 保存', save_btn2:'保存', route_list_btn:'📂 ルート一覧',
+  login_btn:'👤 ログイン',
+  empty_points_msg:'ポイントがありません', empty_points_sub:'住所検索かタップで追加',
+  nav_label_next:'次のポイントへ',
+  username_dialog_title:'ユーザー名を設定', username_label:'ユーザー名（英数字とアンダーバー）',
+  username_placeholder:'例: kilroy_driver', cancel_btn:'キャンセル', logout_btn:'ログアウト',
+  app_title:'🗺 マイナビ', auth_subtitle:'ルートを保存するにはログインが必要です',
+  login_tab:'ログイン', signup_tab:'新規登録', auth_username_label:'ユーザー名',
+  auth_username_placeholder:'例: kilroy_driver（英数字とアンダーバー）',
+  email_label:'メールアドレス', password_label:'パスワード', password_placeholder:'6文字以上',
+  login_without_account:'ログインせずに使う', save_route_title:'ルートを保存',
+  route_name_label:'ルート名', route_name_placeholder:'例: 月曜ルート、○○配送コース',
+  public_checkbox_label:'公開する（他のユーザーも見られる）', saved_routes_title:'保存済みルート',
+  my_routes_tab:'自分のルート', public_routes_tab:'公開ルート', loading:'読み込み中...',
+  point_name_label:'ポイント名', point_name_placeholder:'名前（省略OK）',
+  memo_label:'メモ', memo_placeholder:'曲がり方向など',
+  add_point_modal_title:'ポイントを追加', edit_point_modal_title:'ポイントを編集',
+  point_name_label2:'ポイント名（省略OK）', memo_label2:'メモ（曲がり方向など）',
+  memo_placeholder2:'例: 右折して200m先\n門の前で停車',
+  insert_pos_label:'挿入位置', add_btn:'追加',
+  point_number_inserting:'✕ {n}番目に挿入中', insert_pos_default:'挿入位置（デフォルト: {n}番目）',
+  insert_pos_end_option:'{n}番目（末尾）', insert_pos_between_option:'{n}番目（{a}と{b}の間）',
+  insert_pos_fixed:'{n}番目に挿入',
+  goal_reached_alert:'🏁 ゴール！', goal_reached_speak:'ゴールです。お疲れ様でした。',
+  next_point_speak:'次は{name}。{memo}', point_reached_speak:'{name}、到達',
+  nav_start_speak:'ナビ開始。最初は{name}。{memo}',
+  alert_no_points:'ポイントがありません', alert_need_2points:'ポイントが2つ以上必要です',
+  confirm_reverse:'ポイントの順番を逆にして復路にしますか？',
+  confirm_clear_all:'全ポイントを削除しますか？', alert_load_fail:'読み込み失敗',
+  alert_search_not_ready:'検索機能の準備中です。少し待って再試行してください',
+  alert_search_notfound:'見つかりませんでした', alert_search_fail:'検索失敗',
+  nav_point_default:'ポイント {n}', nav_next_label:'次: {name}', nav_goal_label:'🏁 ゴール',
+  dist_next_straight:'次P直線: {dist}', dist_remaining:'残り: {dist}', dist_straight:'直線: {dist}',
+  err_email_password_required:'メールとパスワードを入力してください', err_password_min:'パスワードは6文字以上',
+  err_username_required:'ユーザー名を入力してください', err_username_format:'ユーザー名は英数字とアンダーバーのみ',
+  confirm_logout:'ログアウトしますか？', err_username_format2:'英数字とアンダーバーのみ使用できます',
+  err_username_min:'3文字以上入力してください', err_username_taken:'そのユーザー名は使われています',
+  err_username_save_fail:'ユーザー名の保存に失敗しました', err_network:'ネットワークエラー',
+  alert_route_name_required:'ルート名を入力してください', alert_save_success:'「{name}」を保存しました',
+  alert_save_fail:'保存失敗: {err}', alert_load_success:'「{name}」を読み込みました',
+  alert_load_route_fail:'読み込み失敗: {err}', confirm_delete_route:'このルートを削除しますか？',
+  alert_delete_fail:'削除失敗', no_routes:'ルートがありません', routes_load_fail:'読み込み失敗',
+  points_count:'{n}ポイント', public_label:'公開', private_label:'非公開', load_btn:'読込',
+  point_label:'ポイント {n}', google_map_not_loaded:'Googleマップが読み込まれていません'
+},
+en: {
+  gps_waiting:'📡 Waiting for GPS', gps_error:'📡 GPS failed', gps_accuracy:'📡 Accuracy ±{m}m',
+  search_placeholder:'🔍 Search address / place', search_btn:'Search',
+  add_point_btn:'＋ Tap to add', add_point_btn_active:'✕ Stop adding',
+  route_mode_road:'🛣 Road', route_mode_straight:'📏 Straight',
+  traffic_btn:'🚦 Traffic', nav_start_btn:'▶ Start Nav', nav_stop_btn:'■ Stop',
+  reverse_route_btn:'🔄 Reverse', save_btn:'💾 Save', save_btn2:'Save', route_list_btn:'📂 Routes',
+  login_btn:'👤 Login',
+  empty_points_msg:'No points yet', empty_points_sub:'Search an address or tap the map',
+  nav_label_next:'Next point',
+  username_dialog_title:'Set username', username_label:'Username (letters, numbers, underscore)',
+  username_placeholder:'e.g. kilroy_driver', cancel_btn:'Cancel', logout_btn:'Log out',
+  app_title:'🗺 My Navi', auth_subtitle:'Log in to save routes',
+  login_tab:'Log in', signup_tab:'Sign up', auth_username_label:'Username',
+  auth_username_placeholder:'e.g. kilroy_driver (letters, numbers, underscore)',
+  email_label:'Email address', password_label:'Password', password_placeholder:'6+ characters',
+  login_without_account:'Continue without login', save_route_title:'Save route',
+  route_name_label:'Route name', route_name_placeholder:'e.g. Monday route, delivery A',
+  public_checkbox_label:'Make public (visible to other users)', saved_routes_title:'Saved routes',
+  my_routes_tab:'My routes', public_routes_tab:'Public routes', loading:'Loading...',
+  point_name_label:'Point name', point_name_placeholder:'Name (optional)',
+  memo_label:'Note', memo_placeholder:'Turn direction, etc.',
+  add_point_modal_title:'Add point', edit_point_modal_title:'Edit point',
+  point_name_label2:'Point name (optional)', memo_label2:'Note (turn direction, etc.)',
+  memo_placeholder2:'e.g. Turn right, 200m ahead\nStop at the gate',
+  insert_pos_label:'Insert position', add_btn:'Add',
+  point_number_inserting:'✕ Inserting at #{n}', insert_pos_default:'Insert position (default: #{n})',
+  insert_pos_end_option:'#{n} (end)', insert_pos_between_option:'#{n} (between {a} and {b})',
+  insert_pos_fixed:'Insert at #{n}',
+  goal_reached_alert:'🏁 Goal!', goal_reached_speak:'You have reached your destination. Well done.',
+  next_point_speak:'Next is {name}. {memo}', point_reached_speak:'Arrived at {name}',
+  nav_start_speak:'Starting navigation. First is {name}. {memo}',
+  alert_no_points:'No points added', alert_need_2points:'At least 2 points are required',
+  confirm_reverse:'Reverse the point order for the return route?',
+  confirm_clear_all:'Delete all points?', alert_load_fail:'Failed to load',
+  alert_search_not_ready:'Search is still loading. Please try again shortly',
+  alert_search_notfound:'No results found', alert_search_fail:'Search failed',
+  nav_point_default:'Point {n}', nav_next_label:'Next: {name}', nav_goal_label:'🏁 Goal',
+  dist_next_straight:'Next (straight): {dist}', dist_remaining:'Remaining: {dist}', dist_straight:'Straight: {dist}',
+  err_email_password_required:'Please enter email and password', err_password_min:'Password must be 6+ characters',
+  err_username_required:'Please enter a username', err_username_format:'Username can only contain letters, numbers, and underscores',
+  confirm_logout:'Log out?', err_username_format2:'Only letters, numbers, and underscores allowed',
+  err_username_min:'Must be at least 3 characters', err_username_taken:'That username is already taken',
+  err_username_save_fail:'Failed to save username', err_network:'Network error',
+  alert_route_name_required:'Please enter a route name', alert_save_success:'Saved "{name}"',
+  alert_save_fail:'Save failed: {err}', alert_load_success:'Loaded "{name}"',
+  alert_load_route_fail:'Failed to load: {err}', confirm_delete_route:'Delete this route?',
+  alert_delete_fail:'Delete failed', no_routes:'No routes', routes_load_fail:'Failed to load',
+  points_count:'{n} points', public_label:'Public', private_label:'Private', load_btn:'Load',
+  point_label:'Point {n}', google_map_not_loaded:'Google Maps has not loaded'
+},
+'zh-CN': {
+  gps_waiting:'📡 等待GPS', gps_error:'📡 GPS失败', gps_accuracy:'📡 精度 ±{m}米',
+  search_placeholder:'🔍 搜索地址/地点', search_btn:'搜索',
+  add_point_btn:'＋ 点击添加', add_point_btn_active:'✕ 结束添加',
+  route_mode_road:'🛣 道路', route_mode_straight:'📏 直线',
+  traffic_btn:'🚦 路况', nav_start_btn:'▶ 开始导航', nav_stop_btn:'■ 停止',
+  reverse_route_btn:'🔄 返程', save_btn:'💾 保存', save_btn2:'保存', route_list_btn:'📂 路线列表',
+  login_btn:'👤 登录',
+  empty_points_msg:'暂无地点', empty_points_sub:'搜索地址或点击地图添加',
+  nav_label_next:'下一个地点',
+  username_dialog_title:'设置用户名', username_label:'用户名（字母、数字、下划线）',
+  username_placeholder:'例: kilroy_driver', cancel_btn:'取消', logout_btn:'退出登录',
+  app_title:'🗺 我的导航', auth_subtitle:'保存路线需要登录',
+  login_tab:'登录', signup_tab:'注册', auth_username_label:'用户名',
+  auth_username_placeholder:'例: kilroy_driver（字母、数字、下划线）',
+  email_label:'邮箱地址', password_label:'密码', password_placeholder:'6位以上',
+  login_without_account:'不登录直接使用', save_route_title:'保存路线',
+  route_name_label:'路线名称', route_name_placeholder:'例: 周一路线、配送路线A',
+  public_checkbox_label:'公开（其他用户也可查看）', saved_routes_title:'已保存的路线',
+  my_routes_tab:'我的路线', public_routes_tab:'公开路线', loading:'加载中...',
+  point_name_label:'地点名称', point_name_placeholder:'名称（可省略）',
+  memo_label:'备注', memo_placeholder:'转弯方向等',
+  add_point_modal_title:'添加地点', edit_point_modal_title:'编辑地点',
+  point_name_label2:'地点名称（可省略）', memo_label2:'备注（转弯方向等）',
+  memo_placeholder2:'例: 右转200米\n在大门前停车',
+  insert_pos_label:'插入位置', add_btn:'添加',
+  point_number_inserting:'✕ 正在插入到第{n}个', insert_pos_default:'插入位置（默认：第{n}个）',
+  insert_pos_end_option:'第{n}个（末尾）', insert_pos_between_option:'第{n}个（{a}和{b}之间）',
+  insert_pos_fixed:'插入到第{n}个',
+  goal_reached_alert:'🏁 到达终点！', goal_reached_speak:'已到达目的地，辛苦了。',
+  next_point_speak:'下一个是{name}。{memo}', point_reached_speak:'已到达{name}',
+  nav_start_speak:'开始导航。第一个地点是{name}。{memo}',
+  alert_no_points:'还没有添加地点', alert_need_2points:'至少需要2个地点',
+  confirm_reverse:'要将地点顺序反转以生成返程路线吗？',
+  confirm_clear_all:'要删除所有地点吗？', alert_load_fail:'加载失败',
+  alert_search_not_ready:'搜索功能正在准备中，请稍后重试',
+  alert_search_notfound:'未找到结果', alert_search_fail:'搜索失败',
+  nav_point_default:'地点 {n}', nav_next_label:'下一个: {name}', nav_goal_label:'🏁 终点',
+  dist_next_straight:'距下一点(直线): {dist}', dist_remaining:'剩余: {dist}', dist_straight:'直线: {dist}',
+  err_email_password_required:'请输入邮箱和密码', err_password_min:'密码需6位以上',
+  err_username_required:'请输入用户名', err_username_format:'用户名只能包含字母、数字和下划线',
+  confirm_logout:'要退出登录吗？', err_username_format2:'只能使用字母、数字和下划线',
+  err_username_min:'请输入至少3个字符', err_username_taken:'该用户名已被使用',
+  err_username_save_fail:'用户名保存失败', err_network:'网络错误',
+  alert_route_name_required:'请输入路线名称', alert_save_success:'已保存"{name}"',
+  alert_save_fail:'保存失败: {err}', alert_load_success:'已加载"{name}"',
+  alert_load_route_fail:'加载失败: {err}', confirm_delete_route:'要删除此路线吗？',
+  alert_delete_fail:'删除失败', no_routes:'暂无路线', routes_load_fail:'加载失败',
+  points_count:'{n}个地点', public_label:'公开', private_label:'非公开', load_btn:'加载',
+  point_label:'地点 {n}', google_map_not_loaded:'谷歌地图尚未加载'
+},
+'zh-TW': {
+  gps_waiting:'📡 等待GPS', gps_error:'📡 GPS失敗', gps_accuracy:'📡 精度 ±{m}公尺',
+  search_placeholder:'🔍 搜尋地址/地點', search_btn:'搜尋',
+  add_point_btn:'＋ 點擊新增', add_point_btn_active:'✕ 結束新增',
+  route_mode_road:'🛣 道路', route_mode_straight:'📏 直線',
+  traffic_btn:'🚦 路況', nav_start_btn:'▶ 開始導航', nav_stop_btn:'■ 停止',
+  reverse_route_btn:'🔄 返程', save_btn:'💾 儲存', save_btn2:'儲存', route_list_btn:'📂 路線清單',
+  login_btn:'👤 登入',
+  empty_points_msg:'尚無地點', empty_points_sub:'搜尋地址或點擊地圖新增',
+  nav_label_next:'下一個地點',
+  username_dialog_title:'設定使用者名稱', username_label:'使用者名稱（英數字與底線）',
+  username_placeholder:'例: kilroy_driver', cancel_btn:'取消', logout_btn:'登出',
+  app_title:'🗺 我的導航', auth_subtitle:'儲存路線需要登入',
+  login_tab:'登入', signup_tab:'註冊', auth_username_label:'使用者名稱',
+  auth_username_placeholder:'例: kilroy_driver（英數字與底線）',
+  email_label:'電子郵件', password_label:'密碼', password_placeholder:'6位以上',
+  login_without_account:'不登入直接使用', save_route_title:'儲存路線',
+  route_name_label:'路線名稱', route_name_placeholder:'例: 週一路線、配送路線A',
+  public_checkbox_label:'公開（其他使用者也能查看）', saved_routes_title:'已儲存的路線',
+  my_routes_tab:'我的路線', public_routes_tab:'公開路線', loading:'載入中...',
+  point_name_label:'地點名稱', point_name_placeholder:'名稱（可省略）',
+  memo_label:'備註', memo_placeholder:'轉彎方向等',
+  add_point_modal_title:'新增地點', edit_point_modal_title:'編輯地點',
+  point_name_label2:'地點名稱（可省略）', memo_label2:'備註（轉彎方向等）',
+  memo_placeholder2:'例: 右轉200公尺\n在大門前停車',
+  insert_pos_label:'插入位置', add_btn:'新增',
+  point_number_inserting:'✕ 正在插入到第{n}個', insert_pos_default:'插入位置（預設：第{n}個）',
+  insert_pos_end_option:'第{n}個（末尾）', insert_pos_between_option:'第{n}個（{a}和{b}之間）',
+  insert_pos_fixed:'插入到第{n}個',
+  goal_reached_alert:'🏁 抵達終點！', goal_reached_speak:'已抵達目的地，辛苦了。',
+  next_point_speak:'下一個是{name}。{memo}', point_reached_speak:'已抵達{name}',
+  nav_start_speak:'開始導航。第一個地點是{name}。{memo}',
+  alert_no_points:'尚未新增地點', alert_need_2points:'至少需要2個地點',
+  confirm_reverse:'要將地點順序反轉以產生返程路線嗎？',
+  confirm_clear_all:'要刪除所有地點嗎？', alert_load_fail:'載入失敗',
+  alert_search_not_ready:'搜尋功能準備中，請稍後再試',
+  alert_search_notfound:'找不到結果', alert_search_fail:'搜尋失敗',
+  nav_point_default:'地點 {n}', nav_next_label:'下一個: {name}', nav_goal_label:'🏁 終點',
+  dist_next_straight:'距下一點(直線): {dist}', dist_remaining:'剩餘: {dist}', dist_straight:'直線: {dist}',
+  err_email_password_required:'請輸入電子郵件和密碼', err_password_min:'密碼需6位以上',
+  err_username_required:'請輸入使用者名稱', err_username_format:'使用者名稱只能包含英數字與底線',
+  confirm_logout:'要登出嗎？', err_username_format2:'只能使用英數字與底線',
+  err_username_min:'請輸入至少3個字元', err_username_taken:'該使用者名稱已被使用',
+  err_username_save_fail:'使用者名稱儲存失敗', err_network:'網路錯誤',
+  alert_route_name_required:'請輸入路線名稱', alert_save_success:'已儲存「{name}」',
+  alert_save_fail:'儲存失敗: {err}', alert_load_success:'已載入「{name}」',
+  alert_load_route_fail:'載入失敗: {err}', confirm_delete_route:'要刪除此路線嗎？',
+  alert_delete_fail:'刪除失敗', no_routes:'尚無路線', routes_load_fail:'載入失敗',
+  points_count:'{n}個地點', public_label:'公開', private_label:'非公開', load_btn:'載入',
+  point_label:'地點 {n}', google_map_not_loaded:'Google地圖尚未載入'
+},
+ko: {
+  gps_waiting:'📡 GPS 대기 중', gps_error:'📡 GPS 실패', gps_accuracy:'📡 정확도 ±{m}m',
+  search_placeholder:'🔍 주소·장소 검색', search_btn:'검색',
+  add_point_btn:'＋ 탭하여 추가', add_point_btn_active:'✕ 추가 종료',
+  route_mode_road:'🛣 도로', route_mode_straight:'📏 직선',
+  traffic_btn:'🚦 교통정보', nav_start_btn:'▶ 내비 시작', nav_stop_btn:'■ 정지',
+  reverse_route_btn:'🔄 복귀', save_btn:'💾 저장', save_btn2:'저장', route_list_btn:'📂 경로 목록',
+  login_btn:'👤 로그인',
+  empty_points_msg:'지점이 없습니다', empty_points_sub:'주소 검색 또는 지도를 탭하여 추가',
+  nav_label_next:'다음 지점',
+  username_dialog_title:'사용자 이름 설정', username_label:'사용자 이름 (영문·숫자·밑줄)',
+  username_placeholder:'예: kilroy_driver', cancel_btn:'취소', logout_btn:'로그아웃',
+  app_title:'🗺 마이내비', auth_subtitle:'경로를 저장하려면 로그인이 필요합니다',
+  login_tab:'로그인', signup_tab:'회원가입', auth_username_label:'사용자 이름',
+  auth_username_placeholder:'예: kilroy_driver (영문·숫자·밑줄)',
+  email_label:'이메일 주소', password_label:'비밀번호', password_placeholder:'6자 이상',
+  login_without_account:'로그인 없이 사용', save_route_title:'경로 저장',
+  route_name_label:'경로 이름', route_name_placeholder:'예: 월요일 경로, 배송 A',
+  public_checkbox_label:'공개 (다른 사용자도 볼 수 있음)', saved_routes_title:'저장된 경로',
+  my_routes_tab:'내 경로', public_routes_tab:'공개 경로', loading:'불러오는 중...',
+  point_name_label:'지점 이름', point_name_placeholder:'이름 (생략 가능)',
+  memo_label:'메모', memo_placeholder:'회전 방향 등',
+  add_point_modal_title:'지점 추가', edit_point_modal_title:'지점 편집',
+  point_name_label2:'지점 이름 (생략 가능)', memo_label2:'메모 (회전 방향 등)',
+  memo_placeholder2:'예: 우회전 후 200m\n정문 앞에서 정차',
+  insert_pos_label:'삽입 위치', add_btn:'추가',
+  point_number_inserting:'✕ {n}번째에 삽입 중', insert_pos_default:'삽입 위치 (기본값: {n}번째)',
+  insert_pos_end_option:'{n}번째 (끝)', insert_pos_between_option:'{n}번째 ({a}와 {b} 사이)',
+  insert_pos_fixed:'{n}번째에 삽입',
+  goal_reached_alert:'🏁 목적지 도착!', goal_reached_speak:'목적지에 도착했습니다. 수고하셨습니다.',
+  next_point_speak:'다음은 {name}입니다. {memo}', point_reached_speak:'{name}에 도착',
+  nav_start_speak:'내비게이션을 시작합니다. 첫 번째는 {name}입니다. {memo}',
+  alert_no_points:'지점이 없습니다', alert_need_2points:'지점이 2개 이상 필요합니다',
+  confirm_reverse:'지점 순서를 반대로 하여 복귀 경로를 만들까요?',
+  confirm_clear_all:'모든 지점을 삭제하시겠습니까？', alert_load_fail:'불러오기 실패',
+  alert_search_not_ready:'검색 기능을 준비 중입니다. 잠시 후 다시 시도해주세요',
+  alert_search_notfound:'검색 결과가 없습니다', alert_search_fail:'검색 실패',
+  nav_point_default:'지점 {n}', nav_next_label:'다음: {name}', nav_goal_label:'🏁 목적지',
+  dist_next_straight:'다음(직선): {dist}', dist_remaining:'남은 거리: {dist}', dist_straight:'직선: {dist}',
+  err_email_password_required:'이메일과 비밀번호를 입력하세요', err_password_min:'비밀번호는 6자 이상이어야 합니다',
+  err_username_required:'사용자 이름을 입력하세요', err_username_format:'사용자 이름은 영문·숫자·밑줄만 가능합니다',
+  confirm_logout:'로그아웃하시겠습니까？', err_username_format2:'영문·숫자·밑줄만 사용할 수 있습니다',
+  err_username_min:'3자 이상 입력하세요', err_username_taken:'이미 사용 중인 사용자 이름입니다',
+  err_username_save_fail:'사용자 이름 저장에 실패했습니다', err_network:'네트워크 오류',
+  alert_route_name_required:'경로 이름을 입력하세요', alert_save_success:'"{name}"을(를) 저장했습니다',
+  alert_save_fail:'저장 실패: {err}', alert_load_success:'"{name}"을(를) 불러왔습니다',
+  alert_load_route_fail:'불러오기 실패: {err}', confirm_delete_route:'이 경로를 삭제하시겠습니까？',
+  alert_delete_fail:'삭제 실패', no_routes:'경로가 없습니다', routes_load_fail:'불러오기 실패',
+  points_count:'{n}개 지점', public_label:'공개', private_label:'비공개', load_btn:'불러오기',
+  point_label:'지점 {n}', google_map_not_loaded:'Google 지도가 로드되지 않았습니다'
+},
+es: {
+  gps_waiting:'📡 Esperando GPS', gps_error:'📡 Error de GPS', gps_accuracy:'📡 Precisión ±{m}m',
+  search_placeholder:'🔍 Buscar dirección/lugar', search_btn:'Buscar',
+  add_point_btn:'＋ Tocar para añadir', add_point_btn_active:'✕ Terminar',
+  route_mode_road:'🛣 Carretera', route_mode_straight:'📏 Recta',
+  traffic_btn:'🚦 Tráfico', nav_start_btn:'▶ Iniciar', nav_stop_btn:'■ Detener',
+  reverse_route_btn:'🔄 Regreso', save_btn:'💾 Guardar', save_btn2:'Guardar', route_list_btn:'📂 Rutas',
+  login_btn:'👤 Iniciar sesión',
+  empty_points_msg:'Sin puntos aún', empty_points_sub:'Busca una dirección o toca el mapa',
+  nav_label_next:'Siguiente punto',
+  username_dialog_title:'Establecer nombre de usuario', username_label:'Usuario (letras, números, guion bajo)',
+  username_placeholder:'ej: kilroy_driver', cancel_btn:'Cancelar', logout_btn:'Cerrar sesión',
+  app_title:'🗺 My Navi', auth_subtitle:'Inicia sesión para guardar rutas',
+  login_tab:'Iniciar sesión', signup_tab:'Registrarse', auth_username_label:'Usuario',
+  auth_username_placeholder:'ej: kilroy_driver (letras, números, guion bajo)',
+  email_label:'Correo electrónico', password_label:'Contraseña', password_placeholder:'6+ caracteres',
+  login_without_account:'Continuar sin iniciar sesión', save_route_title:'Guardar ruta',
+  route_name_label:'Nombre de la ruta', route_name_placeholder:'ej: Ruta del lunes, entrega A',
+  public_checkbox_label:'Hacer pública (visible para otros usuarios)', saved_routes_title:'Rutas guardadas',
+  my_routes_tab:'Mis rutas', public_routes_tab:'Rutas públicas', loading:'Cargando...',
+  point_name_label:'Nombre del punto', point_name_placeholder:'Nombre (opcional)',
+  memo_label:'Nota', memo_placeholder:'Dirección del giro, etc.',
+  add_point_modal_title:'Añadir punto', edit_point_modal_title:'Editar punto',
+  point_name_label2:'Nombre del punto (opcional)', memo_label2:'Nota (dirección del giro, etc.)',
+  memo_placeholder2:'ej: Gira a la derecha, 200m adelante\nDetente en la puerta',
+  insert_pos_label:'Posición de inserción', add_btn:'Añadir',
+  point_number_inserting:'✕ Insertando en la posición {n}', insert_pos_default:'Posición de inserción (por defecto: {n})',
+  insert_pos_end_option:'{n} (al final)', insert_pos_between_option:'{n} (entre {a} y {b})',
+  insert_pos_fixed:'Insertar en la posición {n}',
+  goal_reached_alert:'🏁 ¡Meta!', goal_reached_speak:'Has llegado a tu destino. Buen trabajo.',
+  next_point_speak:'El siguiente es {name}. {memo}', point_reached_speak:'Llegaste a {name}',
+  nav_start_speak:'Iniciando navegación. El primero es {name}. {memo}',
+  alert_no_points:'No hay puntos añadidos', alert_need_2points:'Se necesitan al menos 2 puntos',
+  confirm_reverse:'¿Invertir el orden de los puntos para la ruta de regreso?',
+  confirm_clear_all:'¿Eliminar todos los puntos?', alert_load_fail:'Error al cargar',
+  alert_search_not_ready:'La búsqueda aún se está cargando. Intenta de nuevo en un momento',
+  alert_search_notfound:'No se encontraron resultados', alert_search_fail:'Error en la búsqueda',
+  nav_point_default:'Punto {n}', nav_next_label:'Siguiente: {name}', nav_goal_label:'🏁 Meta',
+  dist_next_straight:'Siguiente (recta): {dist}', dist_remaining:'Restante: {dist}', dist_straight:'Recta: {dist}',
+  err_email_password_required:'Ingresa correo y contraseña', err_password_min:'La contraseña debe tener 6+ caracteres',
+  err_username_required:'Ingresa un nombre de usuario', err_username_format:'El usuario solo puede contener letras, números y guion bajo',
+  confirm_logout:'¿Cerrar sesión?', err_username_format2:'Solo se permiten letras, números y guion bajo',
+  err_username_min:'Debe tener al menos 3 caracteres', err_username_taken:'Ese nombre de usuario ya está en uso',
+  err_username_save_fail:'Error al guardar el nombre de usuario', err_network:'Error de red',
+  alert_route_name_required:'Ingresa un nombre de ruta', alert_save_success:'Se guardó "{name}"',
+  alert_save_fail:'Error al guardar: {err}', alert_load_success:'Se cargó "{name}"',
+  alert_load_route_fail:'Error al cargar: {err}', confirm_delete_route:'¿Eliminar esta ruta?',
+  alert_delete_fail:'Error al eliminar', no_routes:'Sin rutas', routes_load_fail:'Error al cargar',
+  points_count:'{n} puntos', public_label:'Pública', private_label:'Privada', load_btn:'Cargar',
+  point_label:'Punto {n}', google_map_not_loaded:'Google Maps no se ha cargado'
+},
+fr: {
+  gps_waiting:'📡 En attente du GPS', gps_error:'📡 Échec du GPS', gps_accuracy:'📡 Précision ±{m}m',
+  search_placeholder:'🔍 Rechercher une adresse/un lieu', search_btn:'Rechercher',
+  add_point_btn:'＋ Toucher pour ajouter', add_point_btn_active:'✕ Terminer',
+  route_mode_road:'🛣 Route', route_mode_straight:'📏 Ligne droite',
+  traffic_btn:'🚦 Trafic', nav_start_btn:'▶ Démarrer', nav_stop_btn:'■ Arrêter',
+  reverse_route_btn:'🔄 Retour', save_btn:'💾 Enregistrer', save_btn2:'Enregistrer', route_list_btn:'📂 Itinéraires',
+  login_btn:'👤 Connexion',
+  empty_points_msg:'Aucun point pour l\'instant', empty_points_sub:'Recherchez une adresse ou touchez la carte',
+  nav_label_next:'Point suivant',
+  username_dialog_title:'Définir le nom d\'utilisateur', username_label:'Nom d\'utilisateur (lettres, chiffres, tiret bas)',
+  username_placeholder:'ex : kilroy_driver', cancel_btn:'Annuler', logout_btn:'Déconnexion',
+  app_title:'🗺 My Navi', auth_subtitle:'Connectez-vous pour enregistrer des itinéraires',
+  login_tab:'Connexion', signup_tab:'Inscription', auth_username_label:'Nom d\'utilisateur',
+  auth_username_placeholder:'ex : kilroy_driver (lettres, chiffres, tiret bas)',
+  email_label:'Adresse e-mail', password_label:'Mot de passe', password_placeholder:'6+ caractères',
+  login_without_account:'Continuer sans connexion', save_route_title:'Enregistrer l\'itinéraire',
+  route_name_label:'Nom de l\'itinéraire', route_name_placeholder:'ex : Itinéraire du lundi, livraison A',
+  public_checkbox_label:'Rendre public (visible par les autres utilisateurs)', saved_routes_title:'Itinéraires enregistrés',
+  my_routes_tab:'Mes itinéraires', public_routes_tab:'Itinéraires publics', loading:'Chargement...',
+  point_name_label:'Nom du point', point_name_placeholder:'Nom (facultatif)',
+  memo_label:'Note', memo_placeholder:'Direction du virage, etc.',
+  add_point_modal_title:'Ajouter un point', edit_point_modal_title:'Modifier le point',
+  point_name_label2:'Nom du point (facultatif)', memo_label2:'Note (direction du virage, etc.)',
+  memo_placeholder2:'ex : Tourner à droite, 200m plus loin\nS\'arrêter devant le portail',
+  insert_pos_label:'Position d\'insertion', add_btn:'Ajouter',
+  point_number_inserting:'✕ Insertion en position {n}', insert_pos_default:'Position d\'insertion (par défaut : {n})',
+  insert_pos_end_option:'{n} (à la fin)', insert_pos_between_option:'{n} (entre {a} et {b})',
+  insert_pos_fixed:'Insérer en position {n}',
+  goal_reached_alert:'🏁 Arrivée !', goal_reached_speak:'Vous êtes arrivé à destination. Bon travail.',
+  next_point_speak:'Le suivant est {name}. {memo}', point_reached_speak:'Arrivé à {name}',
+  nav_start_speak:'Démarrage de la navigation. Le premier est {name}. {memo}',
+  alert_no_points:'Aucun point ajouté', alert_need_2points:'Au moins 2 points sont nécessaires',
+  confirm_reverse:'Inverser l\'ordre des points pour le trajet retour ?',
+  confirm_clear_all:'Supprimer tous les points ?', alert_load_fail:'Échec du chargement',
+  alert_search_not_ready:'La recherche est en cours de chargement. Réessayez dans un instant',
+  alert_search_notfound:'Aucun résultat trouvé', alert_search_fail:'Échec de la recherche',
+  nav_point_default:'Point {n}', nav_next_label:'Suivant : {name}', nav_goal_label:'🏁 Arrivée',
+  dist_next_straight:'Suivant (ligne droite) : {dist}', dist_remaining:'Restant : {dist}', dist_straight:'Ligne droite : {dist}',
+  err_email_password_required:'Veuillez saisir e-mail et mot de passe', err_password_min:'Le mot de passe doit contenir 6+ caractères',
+  err_username_required:'Veuillez saisir un nom d\'utilisateur', err_username_format:'Le nom d\'utilisateur ne peut contenir que lettres, chiffres et tiret bas',
+  confirm_logout:'Se déconnecter ?', err_username_format2:'Seuls lettres, chiffres et tiret bas sont autorisés',
+  err_username_min:'Doit contenir au moins 3 caractères', err_username_taken:'Ce nom d\'utilisateur est déjà pris',
+  err_username_save_fail:'Échec de l\'enregistrement du nom d\'utilisateur', err_network:'Erreur réseau',
+  alert_route_name_required:'Veuillez saisir un nom d\'itinéraire', alert_save_success:'« {name} » enregistré',
+  alert_save_fail:'Échec de l\'enregistrement : {err}', alert_load_success:'« {name} » chargé',
+  alert_load_route_fail:'Échec du chargement : {err}', confirm_delete_route:'Supprimer cet itinéraire ?',
+  alert_delete_fail:'Échec de la suppression', no_routes:'Aucun itinéraire', routes_load_fail:'Échec du chargement',
+  points_count:'{n} points', public_label:'Public', private_label:'Privé', load_btn:'Charger',
+  point_label:'Point {n}', google_map_not_loaded:'Google Maps n\'a pas été chargé'
+},
+th: {
+  gps_waiting:'📡 กำลังรอ GPS', gps_error:'📡 GPS ล้มเหลว', gps_accuracy:'📡 ความแม่นยำ ±{m}ม.',
+  search_placeholder:'🔍 ค้นหาที่อยู่/สถานที่', search_btn:'ค้นหา',
+  add_point_btn:'＋ แตะเพื่อเพิ่ม', add_point_btn_active:'✕ หยุดเพิ่ม',
+  route_mode_road:'🛣 ถนน', route_mode_straight:'📏 เส้นตรง',
+  traffic_btn:'🚦 การจราจร', nav_start_btn:'▶ เริ่มนำทาง', nav_stop_btn:'■ หยุด',
+  reverse_route_btn:'🔄 ย้อนกลับ', save_btn:'💾 บันทึก', save_btn2:'บันทึก', route_list_btn:'📂 รายการเส้นทาง',
+  login_btn:'👤 เข้าสู่ระบบ',
+  empty_points_msg:'ยังไม่มีจุด', empty_points_sub:'ค้นหาที่อยู่หรือแตะบนแผนที่เพื่อเพิ่ม',
+  nav_label_next:'จุดถัดไป',
+  username_dialog_title:'ตั้งชื่อผู้ใช้', username_label:'ชื่อผู้ใช้ (ตัวอักษร ตัวเลข ขีดล่าง)',
+  username_placeholder:'เช่น kilroy_driver', cancel_btn:'ยกเลิก', logout_btn:'ออกจากระบบ',
+  app_title:'🗺 My Navi', auth_subtitle:'ต้องเข้าสู่ระบบเพื่อบันทึกเส้นทาง',
+  login_tab:'เข้าสู่ระบบ', signup_tab:'สมัครสมาชิก', auth_username_label:'ชื่อผู้ใช้',
+  auth_username_placeholder:'เช่น kilroy_driver (ตัวอักษร ตัวเลข ขีดล่าง)',
+  email_label:'อีเมล', password_label:'รหัสผ่าน', password_placeholder:'6 ตัวขึ้นไป',
+  login_without_account:'ใช้งานโดยไม่เข้าสู่ระบบ', save_route_title:'บันทึกเส้นทาง',
+  route_name_label:'ชื่อเส้นทาง', route_name_placeholder:'เช่น เส้นทางวันจันทร์, จัดส่ง A',
+  public_checkbox_label:'เปิดสาธารณะ (ผู้ใช้อื่นเห็นได้)', saved_routes_title:'เส้นทางที่บันทึกไว้',
+  my_routes_tab:'เส้นทางของฉัน', public_routes_tab:'เส้นทางสาธารณะ', loading:'กำลังโหลด...',
+  point_name_label:'ชื่อจุด', point_name_placeholder:'ชื่อ (ไม่บังคับ)',
+  memo_label:'บันทึกย่อ', memo_placeholder:'ทิศทางการเลี้ยว ฯลฯ',
+  add_point_modal_title:'เพิ่มจุด', edit_point_modal_title:'แก้ไขจุด',
+  point_name_label2:'ชื่อจุด (ไม่บังคับ)', memo_label2:'บันทึกย่อ (ทิศทางการเลี้ยว ฯลฯ)',
+  memo_placeholder2:'เช่น เลี้ยวขวา 200 ม.\nจอดที่หน้าประตู',
+  insert_pos_label:'ตำแหน่งแทรก', add_btn:'เพิ่ม',
+  point_number_inserting:'✕ กำลังแทรกที่ตำแหน่ง {n}', insert_pos_default:'ตำแหน่งแทรก (ค่าเริ่มต้น: {n})',
+  insert_pos_end_option:'{n} (ท้ายสุด)', insert_pos_between_option:'{n} (ระหว่าง {a} กับ {b})',
+  insert_pos_fixed:'แทรกที่ตำแหน่ง {n}',
+  goal_reached_alert:'🏁 ถึงเป้าหมาย!', goal_reached_speak:'คุณมาถึงจุดหมายแล้ว เก่งมาก',
+  next_point_speak:'ถัดไปคือ {name}. {memo}', point_reached_speak:'มาถึง {name} แล้ว',
+  nav_start_speak:'เริ่มนำทาง จุดแรกคือ {name}. {memo}',
+  alert_no_points:'ยังไม่มีจุด', alert_need_2points:'ต้องมีอย่างน้อย 2 จุด',
+  confirm_reverse:'ต้องการสลับลำดับจุดเพื่อสร้างเส้นทางกลับหรือไม่?',
+  confirm_clear_all:'ต้องการลบจุดทั้งหมดหรือไม่?', alert_load_fail:'โหลดล้มเหลว',
+  alert_search_not_ready:'ระบบค้นหากำลังโหลด กรุณาลองใหม่อีกครั้ง',
+  alert_search_notfound:'ไม่พบผลลัพธ์', alert_search_fail:'ค้นหาล้มเหลว',
+  nav_point_default:'จุด {n}', nav_next_label:'ถัดไป: {name}', nav_goal_label:'🏁 เป้าหมาย',
+  dist_next_straight:'ถัดไป(เส้นตรง): {dist}', dist_remaining:'เหลืออีก: {dist}', dist_straight:'เส้นตรง: {dist}',
+  err_email_password_required:'กรุณากรอกอีเมลและรหัสผ่าน', err_password_min:'รหัสผ่านต้องมี 6 ตัวขึ้นไป',
+  err_username_required:'กรุณากรอกชื่อผู้ใช้', err_username_format:'ชื่อผู้ใช้ใช้ได้เฉพาะตัวอักษร ตัวเลข และขีดล่าง',
+  confirm_logout:'ต้องการออกจากระบบหรือไม่?', err_username_format2:'ใช้ได้เฉพาะตัวอักษร ตัวเลข และขีดล่าง',
+  err_username_min:'กรุณากรอกอย่างน้อย 3 ตัวอักษร', err_username_taken:'ชื่อผู้ใช้นี้ถูกใช้แล้ว',
+  err_username_save_fail:'บันทึกชื่อผู้ใช้ล้มเหลว', err_network:'ข้อผิดพลาดเครือข่าย',
+  alert_route_name_required:'กรุณากรอกชื่อเส้นทาง', alert_save_success:'บันทึก "{name}" แล้ว',
+  alert_save_fail:'บันทึกล้มเหลว: {err}', alert_load_success:'โหลด "{name}" แล้ว',
+  alert_load_route_fail:'โหลดล้มเหลว: {err}', confirm_delete_route:'ต้องการลบเส้นทางนี้หรือไม่?',
+  alert_delete_fail:'ลบล้มเหลว', no_routes:'ไม่มีเส้นทาง', routes_load_fail:'โหลดล้มเหลว',
+  points_count:'{n} จุด', public_label:'สาธารณะ', private_label:'ส่วนตัว', load_btn:'โหลด',
+  point_label:'จุด {n}', google_map_not_loaded:'Google Maps ยังไม่โหลด'
+},
+vi: {
+  gps_waiting:'📡 Đang chờ GPS', gps_error:'📡 GPS lỗi', gps_accuracy:'📡 Độ chính xác ±{m}m',
+  search_placeholder:'🔍 Tìm địa chỉ/địa điểm', search_btn:'Tìm kiếm',
+  add_point_btn:'＋ Chạm để thêm', add_point_btn_active:'✕ Kết thúc thêm',
+  route_mode_road:'🛣 Đường bộ', route_mode_straight:'📏 Đường thẳng',
+  traffic_btn:'🚦 Giao thông', nav_start_btn:'▶ Bắt đầu', nav_stop_btn:'■ Dừng',
+  reverse_route_btn:'🔄 Đường về', save_btn:'💾 Lưu', save_btn2:'Lưu', route_list_btn:'📂 Danh sách lộ trình',
+  login_btn:'👤 Đăng nhập',
+  empty_points_msg:'Chưa có điểm nào', empty_points_sub:'Tìm địa chỉ hoặc chạm vào bản đồ để thêm',
+  nav_label_next:'Điểm tiếp theo',
+  username_dialog_title:'Đặt tên người dùng', username_label:'Tên người dùng (chữ, số, gạch dưới)',
+  username_placeholder:'vd: kilroy_driver', cancel_btn:'Hủy', logout_btn:'Đăng xuất',
+  app_title:'🗺 My Navi', auth_subtitle:'Cần đăng nhập để lưu lộ trình',
+  login_tab:'Đăng nhập', signup_tab:'Đăng ký', auth_username_label:'Tên người dùng',
+  auth_username_placeholder:'vd: kilroy_driver (chữ, số, gạch dưới)',
+  email_label:'Địa chỉ email', password_label:'Mật khẩu', password_placeholder:'6+ ký tự',
+  login_without_account:'Tiếp tục không cần đăng nhập', save_route_title:'Lưu lộ trình',
+  route_name_label:'Tên lộ trình', route_name_placeholder:'vd: Lộ trình thứ Hai, giao hàng A',
+  public_checkbox_label:'Công khai (người dùng khác có thể xem)', saved_routes_title:'Lộ trình đã lưu',
+  my_routes_tab:'Lộ trình của tôi', public_routes_tab:'Lộ trình công khai', loading:'Đang tải...',
+  point_name_label:'Tên điểm', point_name_placeholder:'Tên (không bắt buộc)',
+  memo_label:'Ghi chú', memo_placeholder:'Hướng rẽ, v.v.',
+  add_point_modal_title:'Thêm điểm', edit_point_modal_title:'Sửa điểm',
+  point_name_label2:'Tên điểm (không bắt buộc)', memo_label2:'Ghi chú (hướng rẽ, v.v.)',
+  memo_placeholder2:'vd: Rẽ phải, 200m phía trước\nDừng trước cổng',
+  insert_pos_label:'Vị trí chèn', add_btn:'Thêm',
+  point_number_inserting:'✕ Đang chèn vào vị trí {n}', insert_pos_default:'Vị trí chèn (mặc định: {n})',
+  insert_pos_end_option:'{n} (cuối)', insert_pos_between_option:'{n} (giữa {a} và {b})',
+  insert_pos_fixed:'Chèn vào vị trí {n}',
+  goal_reached_alert:'🏁 Đến đích!', goal_reached_speak:'Bạn đã đến đích. Làm tốt lắm.',
+  next_point_speak:'Tiếp theo là {name}. {memo}', point_reached_speak:'Đã đến {name}',
+  nav_start_speak:'Bắt đầu điều hướng. Điểm đầu tiên là {name}. {memo}',
+  alert_no_points:'Chưa thêm điểm nào', alert_need_2points:'Cần ít nhất 2 điểm',
+  confirm_reverse:'Đảo ngược thứ tự điểm để tạo lộ trình về?',
+  confirm_clear_all:'Xóa tất cả các điểm?', alert_load_fail:'Tải thất bại',
+  alert_search_not_ready:'Tìm kiếm đang tải. Vui lòng thử lại sau',
+  alert_search_notfound:'Không tìm thấy kết quả', alert_search_fail:'Tìm kiếm thất bại',
+  nav_point_default:'Điểm {n}', nav_next_label:'Tiếp theo: {name}', nav_goal_label:'🏁 Đích',
+  dist_next_straight:'Tiếp theo (thẳng): {dist}', dist_remaining:'Còn lại: {dist}', dist_straight:'Thẳng: {dist}',
+  err_email_password_required:'Vui lòng nhập email và mật khẩu', err_password_min:'Mật khẩu phải có 6+ ký tự',
+  err_username_required:'Vui lòng nhập tên người dùng', err_username_format:'Tên người dùng chỉ được chứa chữ, số và gạch dưới',
+  confirm_logout:'Đăng xuất?', err_username_format2:'Chỉ được dùng chữ, số và gạch dưới',
+  err_username_min:'Phải có ít nhất 3 ký tự', err_username_taken:'Tên người dùng này đã được sử dụng',
+  err_username_save_fail:'Lưu tên người dùng thất bại', err_network:'Lỗi mạng',
+  alert_route_name_required:'Vui lòng nhập tên lộ trình', alert_save_success:'Đã lưu "{name}"',
+  alert_save_fail:'Lưu thất bại: {err}', alert_load_success:'Đã tải "{name}"',
+  alert_load_route_fail:'Tải thất bại: {err}', confirm_delete_route:'Xóa lộ trình này?',
+  alert_delete_fail:'Xóa thất bại', no_routes:'Không có lộ trình', routes_load_fail:'Tải thất bại',
+  points_count:'{n} điểm', public_label:'Công khai', private_label:'Riêng tư', load_btn:'Tải',
+  point_label:'Điểm {n}', google_map_not_loaded:'Google Maps chưa tải xong'
+}
+};
+
+const LANG_NAMES = { ja:'日本語', en:'English', 'zh-CN':'简体中文', 'zh-TW':'繁體中文', ko:'한국어', es:'Español', fr:'Français', th:'ไทย', vi:'Tiếng Việt' };
+const SPEECH_LOCALE = { ja:'ja-JP', en:'en-US', 'zh-CN':'zh-CN', 'zh-TW':'zh-TW', ko:'ko-KR', es:'es-ES', fr:'fr-FR', th:'th-TH', vi:'vi-VN' };
+const PLACES_LANG = { ja:'ja', en:'en', 'zh-CN':'zh-CN', 'zh-TW':'zh-TW', ko:'ko', es:'es', fr:'fr', th:'th', vi:'vi' };
+
+function detectInitialLang(){
+  const saved = localStorage.getItem('navi_lang');
+  if(saved && SUPPORTED_LANGS.includes(saved)) return saved;
+  const nav = (navigator.language || 'en');
+  const exact = SUPPORTED_LANGS.find(l => l.toLowerCase() === nav.toLowerCase());
+  if(exact) return exact;
+  const base = nav.split('-')[0];
+  if(base === 'zh'){
+    return /TW|HK|MO/i.test(nav) ? 'zh-TW' : 'zh-CN';
+  }
+  const baseMatch = SUPPORTED_LANGS.find(l => l.split('-')[0] === base);
+  return baseMatch || 'en';
+}
+let currentLang = detectInitialLang();
+
+function t(key, vars){
+  let str = (translations[currentLang] && translations[currentLang][key]) || translations.en[key] || key;
+  if(vars){
+    Object.keys(vars).forEach(k=>{ str = str.split('{'+k+'}').join(vars[k]); });
+  }
+  return str;
+}
+
+function applyStaticTranslations(){
+  document.documentElement.lang = currentLang;
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    el.textContent = t(el.dataset.i18n);
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{
+    el.placeholder = t(el.dataset.i18nPlaceholder);
+  });
+  // 動的に切り替わるボタン類は個別に再描画
+  if(typeof renderList === 'function') renderList();
+  const addBtn = document.getElementById('btn-add');
+  if(addBtn && addBtn.dataset.state !== 'active'){ addBtn.textContent = t('add_point_btn'); }
+  const routeBtn = document.getElementById('btn-route-mode');
+  if(routeBtn){ routeBtn.textContent = typeof useRoad!=='undefined' && !useRoad ? t('route_mode_straight') : t('route_mode_road'); }
+  const navBtn = document.getElementById('btn-nav');
+  if(navBtn && typeof navActive!=='undefined'){ navBtn.textContent = navActive ? t('nav_stop_btn') : t('nav_start_btn'); }
+  if(typeof updateUserBar === 'function') updateUserBar();
+}
+
+function setLanguage(lang){
+  if(!SUPPORTED_LANGS.includes(lang)) return;
+  currentLang = lang;
+  localStorage.setItem('navi_lang', lang);
+  const sel = document.getElementById('lang-select');
+  if(sel) sel.value = lang;
+  applyStaticTranslations();
+}
+
+function initLangSelector(){
+  const sel = document.getElementById('lang-select');
+  if(!sel) return;
+  sel.innerHTML = SUPPORTED_LANGS.map(l=>`<option value="${l}">${LANG_NAMES[l]}</option>`).join('');
+  sel.value = currentLang;
+  sel.addEventListener('change', e=>setLanguage(e.target.value));
+}
+
 const map = L.map('map', { center:[35.68,139.75], zoom:14, zoomControl:false });
 
 // ===== 地図タイル：Googleマップ（失敗/上限到達時はMapTilerにフォールバック） =====
@@ -334,7 +863,7 @@ let trafficLayerOn = false;
 
 function useMapTilerFallback(){
   if(usingGoogleMap) return;
-  L.tileLayer(`https://api.maptiler.com/maps/jp-gsi-standard/{z}/{x}/{y}.png?key=${MAPTILER_KEY}`, {
+  L.tileLayer(`https://api.maptiler.com/maps/streets-v4/{z}/{x}/{y}.png?key=${MAPTILER_KEY}`, {
     attribution:'© <a href="https://www.maptiler.com/">MapTiler</a> © OpenStreetMap',
     maxZoom:19, tileSize:256
   }).addTo(map);
@@ -358,7 +887,7 @@ if(window._googleMapsReady){
 setTimeout(()=>{ if(!usingGoogleMap) useMapTilerFallback(); }, 4000);
 
 function toggleTraffic(){
-  if(!usingGoogleMap || !googleLayer){ alert('Googleマップが読み込まれていません'); return; }
+  if(!usingGoogleMap || !googleLayer){ alert(t('google_map_not_loaded')); return; }
   trafficLayerOn = !trafficLayerOn;
   const btn=document.getElementById('btn-traffic');
   if(trafficLayerOn){
@@ -386,7 +915,7 @@ function startGPS(){
 function onGPS(pos){
   const{latitude:lat, longitude:lng, accuracy}=pos.coords;
   const b=document.getElementById('gps-badge');
-  b.textContent=`📡 精度 ±${Math.round(accuracy)}m`;
+  b.textContent=t('gps_accuracy',{m:Math.round(accuracy)});
   b.className=accuracy<30?'good':accuracy<100?'':'bad';
   // 初回だけ現在地に移動
   if(!gpsInitialized){ map.setView([lat,lng],16); gpsInitialized=true; }
@@ -399,17 +928,17 @@ function onGPS(pos){
     checkProgress(lat,lng);
     // ナビバーの距離をリアルタイム更新
     if(navIndex<points.length){
-      const t=points[navIndex];
-      const d=calcDist(lat,lng,t.lat,t.lng);
-      document.getElementById('nav-dist-next').textContent=`次P直線: ${formatDist(d)}`;
+      const tgt=points[navIndex];
+      const d=calcDist(lat,lng,tgt.lat,tgt.lng);
+      document.getElementById('nav-dist-next').textContent=t('dist_next_straight',{dist:formatDist(d)});
       // 残り = 現在地→次のポイント(直線) + 次のポイント→ゴール(道路)
       const roadRem=calcRemainingDist(); // 次のポイント以降の道路距離
       const totalRem = roadRem!==null ? d+roadRem : d;
-      document.getElementById('nav-dist-goal').textContent=`残り: ${formatDist(totalRem)}`;
+      document.getElementById('nav-dist-goal').textContent=t('dist_remaining',{dist:formatDist(totalRem)});
     }
   }
 }
-function onGPSErr(){ const b=document.getElementById('gps-badge'); b.textContent='📡 GPS失敗'; b.className='bad'; }
+function onGPSErr(){ const b=document.getElementById('gps-badge'); b.textContent=t('gps_error'); b.className='bad'; }
 
 function toggleFollow(){
   if(!followMode){
@@ -437,8 +966,8 @@ map.on('click', e=>{
 function toggleAddMode(){
   addMode=!addMode;
   const btn=document.getElementById('btn-add');
-  if(addMode){ btn.textContent='✕ 追加終了'; btn.className='btn btn-add-active'; }
-  else{ btn.textContent='＋ タップ追加'; btn.className='btn btn-gray'; insertAfterIndex=null; }
+  if(addMode){ btn.textContent=t('add_point_btn_active'); btn.className='btn btn-add-active'; }
+  else{ btn.textContent=t('add_point_btn'); btn.className='btn btn-gray'; insertAfterIndex=null; }
 }
 
 // ===== 欄の挿入ボタン =====
@@ -450,7 +979,7 @@ function startInsertAt(afterIdx){
   const insertPos=afterIdx+2;
   const displayPos=afterIdx===-1?1:insertPos;
   const btn=document.getElementById('btn-add');
-  btn.textContent=`✕ ${displayPos}番目に挿入中`;
+  btn.textContent=t('point_number_inserting',{n:displayPos});
   btn.className='btn btn-insert-active';
   document.querySelectorAll('.insert-btn').forEach(b=>{
     b.classList.toggle('active', parseInt(b.dataset.after)===afterIdx);
@@ -462,8 +991,8 @@ function openModal(latlng, id, forceInsertAfter){
   pendingLatLng=latlng;
   editingId=id;
   const isEdit=id!==null;
-  document.getElementById('modal-title').textContent=isEdit?'ポイントを編集':'ポイントを追加';
-  document.getElementById('modal-ok').textContent=isEdit?'保存':'追加';
+  document.getElementById('modal-title').textContent=isEdit?t('edit_point_modal_title'):t('add_point_modal_title');
+  document.getElementById('modal-ok').textContent=isEdit?t('save_btn2'):t('add_btn');
   if(isEdit){
     const p=points.find(x=>x.id===id);
     document.getElementById('modal-name').value=p.name;
@@ -478,19 +1007,19 @@ function openModal(latlng, id, forceInsertAfter){
     if(points.length>=2 && insertAfterIndex===null){
       // 地図タップ時のみ：位置を選ばせる
       posRow.style.display='block';
-      document.getElementById('position-label').textContent=`挿入位置（デフォルト: ${points.length+1}番目）`;
+      document.getElementById('position-label').textContent=t('insert_pos_default',{n:points.length+1});
       sel.innerHTML='';
       // 末尾
       const optEnd=document.createElement('option');
       optEnd.value=points.length;
-      optEnd.textContent=`${points.length+1}番目（末尾）`;
+      optEnd.textContent=t('insert_pos_end_option',{n:points.length+1});
       optEnd.selected=true;
       sel.appendChild(optEnd);
       // 2番目〜N番目（挿入）
       for(let i=1;i<points.length;i++){
         const opt=document.createElement('option');
         opt.value=i;
-        opt.textContent=`${i+1}番目（${i}と${i+1}の間）`;
+        opt.textContent=t('insert_pos_between_option',{n:i+1,a:i,b:i+1});
         sel.appendChild(opt);
       }
     } else if(points.length>=2 && insertAfterIndex!==null){
@@ -498,8 +1027,8 @@ function openModal(latlng, id, forceInsertAfter){
       const insertPos=insertAfterIndex===-1?0:insertAfterIndex+1;
       const displayPos=insertPos+1;
       posRow.style.display='block';
-      document.getElementById('position-label').textContent=`挿入位置`;
-      sel.innerHTML=`<option value="${insertPos}" selected>${displayPos}番目に挿入</option>`;
+      document.getElementById('position-label').textContent=t('insert_pos_label');
+      sel.innerHTML=`<option value="${insertPos}" selected>${t('insert_pos_fixed',{n:displayPos})}</option>`;
     } else {
       posRow.style.display='none';
     }
@@ -515,7 +1044,7 @@ function cancelModal(){
   // addModeは継続（キャンセルしても追加モードは維持）
   if(addMode){
     const btn=document.getElementById('btn-add');
-    btn.textContent='✕ 追加終了'; btn.className='btn btn-add-active';
+    btn.textContent=t('add_point_btn_active'); btn.className='btn btn-add-active';
   }
 }
 
@@ -561,7 +1090,7 @@ function confirmModal(){
   document.querySelectorAll('.insert-btn').forEach(b=>b.classList.remove('active'));
   if(addMode){
     const btn=document.getElementById('btn-add');
-    btn.textContent='✕ 追加終了'; btn.className='btn btn-add-active';
+    btn.textContent=t('add_point_btn_active'); btn.className='btn btn-add-active';
   }
 }
 
@@ -641,15 +1170,15 @@ async function updatePolyline(){
 function toggleRouteMode(){
   useRoad=!useRoad;
   const btn=document.getElementById('btn-route-mode');
-  if(useRoad){btn.textContent='🛣 道路';btn.className='btn btn-gray';}
-  else{btn.textContent='📏 直線';btn.className='btn btn-route-active';}
+  if(useRoad){btn.textContent=t('route_mode_road');btn.className='btn btn-gray';}
+  else{btn.textContent=t('route_mode_straight');btn.className='btn btn-route-active';}
   updatePolyline();
 }
 
 // ===== ポイントリスト =====
 function renderList(){
   const el=document.getElementById('points-wrap');
-  if(!points.length){el.innerHTML='<div class="empty-msg">ポイントがありません<br>住所検索かタップで追加</div>';return;}
+  if(!points.length){el.innerHTML=`<div class="empty-msg">${t('empty_points_msg')}<br>${t('empty_points_sub')}</div>`;return;}
 
   let html='';
   points.forEach((p,i)=>{
@@ -716,7 +1245,7 @@ async function searchAddress(){
   const btn=document.querySelector('#search-row .btn-orange');btn.textContent='...';btn.disabled=true;
   try{
     if(!window.google || !google.maps || !google.maps.places){
-      alert('検索機能の準備中です。少し待って再試行してください');
+      alert(t('alert_search_not_ready'));
       return;
     }
     const { Place } = await google.maps.importLibrary('places');
@@ -726,11 +1255,10 @@ async function searchAddress(){
       fields: ['displayName','location'],
       locationBias: { lat: center.lat, lng: center.lng },
       maxResultCount: 1,
-      language: 'ja',
-      region: 'jp'
+      language: PLACES_LANG[currentLang] || 'en'
     };
     const { places } = await Place.searchByText(request);
-    if(!places || !places.length){ alert('見つかりませんでした'); return; }
+    if(!places || !places.length){ alert(t('alert_search_notfound')); return; }
     const place = places[0];
     const lat = place.location.lat();
     const lng = place.location.lng();
@@ -740,9 +1268,9 @@ async function searchAddress(){
     document.getElementById('search-input').value='';
   }catch(e){
     console.error(e);
-    alert('検索失敗');
+    alert(t('alert_search_fail'));
   } finally {
-    btn.textContent='検索';btn.disabled=false;
+    btn.textContent=t('search_btn');btn.disabled=false;
   }
 }
 document.getElementById('search-input').addEventListener('keydown',e=>{if(e.key==='Enter')searchAddress();});
@@ -751,27 +1279,27 @@ document.getElementById('search-input').addEventListener('keydown',e=>{if(e.key=
 const REACH=40;
 function toggleNav(){navActive?stopNav():startNav();}
 function startNav(){
-  if(!points.length){alert('ポイントがありません');return;}
+  if(!points.length){alert(t('alert_no_points'));return;}
   navActive=true;navIndex=0;
-  const btn=document.getElementById('btn-nav');btn.textContent='■ 停止';btn.className='btn btn-nav-stop';
+  const btn=document.getElementById('btn-nav');btn.textContent=t('nav_stop_btn');btn.className='btn btn-nav-stop';
   document.getElementById('nav-bar').classList.add('show');
   followMode=true;document.getElementById('follow-btn').classList.add('active');
   refreshAllMarkers();renderList();updateNavBar();
   const p=points[0];
-  speak(`ナビ開始。最初は${p.name||'ポイント1'}。${p.memo||''}`);
+  speak(t('nav_start_speak',{name:p.name||t('nav_point_default',{n:1}),memo:p.memo||''}));
   // 開始直後に距離を即表示（GPS更新を待たずに）
   if(gpsMarker){
     const ll=gpsMarker.getLatLng();
     const d=calcDist(ll.lat,ll.lng,p.lat,p.lng);
-    document.getElementById('nav-dist-next').textContent=`直線: ${formatDist(d)}`;
+    document.getElementById('nav-dist-next').textContent=t('dist_straight',{dist:formatDist(d)});
     const roadRem=calcRemainingDist();
     const totalRem = roadRem!==null ? d+roadRem : d;
-    document.getElementById('nav-dist-goal').textContent=`残り: ${formatDist(totalRem)}`;
+    document.getElementById('nav-dist-goal').textContent=t('dist_remaining',{dist:formatDist(totalRem)});
   }
 }
 function stopNav(){
   navActive=false;
-  const btn=document.getElementById('btn-nav');btn.textContent='▶ ナビ開始';btn.className='btn btn-green';
+  const btn=document.getElementById('btn-nav');btn.textContent=t('nav_start_btn');btn.className='btn btn-green';
   document.getElementById('nav-bar').classList.remove('show');
   refreshAllMarkers();renderList();
 }
@@ -779,32 +1307,32 @@ function updateNavBar(){
   if(!navActive||!points.length)return;
   const p=points[navIndex],next=points[navIndex+1];
   document.getElementById('nav-label').textContent=`${navIndex+1} / ${points.length}`;
-  document.getElementById('nav-name').textContent=p.name||`ポイント ${navIndex+1}`;
+  document.getElementById('nav-name').textContent=p.name||t('nav_point_default',{n:navIndex+1});
   document.getElementById('nav-memo-txt').textContent=p.memo||'';
-  document.getElementById('nav-sub').textContent=next?`次: ${next.name||'ポイント'+(navIndex+2)}`:'🏁 ゴール';
+  document.getElementById('nav-sub').textContent=next?t('nav_next_label',{name:next.name||t('nav_point_default',{n:navIndex+2})}):t('nav_goal_label');
   // 距離は毎秒GPS更新で更新するので空欄のみ初期化
   document.getElementById('nav-dist-next').textContent='';
   document.getElementById('nav-dist-goal').textContent='';
 }
 function checkProgress(lat,lng){
   if(!navActive||navIndex>=points.length)return;
-  const t=points[navIndex];
-  if(calcDist(lat,lng,t.lat,t.lng)<REACH){
-    speak(`${t.name||'ポイント'+(navIndex+1)}、到達`);
+  const tgt=points[navIndex];
+  if(calcDist(lat,lng,tgt.lat,tgt.lng)<REACH){
+    speak(t('point_reached_speak',{name:tgt.name||t('nav_point_default',{n:navIndex+1})}));
     navIndex++;
-    if(navIndex>=points.length){speak('ゴールです。お疲れ様でした。');stopNav();alert('🏁 ゴール！');return;}
+    if(navIndex>=points.length){speak(t('goal_reached_speak'));stopNav();alert(t('goal_reached_alert'));return;}
     refreshAllMarkers();renderList();updateNavBar();
     const next=points[navIndex];
-    speak(`次は${next.name||'ポイント'+(navIndex+1)}。${next.memo||''}`);
+    speak(t('next_point_speak',{name:next.name||t('nav_point_default',{n:navIndex+1}),memo:next.memo||''}));
   }
 }
 function calcDist(a,b,c,d){const R=6371000,dL=(c-a)*Math.PI/180,dG=(d-b)*Math.PI/180;const x=Math.sin(dL/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dG/2)**2;return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));}
-function speak(t){if(!('speechSynthesis'in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='ja-JP';u.rate=0.95;speechSynthesis.speak(u);}
+function speak(txt){if(!('speechSynthesis'in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(txt);u.lang=SPEECH_LOCALE[currentLang]||'en-US';u.rate=0.95;speechSynthesis.speak(u);}
 
 // ===== 復路 =====
 function reverseRoute(){
-  if(points.length<2){alert('ポイントが2つ以上必要です');return;}
-  if(!confirm('ポイントの順番を逆にして復路にしますか？'))return;
+  if(points.length<2){alert(t('alert_need_2points'));return;}
+  if(!confirm(t('confirm_reverse')))return;
   points.reverse();
   if(navActive)navIndex=0;
   rebuildAllMarkers();
@@ -815,7 +1343,7 @@ function reverseRoute(){
 
 // ===== 保存・読み込み =====
 function saveRoute(){
-  if(!points.length){alert('ポイントがありません');return;}
+  if(!points.length){alert(t('alert_no_points'));return;}
   const data={version:2,points:points.map(p=>({lat:p.lat,lng:p.lng,name:p.name,memo:p.memo}))};
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
@@ -835,13 +1363,13 @@ function loadRoute(){
         });
         updatePolyline();renderList();
         if(points.length)map.fitBounds(points.map(p=>[p.lat,p.lng]),{padding:[40,40]});
-      }catch{alert('読み込み失敗');}
+      }catch{alert(t('alert_load_fail'));}
     };
     reader.readAsText(e.target.files[0]);
   };input.click();
 }
 function clearAll(silent=false){
-  if(!silent&&points.length&&!confirm('全ポイントを削除しますか？'))return;
+  if(!silent&&points.length&&!confirm(t('confirm_clear_all')))return;
   points.forEach(p=>{if(p.marker)map.removeLayer(p.marker);});
   points=[];clearPolylines();
   if(navActive)stopNav();
@@ -884,7 +1412,7 @@ function openEditPopup(id, anchorEl){
   if(!p) return;
 
   const popup = document.getElementById('edit-popup');
-  document.getElementById('edit-popup-title').textContent = `ポイント ${points.indexOf(p)+1}`;
+  document.getElementById('edit-popup-title').textContent = t('point_label',{n:points.indexOf(p)+1});
   document.getElementById('edit-popup-name').value = p.name||'';
   document.getElementById('edit-popup-memo').value = p.memo||'';
 
@@ -1038,7 +1566,7 @@ function authTab(tab){
   document.getElementById('auth-tab-login').style.color = tab==='login'?'#000':'#aaa';
   document.getElementById('auth-tab-signup').style.background = tab==='signup'?'#f0a500':'#222';
   document.getElementById('auth-tab-signup').style.color = tab==='signup'?'#000':'#aaa';
-  document.getElementById('auth-submit-btn').textContent = tab==='login'?'ログイン':'新規登録';
+  document.getElementById('auth-submit-btn').textContent = tab==='login'?t('login_tab'):t('signup_tab');
   document.getElementById('auth-error').style.display='none';
   document.getElementById('username-row').style.display = tab==='signup'?'block':'none';
 }
@@ -1049,12 +1577,12 @@ async function authSubmit(){
   const errEl = document.getElementById('auth-error');
   errEl.style.display='none';
 
-  if(!email || !password){ errEl.textContent='メールとパスワードを入力してください'; errEl.style.display='block'; return; }
-  if(password.length < 6){ errEl.textContent='パスワードは6文字以上'; errEl.style.display='block'; return; }
+  if(!email || !password){ errEl.textContent=t('err_email_password_required'); errEl.style.display='block'; return; }
+  if(password.length < 6){ errEl.textContent=t('err_password_min'); errEl.style.display='block'; return; }
   if(currentAuthTab==='signup'){
     const uname = document.getElementById('auth-username').value.trim();
-    if(!uname){ errEl.textContent='ユーザー名を入力してください'; errEl.style.display='block'; return; }
-    if(!/^[a-zA-Z0-9_]+$/.test(uname)){ errEl.textContent='ユーザー名は英数字とアンダーバーのみ'; errEl.style.display='block'; return; }
+    if(!uname){ errEl.textContent=t('err_username_required'); errEl.style.display='block'; return; }
+    if(!/^[a-zA-Z0-9_]+$/.test(uname)){ errEl.textContent=t('err_username_format'); errEl.style.display='block'; return; }
   }
 
   const btn = document.getElementById('auth-submit-btn');
@@ -1070,7 +1598,7 @@ async function authSubmit(){
     const data = await res.json();
 
     if(data.error || data.error_code){
-      errEl.textContent = data.error_description || data.msg || 'エラーが発生しました';
+      errEl.textContent = data.error_description || data.msg || t('err_network');
       errEl.style.display='block';
       return;
     }
@@ -1090,7 +1618,7 @@ async function authSubmit(){
         });
         if(!profileRes.ok){
           const err = await profileRes.json();
-          errEl.textContent = err.message?.includes('unique') ? 'そのユーザー名は使われています' : 'ユーザー名の保存に失敗しました';
+          errEl.textContent = err.message?.includes('unique') ? t('err_username_taken') : t('err_username_save_fail');
           errEl.style.display='block';
           // プロフィール作成失敗なので認証状態をリセット
           currentUser = null;
@@ -1108,10 +1636,10 @@ async function authSubmit(){
     const mineTab = document.getElementById('tab-mine');
     if(mineTab) mineTab.style.display='block';
   } catch(e){
-    errEl.textContent = 'ネットワークエラー';
+    errEl.textContent = t('err_network');
     errEl.style.display='block';
   } finally {
-    btn.textContent = currentAuthTab==='login'?'ログイン':'新規登録';
+    btn.textContent = currentAuthTab==='login'?t('login_tab'):t('signup_tab');
     btn.disabled = false;
   }
 }
@@ -1137,7 +1665,7 @@ function updateUserBar(){
   } else {
     if(bar) bar.style.display='none';
     if(btn){
-      btn.textContent = '👤 ログイン';
+      btn.textContent = t('login_btn');
       btn.style.cssText = 'background:#1a3a1a;border:1px solid #0a5a0a;color:#66cc66;padding:8px 12px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;';
     }
   }
@@ -1158,7 +1686,7 @@ function handleAuthBtn(){
 
 function confirmLogout(){
   document.getElementById('username-dialog').style.display='none';
-  if(confirm('ログアウトしますか？')) authLogout();
+  if(confirm(t('confirm_logout'))) authLogout();
 }
 
 // ===== ユーザー名設定 =====
@@ -1167,9 +1695,9 @@ async function saveUsername(){
   const errEl = document.getElementById('username-error');
   errEl.style.display='none';
 
-  if(!username){ errEl.textContent='ユーザー名を入力してください'; errEl.style.display='block'; return; }
-  if(!/^[a-zA-Z0-9_]+$/.test(username)){ errEl.textContent='英数字とアンダーバーのみ使用できます'; errEl.style.display='block'; return; }
-  if(username.length < 3){ errEl.textContent='3文字以上入力してください'; errEl.style.display='block'; return; }
+  if(!username){ errEl.textContent=t('err_username_required'); errEl.style.display='block'; return; }
+  if(!/^[a-zA-Z0-9_]+$/.test(username)){ errEl.textContent=t('err_username_format2'); errEl.style.display='block'; return; }
+  if(username.length < 3){ errEl.textContent=t('err_username_min'); errEl.style.display='block'; return; }
 
   try {
     // upsert（あれば更新、なければ挿入）
@@ -1184,11 +1712,11 @@ async function saveUsername(){
       document.getElementById('username-dialog').style.display='none';
     } else {
       const err = await res.json();
-      errEl.textContent = err.message?.includes('unique') ? 'そのユーザー名は使われています' : '保存失敗';
+      errEl.textContent = err.message?.includes('unique') ? t('err_username_taken') : t('err_username_save_fail');
       errEl.style.display='block';
     }
   } catch(e){
-    errEl.textContent='ネットワークエラー';
+    errEl.textContent=t('err_network');
     errEl.style.display='block';
   }
 }
@@ -1224,7 +1752,7 @@ async function supabaseFetch(path, options={}){
 }
 
 function showSaveDialog(){
-  if(!points.length){ alert('ポイントがありません'); return; }
+  if(!points.length){ alert(t('alert_no_points')); return; }
   if(!currentUser){ showAuthScreen(); return; }
   document.getElementById('save-route-name').value = '';
   document.getElementById('save-is-public').checked = false;
@@ -1238,7 +1766,7 @@ function closeSaveDialog(){
 
 async function saveToSupabase(){
   const name = document.getElementById('save-route-name').value.trim();
-  if(!name){ alert('ルート名を入力してください'); return; }
+  if(!name){ alert(t('alert_route_name_required')); return; }
   const isPublic = document.getElementById('save-is-public').checked;
   const data = {
     name,
@@ -1254,13 +1782,13 @@ async function saveToSupabase(){
     });
     if(res.ok){
       closeSaveDialog();
-      alert(`「${name}」を保存しました`);
+      alert(t('alert_save_success',{name}));
     } else {
       const err = await res.json();
-      alert('保存失敗: ' + JSON.stringify(err));
+      alert(t('alert_save_fail',{err:JSON.stringify(err)}));
     }
   } catch(e){
-    alert('保存失敗: ' + e.message);
+    alert(t('alert_save_fail',{err:e.message}));
   }
 }
 
@@ -1289,7 +1817,7 @@ async function loadRouteListTab(tab){
   document.getElementById('tab-public').style.color = tab==='public' ? '#000' : '#aaa';
 
   const el = document.getElementById('route-list-items');
-  el.innerHTML = '<div style="text-align:center;padding:20px;color:#555;font-size:12px;">読み込み中...</div>';
+  el.innerHTML = `<div style="text-align:center;padding:20px;color:#555;font-size:12px;">${t('loading')}</div>`;
 
   try {
     const uid = currentUser ? currentUser.id : '';
@@ -1300,7 +1828,7 @@ async function loadRouteListTab(tab){
     const data = await res.json();
 
     if(!data.length){
-      el.innerHTML = '<div style="text-align:center;padding:20px;color:#555;font-size:12px;">ルートがありません</div>';
+      el.innerHTML = `<div style="text-align:center;padding:20px;color:#555;font-size:12px;">${t('no_routes')}</div>`;
       return;
     }
 
@@ -1309,20 +1837,20 @@ async function loadRouteListTab(tab){
         <div style="flex:1;">
           <div style="font-size:13px;font-weight:600;color:#fff;">${r.name}</div>
           <div style="font-size:11px;color:#555;margin-top:2px;">
-            ${r.points.length}ポイント
-            ${r.is_public ? ' · 🌐 公開' : ' · 🔒 非公開'}
+            ${t('points_count',{n:r.points.length})}
+            ${r.is_public ? ' · 🌐 ' + t('public_label') : ' · 🔒 ' + t('private_label')}
 
             · ${new Date(r.created_at).toLocaleDateString('ja-JP')}
           </div>
         </div>
         <button onclick="loadFromSupabase('${r.id}')" 
-          style="padding:6px 12px;background:#f0a500;border:none;color:#000;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;">読込</button>
+          style="padding:6px 12px;background:#f0a500;border:none;color:#000;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;">${t('load_btn')}</button>
         <button onclick="deleteFromSupabase('${r.id}')"
           style="padding:6px 10px;background:#2a0000;border:1px solid #500;color:#ff6666;border-radius:6px;font-size:12px;cursor:pointer;">🗑</button>
       </div>
     `).join('');
   } catch(e){
-    el.innerHTML = '<div style="text-align:center;padding:20px;color:#c44;font-size:12px;">読み込み失敗</div>';
+    el.innerHTML = `<div style="text-align:center;padding:20px;color:#c44;font-size:12px;">${t('routes_load_fail')}</div>`;
   }
 }
 
@@ -1330,7 +1858,7 @@ async function loadFromSupabase(id){
   try {
     const res = await supabaseFetch(`/rest/v1/routes?id=eq.${id}`);
     const data = await res.json();
-    if(!data.length){ alert('見つかりませんでした'); return; }
+    if(!data.length){ alert(t('alert_route_notfound')); return; }
     const route = data[0];
     clearAll(true);
     route.points.forEach((d,i)=>{
@@ -1340,23 +1868,25 @@ async function loadFromSupabase(id){
     updatePolyline(); renderList();
     if(points.length) map.fitBounds(points.map(p=>[p.lat,p.lng]),{padding:[40,40]});
     closeRouteList();
-    alert(`「${route.name}」を読み込みました`);
+    alert(t('alert_load_success',{name:route.name}));
   } catch(e){
-    alert('読み込み失敗: ' + e.message);
+    alert(t('alert_load_route_fail',{err:e.message}));
   }
 }
 
 async function deleteFromSupabase(id){
-  if(!confirm('このルートを削除しますか？')) return;
+  if(!confirm(t('confirm_delete_route'))) return;
   try {
     const res = await supabaseFetch(`/rest/v1/routes?id=eq.${id}`, { method:'DELETE' });
     if(res.ok) loadRouteListTab(currentTab);
-    else alert('削除失敗');
+    else alert(t('alert_delete_fail'));
   } catch(e){
-    alert('削除失敗: ' + e.message);
+    alert(t('alert_delete_fail')+': '+e.message);
   }
 }
 
+initLangSelector();
+applyStaticTranslations();
 initAuth();
 startGPS();
 renderList();
