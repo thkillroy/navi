@@ -6,16 +6,16 @@
 <title>マイナビ</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAwuYMBSE85I1VMnG34H-E8JzY114YRSYE&libraries=places&loading=async&callback=onGoogleMapsLoaded" async defer></script>
-<script src="https://unpkg.com/leaflet.gridlayer.googlemutant@latest/dist/Leaflet.GoogleMutant.js"></script>
 <script>
-// Google Mapsの読み込み完了を検知（async読み込みなので実行順が前後する可能性があるため）
+// Google Mapsの読み込み完了を検知（async読み込みなので、コールバック関数は先に定義しておく必要がある）
 window._googleMapsReady = false;
 function onGoogleMapsLoaded(){
   window._googleMapsReady = true;
   if(window._onGoogleMapsReadyCallback) window._onGoogleMapsReadyCallback();
 }
 </script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAwuYMBSE85I1VMnG34H-E8JzY114YRSYE&libraries=places&loading=async&callback=onGoogleMapsLoaded" async defer></script>
+<script src="https://unpkg.com/leaflet.gridlayer.googlemutant@latest/dist/Leaflet.GoogleMutant.js"></script>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 body { background:#0d0d0d; color:#fff; font-family:'Helvetica Neue',Arial,sans-serif; height:100dvh; overflow:hidden; display:flex; flex-direction:column; }
