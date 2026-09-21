@@ -1578,8 +1578,9 @@ function determineInsertPosition(){
   }
 }
 
-function insertRoutePointAt(name, memo, lat, lng){
+function insertRoutePointAt(name, memo, lat, lng, fixedPointId, icon){
   const p={id:Date.now(), lat, lng, name, memo, marker:null};
+  if(fixedPointId){ p.fixedPointId = fixedPointId; p.icon = icon || '⭐'; }
   const insertAt = determineInsertPosition();
   points.splice(insertAt,0,p);
   rebuildAllMarkers();
@@ -1656,7 +1657,7 @@ async function confirmModal(){
         addSavedPointMarker({ id:newId, user_id:currentUser.id, name, memo, icon:'⭐', lat:pendingLatLng.lat, lng:pendingLatLng.lng });
         const addToRoute = document.getElementById('fixedpoint-add-to-route').checked;
         if(addToRoute){
-          insertRoutePointAt(name, memo, pendingLatLng.lat, pendingLatLng.lng);
+          insertRoutePointAt(name, memo, pendingLatLng.lat, pendingLatLng.lng, newId, '⭐');
         }
       } else {
         alert(t('alert_save_fail',{err: await res.text()}));
@@ -1726,12 +1727,8 @@ function openFixedPointEditModal(p){
 
 // ルート上に組み込まれた固定ポイントの編集（編集は本体へ、削除はルートから外すだけ）
 function openLinkedRoutePointModal(routePointId){
-  console.log('[DEBUG] openLinkedRoutePointModal呼び出し', routePointId);
   const rp = points.find(x=>x.id===routePointId);
-  if(!rp || !rp.fixedPointId){
-    console.log('[DEBUG] openLinkedRoutePointModalで早期return', {rp, allPoints: points.map(pt=>pt.id)});
-    return;
-  }
+  if(!rp || !rp.fixedPointId) return;
   pendingLatLng=null;
   editingId=null;
   editingFixedPoint=null;
@@ -2118,11 +2115,9 @@ function _openEditFromMarker(id){
 let editPopupId = null;
 
 function openEditPopup(id, anchorEl){
-  console.log('[DEBUG] openEditPopup呼び出し（通常ルートポイント扱い）', id);
   editPopupId = id;
   const p = points.find(x=>x.id===id);
   if(!p) return;
-  console.log('[DEBUG] openEditPopup対象p.fixedPointId=', p.fixedPointId);
 
   const popup = document.getElementById('edit-popup');
   document.getElementById('edit-popup-title').textContent = t('point_label',{n:points.indexOf(p)+1});
@@ -2190,7 +2185,6 @@ async function saveRoutePointAsFixed(){
   const idx = points.findIndex(x=>x.id===editPopupId);
   if(idx === -1) return;
   const p = points[idx];
-  console.log('[DEBUG] saveRoutePointAsFixed開始', {editPopupId, idx, pBefore: {id:p.id, lat:p.lat, lng:p.lng, name:p.name, memo:p.memo, fixedPointId:p.fixedPointId}});
   const name = document.getElementById('edit-popup-name').value.trim();
   const memo = document.getElementById('edit-popup-memo').value.trim();
   try{
@@ -2205,7 +2199,6 @@ async function saveRoutePointAsFixed(){
         lat: p.lat, lng: p.lng
       })
     });
-    console.log('[DEBUG] POST結果', res.status, res.ok);
     if(res.ok){
       const newSavedPoint = { id:newId, user_id:currentUser.id, name, memo, icon:'⭐', lat:p.lat, lng:p.lng };
       addSavedPointMarker(newSavedPoint);
@@ -2216,7 +2209,6 @@ async function saveRoutePointAsFixed(){
       insertAfterIndex = idx - 1;
       addFixedPointToRoute(newSavedPoint);
       insertAfterIndex = savedInsertAfterIndex;
-      console.log('[DEBUG] リンク後のpoints配列', JSON.parse(JSON.stringify(points.map(pt=>({id:pt.id, fixedPointId:pt.fixedPointId})))));
 
       document.getElementById('edit-popup').classList.remove('show');
       document.getElementById('edit-popup').style.transform = '';
