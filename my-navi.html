@@ -2181,8 +2181,9 @@ function closeEditPopup(){
 async function saveRoutePointAsFixed(){
   if(!editPopupId) return;
   if(!currentUser){ showAuthScreen(); return; }
-  const p = points.find(x=>x.id===editPopupId);
-  if(!p) return;
+  const idx = points.findIndex(x=>x.id===editPopupId);
+  if(idx === -1) return;
+  const p = points[idx];
   const name = document.getElementById('edit-popup-name').value.trim();
   const memo = document.getElementById('edit-popup-memo').value.trim();
   try{
@@ -2198,17 +2199,19 @@ async function saveRoutePointAsFixed(){
       })
     });
     if(res.ok){
-      addSavedPointMarker({ id:newId, user_id:currentUser.id, name, memo, icon:'⭐', lat:p.lat, lng:p.lng });
-      // このルートポイント自体も固定ポイントに紐付け、合成マーカー（★＋番号）に変える
-      p.fixedPointId = newId;
-      p.icon = '⭐';
-      p.name = name;
-      p.memo = memo;
+      const newSavedPoint = { id:newId, user_id:currentUser.id, name, memo, icon:'⭐', lat:p.lat, lng:p.lng };
+      addSavedPointMarker(newSavedPoint);
+      // 元のルートポイントを削除し、同じ位置に「動作確認済みの固定ポイント組み込み処理」で入れ直す
+      if(p.marker) map.removeLayer(p.marker);
+      points.splice(idx, 1);
+      const savedInsertAfterIndex = insertAfterIndex;
+      insertAfterIndex = idx - 1;
+      addFixedPointToRoute(newSavedPoint);
+      insertAfterIndex = savedInsertAfterIndex;
+
       document.getElementById('edit-popup').classList.remove('show');
       document.getElementById('edit-popup').style.transform = '';
       editPopupId = null;
-      rebuildAllMarkers();
-      renderList();
       alert(t('alert_save_success',{name: name || '⭐'}));
     } else {
       alert(t('alert_save_fail',{err: await res.text()}));
