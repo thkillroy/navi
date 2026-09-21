@@ -2196,7 +2196,19 @@ async function saveRoutePointAsFixed(){
     });
     if(res.ok){
       const data = await res.json();
-      if(data && data[0]) addSavedPointMarker(data[0]);
+      if(data && data[0]){
+        addSavedPointMarker(data[0]);
+        // このルートポイント自体も固定ポイントに紐付け、合成マーカー（★＋番号）に変える
+        p.fixedPointId = data[0].id;
+        p.icon = '⭐';
+        p.name = name;
+        p.memo = memo;
+        document.getElementById('edit-popup').classList.remove('show');
+        document.getElementById('edit-popup').style.transform = '';
+        editPopupId = null;
+        rebuildAllMarkers();
+        renderList();
+      }
       alert(t('alert_save_success',{name: name || '⭐'}));
     } else {
       alert(t('alert_save_fail',{err: await res.text()}));
