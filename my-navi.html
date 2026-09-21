@@ -2050,6 +2050,7 @@ function calcRemainingDist(){
 // ===== Supabase Auth =====
 let currentUser = null;
 let authToken = null;
+let refreshToken = null;
 let currentAuthTab = 'login';
 
 async function initAuth(){
@@ -2060,6 +2061,7 @@ async function initAuth(){
       // expires_atがない場合も含めて復元
       currentUser = s.user;
       authToken = s.access_token;
+      refreshToken = s.refresh_token;
       await loadUserProfile();
       updateUserBar();
       loadSavedPoints();
@@ -2126,6 +2128,7 @@ async function authSubmit(){
 
     currentUser = data.user;
     authToken = data.access_token;
+    refreshToken = data.refresh_token;
     localStorage.setItem('navi_session', JSON.stringify(data));
 
     // サインアップ時はprofileを作成（エラーハンドリング追加）
@@ -2169,6 +2172,7 @@ async function authSubmit(){
 function authLogout(){
   currentUser = null;
   authToken = null;
+  refreshToken = null;
   localStorage.removeItem('navi_session');
   clearSavedPointMarkers();
   updateUserBar();
@@ -2492,7 +2496,28 @@ async function deleteFixedPoint(p){
 }
 
 // ===== Supabase ルート保存・読込 =====
-async function supabaseFetch(path, options={}){
+async function refreshAuthToken(){
+  if(!refreshToken) return false;
+  try{
+    const res = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=refresh_token', {
+      method: 'POST',
+      headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refresh_token: refreshToken })
+    });
+    if(!res.ok) return false;
+    const data = await res.json();
+    if(!data.access_token) return false;
+    authToken = data.access_token;
+    refreshToken = data.refresh_token || refreshToken;
+    if(data.user) currentUser = { ...currentUser, ...data.user, username: currentUser?.username };
+    localStorage.setItem('navi_session', JSON.stringify({ ...data, user: currentUser }));
+    return true;
+  }catch(e){
+    return false;
+  }
+}
+
+async function supabaseFetch(path, options={}, _retried=false){
   const headers = {
     'apikey': SUPABASE_KEY,
     'Content-Type': 'application/json',
@@ -2508,6 +2533,13 @@ async function supabaseFetch(path, options={}){
     headers,
     body: options.body
   });
+  // JWT期限切れ（401 or PGRST303）なら1回だけ自動更新して再試行
+  if((res.status === 401 || res.status === 403) && authToken && !_retried){
+    const refreshed = await refreshAuthToken();
+    if(refreshed){
+      return supabaseFetch(path, options, true);
+    }
+  }
   return res;
 }
 
