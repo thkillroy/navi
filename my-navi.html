@@ -1937,7 +1937,7 @@ function getState(idx){
 
 function addMarker(p,idx){
   const isLinked = !!p.fixedPointId;
-  const icon = isLinked ? makeLinkedIcon(idx,getState(idx),p.icon) : makeIcon(idx,getState(idx));
+  const icon = p.icon ? makeLinkedIcon(idx,getState(idx),p.icon) : makeIcon(idx,getState(idx));
   const m=L.marker([p.lat,p.lng],{icon, draggable: !isLinked}).addTo(map);
   m.bindTooltip(makeTooltip(p,idx),{direction:'top',offset:[0,-40]});
   if(isLinked){
@@ -1950,7 +1950,7 @@ function addMarker(p,idx){
 }
 
 function makeTooltip(p,idx){
-  const star = p.fixedPointId ? iconHTML(p.icon,14)+' ' : '';
+  const star = p.icon ? iconHTML(p.icon,14)+' ' : '';
   return `<b>${star}${idx+1}${p.name?' - '+p.name:''}</b>${p.memo?'<br><span style="color:#f0a500">'+p.memo+'</span>':''}`;
 }
 
@@ -1963,7 +1963,7 @@ function rebuildAllMarkers(){
 function refreshAllMarkers(){
   points.forEach((p,i)=>{
     if(!p.marker)return;
-    const icon = p.fixedPointId ? makeLinkedIcon(i,getState(i),p.icon) : makeIcon(i,getState(i));
+    const icon = p.icon ? makeLinkedIcon(i,getState(i),p.icon) : makeIcon(i,getState(i));
     p.marker.setIcon(icon);
     p.marker.setTooltipContent(makeTooltip(p,i));
   });
@@ -2015,7 +2015,7 @@ function renderList(){
     const numClass=state==='done'?'done':'';
     const displayName=p.name||'';
     const isLinked = !!p.fixedPointId;
-    const starPrefix = isLinked ? `<span style="display:inline-flex;align-items:center;">${iconHTML(p.icon,16)}</span>` : '';
+    const starPrefix = p.icon ? `<span style="display:inline-flex;align-items:center;">${iconHTML(p.icon,16)}</span>` : '';
     const numOnclick = isLinked
       ? `_suppressMapClick=true; openLinkedRoutePointModal(${p.id})`
       : `_suppressMapClick=true; openEditPopup(${p.id}, this)`;
@@ -2201,9 +2201,23 @@ function reverseRoute(){
 }
 
 // ===== 保存・読み込み =====
+// ルートポイント → 保存用データ（名前・メモ・アイコン・固定ポイントIDを全部記録）
+function pointToSnapshot(p){
+  const d = {lat:p.lat, lng:p.lng, name:p.name||'', memo:p.memo||''};
+  if(p.icon) d.icon = p.icon;
+  if(p.fixedPointId) d.fixedPointId = p.fixedPointId;
+  return d;
+}
+// 保存用データ → ルートポイント（中身は保存時のまま。固定ポイント本体が残っていれば紐付けだけ復活）
+function snapshotToPoint(d, i){
+  const p = {id:Date.now()+i, lat:d.lat, lng:d.lng, name:d.name||'', memo:d.memo||'', marker:null};
+  if(d.icon) p.icon = d.icon;
+  if(d.fixedPointId && savedPoints.some(sp=>sp.id===d.fixedPointId)) p.fixedPointId = d.fixedPointId;
+  return p;
+}
 function saveRoute(){
   if(!points.length){alert(t('alert_no_points'));return;}
-  const data={version:2,points:points.map(p=>({lat:p.lat,lng:p.lng,name:p.name,memo:p.memo}))};
+  const data={version:3,points:points.map(pointToSnapshot)};
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
   a.download=`route-${new Date().toISOString().slice(0,10)}.json`;a.click();
@@ -2217,7 +2231,7 @@ function loadRoute(){
         const data=JSON.parse(ev.target.result);
         clearAll(true);
         data.points.forEach((d,i)=>{
-          const p={id:Date.now()+i,lat:d.lat,lng:d.lng,name:d.name||'',memo:d.memo||'',marker:null};
+          const p=snapshotToPoint(d,i);
           addMarker(p,i);points.push(p);
         });
         updatePolyline();renderList();
@@ -2953,7 +2967,7 @@ async function saveToSupabase(){
     name,
     is_public: isPublic,
     user_id: currentUser.id,
-    points: points.map(p=>({lat:p.lat, lng:p.lng, name:p.name, memo:p.memo}))
+    points: points.map(pointToSnapshot)
   };
   try {
     const res = await supabaseFetch('/rest/v1/routes', {
@@ -3043,7 +3057,7 @@ async function loadFromSupabase(id){
     const route = data[0];
     clearAll(true);
     route.points.forEach((d,i)=>{
-      const p={id:Date.now()+i, lat:d.lat, lng:d.lng, name:d.name||'', memo:d.memo||'', marker:null};
+      const p=snapshotToPoint(d,i);
       addMarker(p,i); points.push(p);
     });
     updatePolyline(); renderList();
