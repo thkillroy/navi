@@ -1641,18 +1641,19 @@ async function confirmModal(){
     if(!pendingLatLng)return;
     if(!currentUser){ showAuthScreen(); return; }
     try{
+      const newId = crypto.randomUUID();
       const res = await supabaseFetch('/rest/v1/saved_points', {
         method: 'POST',
-        prefer: 'return=representation',
+        prefer: 'return=minimal',
         body: JSON.stringify({
+          id: newId,
           user_id: currentUser.id,
           name, memo, icon: '⭐',
           lat: pendingLatLng.lat, lng: pendingLatLng.lng
         })
       });
       if(res.ok){
-        const data = await res.json();
-        if(data && data[0]) addSavedPointMarker(data[0]);
+        addSavedPointMarker({ id:newId, user_id:currentUser.id, name, memo, icon:'⭐', lat:pendingLatLng.lat, lng:pendingLatLng.lng });
         const addToRoute = document.getElementById('fixedpoint-add-to-route').checked;
         if(addToRoute){
           insertRoutePointAt(name, memo, pendingLatLng.lat, pendingLatLng.lng);
@@ -2185,30 +2186,29 @@ async function saveRoutePointAsFixed(){
   const name = document.getElementById('edit-popup-name').value.trim();
   const memo = document.getElementById('edit-popup-memo').value.trim();
   try{
+    const newId = crypto.randomUUID();
     const res = await supabaseFetch('/rest/v1/saved_points', {
       method: 'POST',
-      prefer: 'return=representation',
+      prefer: 'return=minimal',
       body: JSON.stringify({
+        id: newId,
         user_id: currentUser.id,
         name, memo, icon: '⭐',
         lat: p.lat, lng: p.lng
       })
     });
     if(res.ok){
-      const data = await res.json();
-      if(data && data[0]){
-        addSavedPointMarker(data[0]);
-        // このルートポイント自体も固定ポイントに紐付け、合成マーカー（★＋番号）に変える
-        p.fixedPointId = data[0].id;
-        p.icon = '⭐';
-        p.name = name;
-        p.memo = memo;
-        document.getElementById('edit-popup').classList.remove('show');
-        document.getElementById('edit-popup').style.transform = '';
-        editPopupId = null;
-        rebuildAllMarkers();
-        renderList();
-      }
+      addSavedPointMarker({ id:newId, user_id:currentUser.id, name, memo, icon:'⭐', lat:p.lat, lng:p.lng });
+      // このルートポイント自体も固定ポイントに紐付け、合成マーカー（★＋番号）に変える
+      p.fixedPointId = newId;
+      p.icon = '⭐';
+      p.name = name;
+      p.memo = memo;
+      document.getElementById('edit-popup').classList.remove('show');
+      document.getElementById('edit-popup').style.transform = '';
+      editPopupId = null;
+      rebuildAllMarkers();
+      renderList();
       alert(t('alert_save_success',{name: name || '⭐'}));
     } else {
       alert(t('alert_save_fail',{err: await res.text()}));
