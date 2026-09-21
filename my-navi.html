@@ -2698,24 +2698,41 @@ async function deleteFixedPoint(p){
 
 // ===== Supabase ルート保存・読込 =====
 async function refreshAuthToken(){
-  if(!refreshToken) return false;
+  if(!refreshToken){
+    // リフレッシュ用の情報を持たない古いセッション（自動更新不能）。
+    // 無効なセッションを破棄してログインし直してもらう。
+    forceReLogin();
+    return false;
+  }
   try{
     const res = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=refresh_token', {
       method: 'POST',
       headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
       body: JSON.stringify({ refresh_token: refreshToken })
     });
-    if(!res.ok) return false;
+    if(!res.ok){ forceReLogin(); return false; }
     const data = await res.json();
-    if(!data.access_token) return false;
+    if(!data.access_token){ forceReLogin(); return false; }
     authToken = data.access_token;
     refreshToken = data.refresh_token || refreshToken;
     if(data.user) currentUser = { ...currentUser, ...data.user, username: currentUser?.username };
     localStorage.setItem('navi_session', JSON.stringify({ ...data, user: currentUser }));
     return true;
   }catch(e){
+    forceReLogin();
     return false;
   }
+}
+
+// セッションが自動更新不能な場合、破棄してログイン画面に誘導する
+function forceReLogin(){
+  currentUser = null;
+  authToken = null;
+  refreshToken = null;
+  localStorage.removeItem('navi_session');
+  clearSavedPointMarkers();
+  updateUserBar();
+  showAuthScreen();
 }
 
 async function supabaseFetch(path, options={}, _retried=false){
