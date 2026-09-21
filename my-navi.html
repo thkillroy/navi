@@ -146,6 +146,20 @@ body { background:#0d0d0d; color:#fff; font-family:'Helvetica Neue',Arial,sans-s
 #modal-btns { display:flex; gap:8px; }
 #modal-btns .btn { flex:1; padding:12px; font-size:14px; }
 #position-row { display:none; }
+#modal { max-height:92dvh; overflow-y:auto; }
+#icon-picker-row { display:none; margin-bottom:12px; }
+#icon-current-btn { display:flex; align-items:center; gap:8px; width:100%; background:#0d0d0d; border:1px solid #333; border-radius:8px; color:#aaa; padding:6px 12px; font-size:13px; cursor:pointer; }
+#icon-current-btn:hover { border-color:#f0a500; }
+#icon-current-preview { font-size:26px; line-height:1; display:inline-flex; align-items:center; }
+#icon-grid { display:none; margin-top:8px; background:#0d0d0d; border:1px solid #333; border-radius:8px; padding:6px; }
+#icon-grid.show { display:block; }
+.icon-group { display:flex; flex-wrap:wrap; gap:2px; padding:4px 0; border-bottom:1px solid #222; }
+.icon-group:last-child { border-bottom:none; }
+.icon-cell { width:38px; height:38px; font-size:24px; line-height:1; background:transparent; border:2px solid transparent; border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; }
+.icon-cell.selected { border-color:#f0a500; background:#332800; }
+#icon-color-row { display:none; flex-wrap:wrap; gap:6px; margin-top:8px; align-items:center; }
+.color-cell { width:32px; height:32px; border-radius:50%; border:2px solid #444; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:18px; padding:0; background:#0d0d0d; }
+.color-cell.selected { border-color:#f0a500; box-shadow:0 0 0 2px #f0a500; }
 
 /* スマホ横向き */
 @media (orientation:landscape) and (max-width:900px) {
@@ -386,7 +400,7 @@ body { background:#0d0d0d; color:#fff; font-family:'Helvetica Neue',Arial,sans-s
   <input type="text" id="edit-popup-name" data-i18n-placeholder="point_name_placeholder" placeholder="名前（省略OK）">
   <label data-i18n="memo_label">メモ</label>
   <textarea id="edit-popup-memo" data-i18n-placeholder="memo_placeholder" placeholder="曲がり方向など"></textarea>
-  <button onclick="saveRoutePointAsFixed()" style="width:100%;padding:8px;background:#332800;border:1px solid #f0a500;color:#f0a500;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;" data-i18n="save_as_fixed_btn">⭐ 固定ポイントとして保存</button>
+  <button onclick="openConvertToFixedModal()" style="width:100%;padding:8px;background:#332800;border:1px solid #f0a500;color:#f0a500;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;" data-i18n="save_as_fixed_btn">⭐ 固定ポイントとして保存</button>
 </div>
 
 <!-- モーダル -->
@@ -401,6 +415,12 @@ body { background:#0d0d0d; color:#fff; font-family:'Helvetica Neue',Arial,sans-s
     <input type="text" id="modal-name" data-i18n-placeholder="modal_name_placeholder" placeholder="例: ○○工場、△△倉庫">
     <label data-i18n="memo_label2">メモ（曲がり方向など）</label>
     <textarea id="modal-memo-input" data-i18n-placeholder="modal_memo_placeholder" placeholder="例: 右折して200m先&#10;門の前で停車"></textarea>
+    <div id="icon-picker-row">
+      <label data-i18n="icon_label">アイコン</label>
+      <button type="button" id="icon-current-btn" onclick="toggleIconGrid()"><span id="icon-current-preview">⭐</span><span style="margin-left:auto;">▼</span></button>
+      <div id="icon-grid"></div>
+      <div id="icon-color-row"></div>
+    </div>
     <div id="fixedpoint-route-toggle" style="display:none;align-items:center;gap:8px;margin-bottom:12px;">
       <input type="checkbox" id="fixedpoint-add-to-route" checked onchange="toggleFixedPointRouteRow()" style="width:16px;height:16px;cursor:pointer;">
       <label for="fixedpoint-add-to-route" style="font-size:13px;color:#ccc;cursor:pointer;text-transform:none;letter-spacing:normal;" data-i18n="assign_route_number_label">ルート番号を付ける</label>
@@ -477,7 +497,7 @@ ja: {
   point_label:'ポイント {n}', google_map_not_loaded:'Googleマップが読み込まれていません',
   modal_name_placeholder:'例: ○○工場、△△倉庫', modal_memo_placeholder:'例: 右折して200m先\n門の前で停車',
   confirm_lang_change_reload:'言語を変更すると地図が再読み込みされます。保存していないポイントは消えます。続けますか？',
-  settings_title:'ユーザー設定', lang_setting_label:'言語', new_password_label:'新しいパスワード', change_password_btn:'パスワードを変更', password_change_success:'パスワードを変更しました', forgot_password_link:'パスワードをお忘れですか？', forgot_password_title:'パスワード再設定', send_reset_btn:'送信', password_reset_sent:'パスワード再設定メールを送信しました', map_type_label:'地図の種類', map_type_default:'標準', map_type_satellite:'航空写真', map_type_terrain:'地形', layers_label:'表示', biking_label:'自転車', traffic_label:'渋滞', transit_label:'公共交通機関', fixed_point_btn:'⭐ 固定ポイント', fixed_point_modal_title:'固定ポイントを保存', confirm_delete_point:'このポイントを削除しますか？', target_route_label:'ルート', target_fixedpoint_label:'⭐ 固定ポイント', edit_fixed_point_modal_title:'固定ポイントを編集', delete_btn:'削除', save_as_fixed_btn:'⭐ 固定ポイントとして保存', assign_route_number_label:'ルート番号を付ける', remove_from_route_btn:'ルートから外す',
+  settings_title:'ユーザー設定', lang_setting_label:'言語', new_password_label:'新しいパスワード', change_password_btn:'パスワードを変更', password_change_success:'パスワードを変更しました', forgot_password_link:'パスワードをお忘れですか？', forgot_password_title:'パスワード再設定', send_reset_btn:'送信', password_reset_sent:'パスワード再設定メールを送信しました', map_type_label:'地図の種類', map_type_default:'標準', map_type_satellite:'航空写真', map_type_terrain:'地形', layers_label:'表示', biking_label:'自転車', traffic_label:'渋滞', transit_label:'公共交通機関', fixed_point_btn:'⭐ 固定ポイント', fixed_point_modal_title:'固定ポイントを保存', confirm_delete_point:'このポイントを削除しますか？', target_route_label:'ルート', target_fixedpoint_label:'⭐ 固定ポイント', edit_fixed_point_modal_title:'固定ポイントを編集', delete_btn:'削除', save_as_fixed_btn:'⭐ 固定ポイントとして保存', assign_route_number_label:'ルート番号を付ける', remove_from_route_btn:'ルートから外す', icon_label:'アイコン', color_label:'色',
 },
 en: {
   gps_waiting:'📡 Waiting for GPS', gps_error:'📡 GPS failed', gps_accuracy:'📡 Accuracy ±{m}m',
@@ -531,7 +551,7 @@ en: {
   point_label:'Point {n}', google_map_not_loaded:'Google Maps has not loaded',
   modal_name_placeholder:'e.g. Factory A, Warehouse B', modal_memo_placeholder:'e.g. Turn right, 200m ahead\nStop at the gate',
   confirm_lang_change_reload:'Changing language reloads the map. Unsaved points will be lost. Continue?',
-  settings_title:'User Settings', lang_setting_label:'Language', new_password_label:'New password', change_password_btn:'Change password', password_change_success:'Password changed', forgot_password_link:'Forgot password?', forgot_password_title:'Reset password', send_reset_btn:'Send', password_reset_sent:'Password reset email sent', map_type_label:'Map type', map_type_default:'Default', map_type_satellite:'Satellite', map_type_terrain:'Terrain', layers_label:'Layers', biking_label:'Biking', traffic_label:'Traffic', transit_label:'Transit', fixed_point_btn:'⭐ Save Point', fixed_point_modal_title:'Save fixed point', confirm_delete_point:'Delete this point?', target_route_label:'Route', target_fixedpoint_label:'⭐ Saved Point', edit_fixed_point_modal_title:'Edit saved point', delete_btn:'Delete', save_as_fixed_btn:'⭐ Save as fixed point', assign_route_number_label:'Assign a route number', remove_from_route_btn:'Remove from route',
+  settings_title:'User Settings', lang_setting_label:'Language', new_password_label:'New password', change_password_btn:'Change password', password_change_success:'Password changed', forgot_password_link:'Forgot password?', forgot_password_title:'Reset password', send_reset_btn:'Send', password_reset_sent:'Password reset email sent', map_type_label:'Map type', map_type_default:'Default', map_type_satellite:'Satellite', map_type_terrain:'Terrain', layers_label:'Layers', biking_label:'Biking', traffic_label:'Traffic', transit_label:'Transit', fixed_point_btn:'⭐ Save Point', fixed_point_modal_title:'Save fixed point', confirm_delete_point:'Delete this point?', target_route_label:'Route', target_fixedpoint_label:'⭐ Saved Point', edit_fixed_point_modal_title:'Edit saved point', delete_btn:'Delete', save_as_fixed_btn:'⭐ Save as fixed point', assign_route_number_label:'Assign a route number', remove_from_route_btn:'Remove from route', icon_label:'Icon', color_label:'Color',
 },
 'zh-CN': {
   gps_waiting:'📡 等待GPS', gps_error:'📡 GPS失败', gps_accuracy:'📡 精度 ±{m}米',
@@ -585,7 +605,7 @@ en: {
   point_label:'地点 {n}', google_map_not_loaded:'谷歌地图尚未加载',
   modal_name_placeholder:'例: A工厂、B仓库', modal_memo_placeholder:'例: 右转200米\n在大门前停车',
   confirm_lang_change_reload:'切换语言将重新加载地图，未保存的地点会丢失。要继续吗？',
-  settings_title:'用户设置', lang_setting_label:'语言', new_password_label:'新密码', change_password_btn:'修改密码', password_change_success:'密码已修改', forgot_password_link:'忘记密码？', forgot_password_title:'重置密码', send_reset_btn:'发送', password_reset_sent:'密码重置邮件已发送', map_type_label:'地图类型', map_type_default:'标准', map_type_satellite:'卫星', map_type_terrain:'地形', layers_label:'图层', biking_label:'自行车', traffic_label:'路况', transit_label:'公共交通', fixed_point_btn:'⭐ 收藏地点', fixed_point_modal_title:'保存收藏地点', confirm_delete_point:'要删除这个地点吗？', target_route_label:'路线', target_fixedpoint_label:'⭐ 收藏地点', edit_fixed_point_modal_title:'编辑收藏地点', delete_btn:'删除', save_as_fixed_btn:'⭐ 另存为收藏地点', assign_route_number_label:'分配路线编号', remove_from_route_btn:'从路线中移除',
+  settings_title:'用户设置', lang_setting_label:'语言', new_password_label:'新密码', change_password_btn:'修改密码', password_change_success:'密码已修改', forgot_password_link:'忘记密码？', forgot_password_title:'重置密码', send_reset_btn:'发送', password_reset_sent:'密码重置邮件已发送', map_type_label:'地图类型', map_type_default:'标准', map_type_satellite:'卫星', map_type_terrain:'地形', layers_label:'图层', biking_label:'自行车', traffic_label:'路况', transit_label:'公共交通', fixed_point_btn:'⭐ 收藏地点', fixed_point_modal_title:'保存收藏地点', confirm_delete_point:'要删除这个地点吗？', target_route_label:'路线', target_fixedpoint_label:'⭐ 收藏地点', edit_fixed_point_modal_title:'编辑收藏地点', delete_btn:'删除', save_as_fixed_btn:'⭐ 另存为收藏地点', assign_route_number_label:'分配路线编号', remove_from_route_btn:'从路线中移除', icon_label:'图标', color_label:'颜色',
 },
 'zh-TW': {
   gps_waiting:'📡 等待GPS', gps_error:'📡 GPS失敗', gps_accuracy:'📡 精度 ±{m}公尺',
@@ -639,7 +659,7 @@ en: {
   point_label:'地點 {n}', google_map_not_loaded:'Google地圖尚未載入',
   modal_name_placeholder:'例: A工廠、B倉庫', modal_memo_placeholder:'例: 右轉200公尺\n在大門前停車',
   confirm_lang_change_reload:'切換語言將重新載入地圖，未儲存的地點會遺失。要繼續嗎？',
-  settings_title:'使用者設定', lang_setting_label:'語言', new_password_label:'新密碼', change_password_btn:'修改密碼', password_change_success:'密碼已修改', forgot_password_link:'忘記密碼？', forgot_password_title:'重設密碼', send_reset_btn:'傳送', password_reset_sent:'密碼重設郵件已寄出', map_type_label:'地圖類型', map_type_default:'標準', map_type_satellite:'衛星', map_type_terrain:'地形', layers_label:'圖層', biking_label:'自行車', traffic_label:'路況', transit_label:'大眾運輸', fixed_point_btn:'⭐ 收藏地點', fixed_point_modal_title:'儲存收藏地點', confirm_delete_point:'要刪除這個地點嗎？', target_route_label:'路線', target_fixedpoint_label:'⭐ 收藏地點', edit_fixed_point_modal_title:'編輯收藏地點', delete_btn:'刪除', save_as_fixed_btn:'⭐ 另存為收藏地點', assign_route_number_label:'分配路線編號', remove_from_route_btn:'從路線中移除',
+  settings_title:'使用者設定', lang_setting_label:'語言', new_password_label:'新密碼', change_password_btn:'修改密碼', password_change_success:'密碼已修改', forgot_password_link:'忘記密碼？', forgot_password_title:'重設密碼', send_reset_btn:'傳送', password_reset_sent:'密碼重設郵件已寄出', map_type_label:'地圖類型', map_type_default:'標準', map_type_satellite:'衛星', map_type_terrain:'地形', layers_label:'圖層', biking_label:'自行車', traffic_label:'路況', transit_label:'大眾運輸', fixed_point_btn:'⭐ 收藏地點', fixed_point_modal_title:'儲存收藏地點', confirm_delete_point:'要刪除這個地點嗎？', target_route_label:'路線', target_fixedpoint_label:'⭐ 收藏地點', edit_fixed_point_modal_title:'編輯收藏地點', delete_btn:'刪除', save_as_fixed_btn:'⭐ 另存為收藏地點', assign_route_number_label:'分配路線編號', remove_from_route_btn:'從路線中移除', icon_label:'圖示', color_label:'顏色',
 },
 ko: {
   gps_waiting:'📡 GPS 대기 중', gps_error:'📡 GPS 실패', gps_accuracy:'📡 정확도 ±{m}m',
@@ -693,7 +713,7 @@ ko: {
   point_label:'지점 {n}', google_map_not_loaded:'Google 지도가 로드되지 않았습니다',
   modal_name_placeholder:'예: A공장, B창고', modal_memo_placeholder:'예: 우회전 후 200m\n정문 앞에서 정차',
   confirm_lang_change_reload:'언어를 변경하면 지도가 새로고침됩니다. 저장하지 않은 지점은 사라집니다. 계속하시겠습니까？',
-  settings_title:'사용자 설정', lang_setting_label:'언어', new_password_label:'새 비밀번호', change_password_btn:'비밀번호 변경', password_change_success:'비밀번호가 변경되었습니다', forgot_password_link:'비밀번호를 잊으셨나요?', forgot_password_title:'비밀번호 재설정', send_reset_btn:'보내기', password_reset_sent:'비밀번호 재설정 이메일을 보냈습니다', map_type_label:'지도 종류', map_type_default:'기본', map_type_satellite:'위성', map_type_terrain:'지형', layers_label:'레이어', biking_label:'자전거', traffic_label:'교통정보', transit_label:'대중교통', fixed_point_btn:'⭐ 즐겨찾기', fixed_point_modal_title:'즐겨찾기 저장', confirm_delete_point:'이 지점을 삭제하시겠습니까?', target_route_label:'경로', target_fixedpoint_label:'⭐ 즐겨찾기', edit_fixed_point_modal_title:'즐겨찾기 편집', delete_btn:'삭제', save_as_fixed_btn:'⭐ 즐겨찾기로 저장', assign_route_number_label:'경로 번호 지정', remove_from_route_btn:'경로에서 제거',
+  settings_title:'사용자 설정', lang_setting_label:'언어', new_password_label:'새 비밀번호', change_password_btn:'비밀번호 변경', password_change_success:'비밀번호가 변경되었습니다', forgot_password_link:'비밀번호를 잊으셨나요?', forgot_password_title:'비밀번호 재설정', send_reset_btn:'보내기', password_reset_sent:'비밀번호 재설정 이메일을 보냈습니다', map_type_label:'지도 종류', map_type_default:'기본', map_type_satellite:'위성', map_type_terrain:'지형', layers_label:'레이어', biking_label:'자전거', traffic_label:'교통정보', transit_label:'대중교통', fixed_point_btn:'⭐ 즐겨찾기', fixed_point_modal_title:'즐겨찾기 저장', confirm_delete_point:'이 지점을 삭제하시겠습니까?', target_route_label:'경로', target_fixedpoint_label:'⭐ 즐겨찾기', edit_fixed_point_modal_title:'즐겨찾기 편집', delete_btn:'삭제', save_as_fixed_btn:'⭐ 즐겨찾기로 저장', assign_route_number_label:'경로 번호 지정', remove_from_route_btn:'경로에서 제거', icon_label:'아이콘', color_label:'색상',
 },
 es: {
   gps_waiting:'📡 Esperando GPS', gps_error:'📡 Error de GPS', gps_accuracy:'📡 Precisión ±{m}m',
@@ -747,7 +767,7 @@ es: {
   point_label:'Punto {n}', google_map_not_loaded:'Google Maps no se ha cargado',
   modal_name_placeholder:'ej: Fábrica A, Almacén B', modal_memo_placeholder:'ej: Gira a la derecha, 200m adelante\nDetente en la puerta',
   confirm_lang_change_reload:'Cambiar el idioma recargará el mapa. Se perderán los puntos no guardados. ¿Continuar?',
-  settings_title:'Configuración de usuario', lang_setting_label:'Idioma', new_password_label:'Nueva contraseña', change_password_btn:'Cambiar contraseña', password_change_success:'Contraseña cambiada', forgot_password_link:'¿Olvidaste tu contraseña?', forgot_password_title:'Restablecer contraseña', send_reset_btn:'Enviar', password_reset_sent:'Se envió el correo de restablecimiento', map_type_label:'Tipo de mapa', map_type_default:'Estándar', map_type_satellite:'Satélite', map_type_terrain:'Relieve', layers_label:'Capas', biking_label:'Bicicleta', traffic_label:'Tráfico', transit_label:'Transporte público', fixed_point_btn:'⭐ Guardar punto', fixed_point_modal_title:'Guardar punto favorito', confirm_delete_point:'¿Eliminar este punto?', target_route_label:'Ruta', target_fixedpoint_label:'⭐ Punto favorito', edit_fixed_point_modal_title:'Editar punto favorito', delete_btn:'Eliminar', save_as_fixed_btn:'⭐ Guardar como punto favorito', assign_route_number_label:'Asignar número de ruta', remove_from_route_btn:'Quitar de la ruta',
+  settings_title:'Configuración de usuario', lang_setting_label:'Idioma', new_password_label:'Nueva contraseña', change_password_btn:'Cambiar contraseña', password_change_success:'Contraseña cambiada', forgot_password_link:'¿Olvidaste tu contraseña?', forgot_password_title:'Restablecer contraseña', send_reset_btn:'Enviar', password_reset_sent:'Se envió el correo de restablecimiento', map_type_label:'Tipo de mapa', map_type_default:'Estándar', map_type_satellite:'Satélite', map_type_terrain:'Relieve', layers_label:'Capas', biking_label:'Bicicleta', traffic_label:'Tráfico', transit_label:'Transporte público', fixed_point_btn:'⭐ Guardar punto', fixed_point_modal_title:'Guardar punto favorito', confirm_delete_point:'¿Eliminar este punto?', target_route_label:'Ruta', target_fixedpoint_label:'⭐ Punto favorito', edit_fixed_point_modal_title:'Editar punto favorito', delete_btn:'Eliminar', save_as_fixed_btn:'⭐ Guardar como punto favorito', assign_route_number_label:'Asignar número de ruta', remove_from_route_btn:'Quitar de la ruta', icon_label:'Icono', color_label:'Color',
 },
 fr: {
   gps_waiting:'📡 En attente du GPS', gps_error:'📡 Échec du GPS', gps_accuracy:'📡 Précision ±{m}m',
@@ -801,7 +821,7 @@ fr: {
   point_label:'Point {n}', google_map_not_loaded:'Google Maps n\'a pas été chargé',
   modal_name_placeholder:'ex : Usine A, Entrepôt B', modal_memo_placeholder:'ex : Tourner à droite, 200m plus loin\nS\'arrêter devant le portail',
   confirm_lang_change_reload:'Changer de langue rechargera la carte. Les points non enregistrés seront perdus. Continuer ?',
-  settings_title:'Paramètres utilisateur', lang_setting_label:'Langue', new_password_label:'Nouveau mot de passe', change_password_btn:'Changer le mot de passe', password_change_success:'Mot de passe modifié', forgot_password_link:'Mot de passe oublié ?', forgot_password_title:'Réinitialiser le mot de passe', send_reset_btn:'Envoyer', password_reset_sent:'E-mail de réinitialisation envoyé', map_type_label:'Type de carte', map_type_default:'Standard', map_type_satellite:'Satellite', map_type_terrain:'Relief', layers_label:'Calques', biking_label:'Vélo', traffic_label:'Trafic', transit_label:'Transports en commun', fixed_point_btn:'⭐ Enregistrer', fixed_point_modal_title:'Enregistrer un point favori', confirm_delete_point:'Supprimer ce point ?', target_route_label:'Itinéraire', target_fixedpoint_label:'⭐ Point favori', edit_fixed_point_modal_title:'Modifier le point favori', delete_btn:'Supprimer', save_as_fixed_btn:'⭐ Enregistrer comme point favori', assign_route_number_label:'Attribuer un numéro d\'itinéraire', remove_from_route_btn:'Retirer de l\'itinéraire',
+  settings_title:'Paramètres utilisateur', lang_setting_label:'Langue', new_password_label:'Nouveau mot de passe', change_password_btn:'Changer le mot de passe', password_change_success:'Mot de passe modifié', forgot_password_link:'Mot de passe oublié ?', forgot_password_title:'Réinitialiser le mot de passe', send_reset_btn:'Envoyer', password_reset_sent:'E-mail de réinitialisation envoyé', map_type_label:'Type de carte', map_type_default:'Standard', map_type_satellite:'Satellite', map_type_terrain:'Relief', layers_label:'Calques', biking_label:'Vélo', traffic_label:'Trafic', transit_label:'Transports en commun', fixed_point_btn:'⭐ Enregistrer', fixed_point_modal_title:'Enregistrer un point favori', confirm_delete_point:'Supprimer ce point ?', target_route_label:'Itinéraire', target_fixedpoint_label:'⭐ Point favori', edit_fixed_point_modal_title:'Modifier le point favori', delete_btn:'Supprimer', save_as_fixed_btn:'⭐ Enregistrer comme point favori', assign_route_number_label:'Attribuer un numéro d\'itinéraire', remove_from_route_btn:'Retirer de l\'itinéraire', icon_label:'Icône', color_label:'Couleur',
 },
 th: {
   gps_waiting:'📡 กำลังรอ GPS', gps_error:'📡 GPS ล้มเหลว', gps_accuracy:'📡 ความแม่นยำ ±{m}ม.',
@@ -855,7 +875,7 @@ th: {
   point_label:'จุด {n}', google_map_not_loaded:'Google Maps ยังไม่โหลด',
   modal_name_placeholder:'เช่น โรงงาน A, คลังสินค้า B', modal_memo_placeholder:'เช่น เลี้ยวขวา 200 ม.\nจอดที่หน้าประตู',
   confirm_lang_change_reload:'การเปลี่ยนภาษาจะโหลดแผนที่ใหม่ จุดที่ยังไม่บันทึกจะหายไป ต้องการดำเนินการต่อหรือไม่?',
-  settings_title:'การตั้งค่าผู้ใช้', lang_setting_label:'ภาษา', new_password_label:'รหัสผ่านใหม่', change_password_btn:'เปลี่ยนรหัสผ่าน', password_change_success:'เปลี่ยนรหัสผ่านแล้ว', forgot_password_link:'ลืมรหัสผ่าน?', forgot_password_title:'รีเซ็ตรหัสผ่าน', send_reset_btn:'ส่ง', password_reset_sent:'ส่งอีเมลรีเซ็ตรหัสผ่านแล้ว', map_type_label:'ประเภทแผนที่', map_type_default:'มาตรฐาน', map_type_satellite:'ดาวเทียม', map_type_terrain:'ภูมิประเทศ', layers_label:'เลเยอร์', biking_label:'จักรยาน', traffic_label:'การจราจร', transit_label:'ขนส่งสาธารณะ', fixed_point_btn:'⭐ บันทึกจุด', fixed_point_modal_title:'บันทึกจุดโปรด', confirm_delete_point:'ลบจุดนี้หรือไม่?', target_route_label:'เส้นทาง', target_fixedpoint_label:'⭐ จุดโปรด', edit_fixed_point_modal_title:'แก้ไขจุดโปรด', delete_btn:'ลบ', save_as_fixed_btn:'⭐ บันทึกเป็นจุดโปรด', assign_route_number_label:'กำหนดหมายเลขเส้นทาง', remove_from_route_btn:'นำออกจากเส้นทาง',
+  settings_title:'การตั้งค่าผู้ใช้', lang_setting_label:'ภาษา', new_password_label:'รหัสผ่านใหม่', change_password_btn:'เปลี่ยนรหัสผ่าน', password_change_success:'เปลี่ยนรหัสผ่านแล้ว', forgot_password_link:'ลืมรหัสผ่าน?', forgot_password_title:'รีเซ็ตรหัสผ่าน', send_reset_btn:'ส่ง', password_reset_sent:'ส่งอีเมลรีเซ็ตรหัสผ่านแล้ว', map_type_label:'ประเภทแผนที่', map_type_default:'มาตรฐาน', map_type_satellite:'ดาวเทียม', map_type_terrain:'ภูมิประเทศ', layers_label:'เลเยอร์', biking_label:'จักรยาน', traffic_label:'การจราจร', transit_label:'ขนส่งสาธารณะ', fixed_point_btn:'⭐ บันทึกจุด', fixed_point_modal_title:'บันทึกจุดโปรด', confirm_delete_point:'ลบจุดนี้หรือไม่?', target_route_label:'เส้นทาง', target_fixedpoint_label:'⭐ จุดโปรด', edit_fixed_point_modal_title:'แก้ไขจุดโปรด', delete_btn:'ลบ', save_as_fixed_btn:'⭐ บันทึกเป็นจุดโปรด', assign_route_number_label:'กำหนดหมายเลขเส้นทาง', remove_from_route_btn:'นำออกจากเส้นทาง', icon_label:'ไอคอน', color_label:'สี',
 },
 de: {
   gps_waiting:'📡 Warte auf GPS', gps_error:'📡 GPS-Fehler', gps_accuracy:'📡 Genauigkeit ±{m}m',
@@ -909,7 +929,7 @@ de: {
   point_label:'Punkt {n}', google_map_not_loaded:'Google Maps wurde nicht geladen',
   modal_name_placeholder:'z. B. Fabrik A, Lager B', modal_memo_placeholder:'z. B. Rechts abbiegen, 200m voraus\nAm Tor anhalten',
   confirm_lang_change_reload:'Sprachwechsel lädt die Karte neu. Nicht gespeicherte Punkte gehen verloren. Fortfahren?',
-  settings_title:'Benutzereinstellungen', lang_setting_label:'Sprache', new_password_label:'Neues Passwort', change_password_btn:'Passwort ändern', password_change_success:'Passwort geändert', forgot_password_link:'Passwort vergessen?', forgot_password_title:'Passwort zurücksetzen', send_reset_btn:'Senden', password_reset_sent:'E-Mail zum Zurücksetzen gesendet', map_type_label:'Kartentyp', map_type_default:'Standard', map_type_satellite:'Satellit', map_type_terrain:'Gelände', layers_label:'Ebenen', biking_label:'Fahrrad', traffic_label:'Verkehr', transit_label:'Öffentlicher Verkehr', fixed_point_btn:'⭐ Punkt speichern', fixed_point_modal_title:'Favoritenpunkt speichern', confirm_delete_point:'Diesen Punkt löschen?', target_route_label:'Route', target_fixedpoint_label:'⭐ Favoritenpunkt', edit_fixed_point_modal_title:'Favoritenpunkt bearbeiten', delete_btn:'Löschen', save_as_fixed_btn:'⭐ Als Favoritenpunkt speichern', assign_route_number_label:'Routennummer zuweisen', remove_from_route_btn:'Aus Route entfernen'
+  settings_title:'Benutzereinstellungen', lang_setting_label:'Sprache', new_password_label:'Neues Passwort', change_password_btn:'Passwort ändern', password_change_success:'Passwort geändert', forgot_password_link:'Passwort vergessen?', forgot_password_title:'Passwort zurücksetzen', send_reset_btn:'Senden', password_reset_sent:'E-Mail zum Zurücksetzen gesendet', map_type_label:'Kartentyp', map_type_default:'Standard', map_type_satellite:'Satellit', map_type_terrain:'Gelände', layers_label:'Ebenen', biking_label:'Fahrrad', traffic_label:'Verkehr', transit_label:'Öffentlicher Verkehr', fixed_point_btn:'⭐ Punkt speichern', fixed_point_modal_title:'Favoritenpunkt speichern', confirm_delete_point:'Diesen Punkt löschen?', target_route_label:'Route', target_fixedpoint_label:'⭐ Favoritenpunkt', edit_fixed_point_modal_title:'Favoritenpunkt bearbeiten', delete_btn:'Löschen', save_as_fixed_btn:'⭐ Als Favoritenpunkt speichern', assign_route_number_label:'Routennummer zuweisen', remove_from_route_btn:'Aus Route entfernen', icon_label:'Symbol', color_label:'Farbe'
 },
 ru: {
   gps_waiting:'📡 Ожидание GPS', gps_error:'📡 Ошибка GPS', gps_accuracy:'📡 Точность ±{m}м',
@@ -963,7 +983,7 @@ ru: {
   point_label:'Точка {n}', google_map_not_loaded:'Google Maps не загружен',
   modal_name_placeholder:'напр. Завод A, Склад B', modal_memo_placeholder:'напр. Поворот направо, через 200м\nОстановиться у ворот',
   confirm_lang_change_reload:'Смена языка перезагрузит карту. Несохранённые точки будут потеряны. Продолжить?',
-  settings_title:'Настройки пользователя', lang_setting_label:'Язык', new_password_label:'Новый пароль', change_password_btn:'Изменить пароль', password_change_success:'Пароль изменён', forgot_password_link:'Забыли пароль?', forgot_password_title:'Сброс пароля', send_reset_btn:'Отправить', password_reset_sent:'Письмо для сброса пароля отправлено', map_type_label:'Тип карты', map_type_default:'Обычная', map_type_satellite:'Спутник', map_type_terrain:'Рельеф', layers_label:'Слои', biking_label:'Велосипед', traffic_label:'Пробки', transit_label:'Общественный транспорт', fixed_point_btn:'⭐ Сохранить точку', fixed_point_modal_title:'Сохранить избранную точку', confirm_delete_point:'Удалить эту точку?', target_route_label:'Маршрут', target_fixedpoint_label:'⭐ Избранная точка', edit_fixed_point_modal_title:'Изменить избранную точку', delete_btn:'Удалить', save_as_fixed_btn:'⭐ Сохранить как избранную точку', assign_route_number_label:'Присвоить номер маршрута', remove_from_route_btn:'Убрать из маршрута'
+  settings_title:'Настройки пользователя', lang_setting_label:'Язык', new_password_label:'Новый пароль', change_password_btn:'Изменить пароль', password_change_success:'Пароль изменён', forgot_password_link:'Забыли пароль?', forgot_password_title:'Сброс пароля', send_reset_btn:'Отправить', password_reset_sent:'Письмо для сброса пароля отправлено', map_type_label:'Тип карты', map_type_default:'Обычная', map_type_satellite:'Спутник', map_type_terrain:'Рельеф', layers_label:'Слои', biking_label:'Велосипед', traffic_label:'Пробки', transit_label:'Общественный транспорт', fixed_point_btn:'⭐ Сохранить точку', fixed_point_modal_title:'Сохранить избранную точку', confirm_delete_point:'Удалить эту точку?', target_route_label:'Маршрут', target_fixedpoint_label:'⭐ Избранная точка', edit_fixed_point_modal_title:'Изменить избранную точку', delete_btn:'Удалить', save_as_fixed_btn:'⭐ Сохранить как избранную точку', assign_route_number_label:'Присвоить номер маршрута', remove_from_route_btn:'Убрать из маршрута', icon_label:'Значок', color_label:'Цвет'
 },
 pt: {
   gps_waiting:'📡 Aguardando GPS', gps_error:'📡 Falha no GPS', gps_accuracy:'📡 Precisão ±{m}m',
@@ -1017,7 +1037,7 @@ pt: {
   point_label:'Ponto {n}', google_map_not_loaded:'O Google Maps não foi carregado',
   modal_name_placeholder:'ex: Fábrica A, Depósito B', modal_memo_placeholder:'ex: Vire à direita, 200m à frente\nPare no portão',
   confirm_lang_change_reload:'Mudar o idioma recarregará o mapa. Pontos não salvos serão perdidos. Continuar?',
-  settings_title:'Configurações do usuário', lang_setting_label:'Idioma', new_password_label:'Nova senha', change_password_btn:'Alterar senha', password_change_success:'Senha alterada', forgot_password_link:'Esqueceu a senha?', forgot_password_title:'Redefinir senha', send_reset_btn:'Enviar', password_reset_sent:'E-mail de redefinição enviado', map_type_label:'Tipo de mapa', map_type_default:'Padrão', map_type_satellite:'Satélite', map_type_terrain:'Relevo', layers_label:'Camadas', biking_label:'Bicicleta', traffic_label:'Trânsito', transit_label:'Transporte público', fixed_point_btn:'⭐ Salvar ponto', fixed_point_modal_title:'Salvar ponto favorito', confirm_delete_point:'Excluir este ponto?', target_route_label:'Rota', target_fixedpoint_label:'⭐ Ponto favorito', edit_fixed_point_modal_title:'Editar ponto favorito', delete_btn:'Excluir', save_as_fixed_btn:'⭐ Salvar como ponto favorito', assign_route_number_label:'Atribuir número de rota', remove_from_route_btn:'Remover da rota'
+  settings_title:'Configurações do usuário', lang_setting_label:'Idioma', new_password_label:'Nova senha', change_password_btn:'Alterar senha', password_change_success:'Senha alterada', forgot_password_link:'Esqueceu a senha?', forgot_password_title:'Redefinir senha', send_reset_btn:'Enviar', password_reset_sent:'E-mail de redefinição enviado', map_type_label:'Tipo de mapa', map_type_default:'Padrão', map_type_satellite:'Satélite', map_type_terrain:'Relevo', layers_label:'Camadas', biking_label:'Bicicleta', traffic_label:'Trânsito', transit_label:'Transporte público', fixed_point_btn:'⭐ Salvar ponto', fixed_point_modal_title:'Salvar ponto favorito', confirm_delete_point:'Excluir este ponto?', target_route_label:'Rota', target_fixedpoint_label:'⭐ Ponto favorito', edit_fixed_point_modal_title:'Editar ponto favorito', delete_btn:'Excluir', save_as_fixed_btn:'⭐ Salvar como ponto favorito', assign_route_number_label:'Atribuir número de rota', remove_from_route_btn:'Remover da rota', icon_label:'Ícone', color_label:'Cor'
 },
 ar: {
   gps_waiting:'📡 في انتظار GPS', gps_error:'📡 فشل GPS', gps_accuracy:'📡 الدقة ±{m} م',
@@ -1071,7 +1091,7 @@ ar: {
   point_label:'نقطة {n}', google_map_not_loaded:'لم يتم تحميل خرائط Google',
   modal_name_placeholder:'مثال: مصنع A، مستودع B', modal_memo_placeholder:'مثال: انعطف يمينًا، بعد 200م\nتوقف عند البوابة',
   confirm_lang_change_reload:'سيؤدي تغيير اللغة إلى إعادة تحميل الخريطة. ستُفقد النقاط غير المحفوظة. متابعة؟',
-  settings_title:'إعدادات المستخدم', lang_setting_label:'اللغة', new_password_label:'كلمة مرور جديدة', change_password_btn:'تغيير كلمة المرور', password_change_success:'تم تغيير كلمة المرور', forgot_password_link:'هل نسيت كلمة المرور؟', forgot_password_title:'إعادة تعيين كلمة المرور', send_reset_btn:'إرسال', password_reset_sent:'تم إرسال بريد إعادة التعيين', map_type_label:'نوع الخريطة', map_type_default:'عادي', map_type_satellite:'قمر صناعي', map_type_terrain:'التضاريس', layers_label:'الطبقات', biking_label:'الدراجات', traffic_label:'حركة المرور', transit_label:'وسائل النقل العام', fixed_point_btn:'⭐ حفظ نقطة', fixed_point_modal_title:'حفظ نقطة مفضلة', confirm_delete_point:'حذف هذه النقطة؟', target_route_label:'المسار', target_fixedpoint_label:'⭐ نقطة مفضلة', edit_fixed_point_modal_title:'تعديل النقطة المفضلة', delete_btn:'حذف', save_as_fixed_btn:'⭐ حفظ كنقطة مفضلة', assign_route_number_label:'تعيين رقم المسار', remove_from_route_btn:'إزالة من المسار'
+  settings_title:'إعدادات المستخدم', lang_setting_label:'اللغة', new_password_label:'كلمة مرور جديدة', change_password_btn:'تغيير كلمة المرور', password_change_success:'تم تغيير كلمة المرور', forgot_password_link:'هل نسيت كلمة المرور؟', forgot_password_title:'إعادة تعيين كلمة المرور', send_reset_btn:'إرسال', password_reset_sent:'تم إرسال بريد إعادة التعيين', map_type_label:'نوع الخريطة', map_type_default:'عادي', map_type_satellite:'قمر صناعي', map_type_terrain:'التضاريس', layers_label:'الطبقات', biking_label:'الدراجات', traffic_label:'حركة المرور', transit_label:'وسائل النقل العام', fixed_point_btn:'⭐ حفظ نقطة', fixed_point_modal_title:'حفظ نقطة مفضلة', confirm_delete_point:'حذف هذه النقطة؟', target_route_label:'المسار', target_fixedpoint_label:'⭐ نقطة مفضلة', edit_fixed_point_modal_title:'تعديل النقطة المفضلة', delete_btn:'حذف', save_as_fixed_btn:'⭐ حفظ كنقطة مفضلة', assign_route_number_label:'تعيين رقم المسار', remove_from_route_btn:'إزالة من المسار', icon_label:'الأيقونة', color_label:'اللون'
 },
 it: {
   gps_waiting:'📡 In attesa del GPS', gps_error:'📡 GPS non riuscito', gps_accuracy:'📡 Precisione ±{m}m',
@@ -1125,7 +1145,7 @@ it: {
   point_label:'Punto {n}', google_map_not_loaded:'Google Maps non è stato caricato',
   modal_name_placeholder:'es. Fabbrica A, Magazzino B', modal_memo_placeholder:'es. Gira a destra, 200m avanti\nFermati al cancello',
   confirm_lang_change_reload:'Il cambio di lingua ricaricherà la mappa. I punti non salvati andranno persi. Continuare?',
-  settings_title:'Impostazioni utente', lang_setting_label:'Lingua', new_password_label:'Nuova password', change_password_btn:'Cambia password', password_change_success:'Password modificata', forgot_password_link:'Password dimenticata?', forgot_password_title:'Reimposta password', send_reset_btn:'Invia', password_reset_sent:'E-mail di reimpostazione inviata', map_type_label:'Tipo di mappa', map_type_default:'Predefinito', map_type_satellite:'Satellite', map_type_terrain:'Rilievo', layers_label:'Livelli', biking_label:'Bicicletta', traffic_label:'Traffico', transit_label:'Trasporto pubblico', fixed_point_btn:'⭐ Salva punto', fixed_point_modal_title:'Salva punto preferito', confirm_delete_point:'Eliminare questo punto?', target_route_label:'Percorso', target_fixedpoint_label:'⭐ Punto preferito', edit_fixed_point_modal_title:'Modifica punto preferito', delete_btn:'Elimina', save_as_fixed_btn:'⭐ Salva come punto preferito', assign_route_number_label:'Assegna un numero di percorso', remove_from_route_btn:'Rimuovi dal percorso'
+  settings_title:'Impostazioni utente', lang_setting_label:'Lingua', new_password_label:'Nuova password', change_password_btn:'Cambia password', password_change_success:'Password modificata', forgot_password_link:'Password dimenticata?', forgot_password_title:'Reimposta password', send_reset_btn:'Invia', password_reset_sent:'E-mail di reimpostazione inviata', map_type_label:'Tipo di mappa', map_type_default:'Predefinito', map_type_satellite:'Satellite', map_type_terrain:'Rilievo', layers_label:'Livelli', biking_label:'Bicicletta', traffic_label:'Traffico', transit_label:'Trasporto pubblico', fixed_point_btn:'⭐ Salva punto', fixed_point_modal_title:'Salva punto preferito', confirm_delete_point:'Eliminare questo punto?', target_route_label:'Percorso', target_fixedpoint_label:'⭐ Punto preferito', edit_fixed_point_modal_title:'Modifica punto preferito', delete_btn:'Elimina', save_as_fixed_btn:'⭐ Salva come punto preferito', assign_route_number_label:'Assegna un numero di percorso', remove_from_route_btn:'Rimuovi dal percorso', icon_label:'Icona', color_label:'Colore'
 },
 id: {
   gps_waiting:'📡 Menunggu GPS', gps_error:'📡 GPS gagal', gps_accuracy:'📡 Akurasi ±{m}m',
@@ -1179,7 +1199,7 @@ id: {
   point_label:'Titik {n}', google_map_not_loaded:'Google Maps belum dimuat',
   modal_name_placeholder:'contoh: Pabrik A, Gudang B', modal_memo_placeholder:'contoh: Belok kanan, 200m di depan\nBerhenti di gerbang',
   confirm_lang_change_reload:'Mengubah bahasa akan memuat ulang peta. Titik yang belum disimpan akan hilang. Lanjutkan?',
-  settings_title:'Pengaturan pengguna', lang_setting_label:'Bahasa', new_password_label:'Kata sandi baru', change_password_btn:'Ubah kata sandi', password_change_success:'Kata sandi diubah', forgot_password_link:'Lupa kata sandi?', forgot_password_title:'Atur ulang kata sandi', send_reset_btn:'Kirim', password_reset_sent:'Email reset kata sandi terkirim', map_type_label:'Jenis peta', map_type_default:'Standar', map_type_satellite:'Satelit', map_type_terrain:'Medan', layers_label:'Lapisan', biking_label:'Sepeda', traffic_label:'Lalu lintas', transit_label:'Transportasi umum', fixed_point_btn:'⭐ Simpan titik', fixed_point_modal_title:'Simpan titik favorit', confirm_delete_point:'Hapus titik ini?', target_route_label:'Rute', target_fixedpoint_label:'⭐ Titik favorit', edit_fixed_point_modal_title:'Edit titik favorit', delete_btn:'Hapus', save_as_fixed_btn:'⭐ Simpan sebagai titik favorit', assign_route_number_label:'Tetapkan nomor rute', remove_from_route_btn:'Hapus dari rute'
+  settings_title:'Pengaturan pengguna', lang_setting_label:'Bahasa', new_password_label:'Kata sandi baru', change_password_btn:'Ubah kata sandi', password_change_success:'Kata sandi diubah', forgot_password_link:'Lupa kata sandi?', forgot_password_title:'Atur ulang kata sandi', send_reset_btn:'Kirim', password_reset_sent:'Email reset kata sandi terkirim', map_type_label:'Jenis peta', map_type_default:'Standar', map_type_satellite:'Satelit', map_type_terrain:'Medan', layers_label:'Lapisan', biking_label:'Sepeda', traffic_label:'Lalu lintas', transit_label:'Transportasi umum', fixed_point_btn:'⭐ Simpan titik', fixed_point_modal_title:'Simpan titik favorit', confirm_delete_point:'Hapus titik ini?', target_route_label:'Rute', target_fixedpoint_label:'⭐ Titik favorit', edit_fixed_point_modal_title:'Edit titik favorit', delete_btn:'Hapus', save_as_fixed_btn:'⭐ Simpan sebagai titik favorit', assign_route_number_label:'Tetapkan nomor rute', remove_from_route_btn:'Hapus dari rute', icon_label:'Ikon', color_label:'Warna'
 },
 vi: {
   gps_waiting:'📡 Đang chờ GPS', gps_error:'📡 GPS lỗi', gps_accuracy:'📡 Độ chính xác ±{m}m',
@@ -1233,7 +1253,7 @@ vi: {
   point_label:'Điểm {n}', google_map_not_loaded:'Google Maps chưa tải xong',
   modal_name_placeholder:'vd: Nhà máy A, Kho B', modal_memo_placeholder:'vd: Rẽ phải, 200m phía trước\nDừng trước cổng',
   confirm_lang_change_reload:'Đổi ngôn ngữ sẽ tải lại bản đồ. Các điểm chưa lưu sẽ bị mất. Tiếp tục?',
-  settings_title:'Cài đặt người dùng', lang_setting_label:'Ngôn ngữ', new_password_label:'Mật khẩu mới', change_password_btn:'Đổi mật khẩu', password_change_success:'Đã đổi mật khẩu', forgot_password_link:'Quên mật khẩu?', forgot_password_title:'Đặt lại mật khẩu', send_reset_btn:'Gửi', password_reset_sent:'Đã gửi email đặt lại mật khẩu', map_type_label:'Loại bản đồ', map_type_default:'Mặc định', map_type_satellite:'Vệ tinh', map_type_terrain:'Địa hình', layers_label:'Lớp', biking_label:'Xe đạp', traffic_label:'Giao thông', transit_label:'Giao thông công cộng', fixed_point_btn:'⭐ Lưu điểm', fixed_point_modal_title:'Lưu điểm yêu thích', confirm_delete_point:'Xóa điểm này?', target_route_label:'Lộ trình', target_fixedpoint_label:'⭐ Điểm yêu thích', edit_fixed_point_modal_title:'Sửa điểm yêu thích', delete_btn:'Xóa', save_as_fixed_btn:'⭐ Lưu thành điểm yêu thích', assign_route_number_label:'Gán số lộ trình', remove_from_route_btn:'Xóa khỏi lộ trình',
+  settings_title:'Cài đặt người dùng', lang_setting_label:'Ngôn ngữ', new_password_label:'Mật khẩu mới', change_password_btn:'Đổi mật khẩu', password_change_success:'Đã đổi mật khẩu', forgot_password_link:'Quên mật khẩu?', forgot_password_title:'Đặt lại mật khẩu', send_reset_btn:'Gửi', password_reset_sent:'Đã gửi email đặt lại mật khẩu', map_type_label:'Loại bản đồ', map_type_default:'Mặc định', map_type_satellite:'Vệ tinh', map_type_terrain:'Địa hình', layers_label:'Lớp', biking_label:'Xe đạp', traffic_label:'Giao thông', transit_label:'Giao thông công cộng', fixed_point_btn:'⭐ Lưu điểm', fixed_point_modal_title:'Lưu điểm yêu thích', confirm_delete_point:'Xóa điểm này?', target_route_label:'Lộ trình', target_fixedpoint_label:'⭐ Điểm yêu thích', edit_fixed_point_modal_title:'Sửa điểm yêu thích', delete_btn:'Xóa', save_as_fixed_btn:'⭐ Lưu thành điểm yêu thích', assign_route_number_label:'Gán số lộ trình', remove_from_route_btn:'Xóa khỏi lộ trình', icon_label:'Biểu tượng', color_label:'Màu',
 }
 };
 
@@ -1474,6 +1494,123 @@ function startInsertAt(afterIdx){
 let modalTarget = 'route'; // 'route' | 'fixedpoint'（新規追加時に何として保存するか）
 let editingFixedPoint = null; // 固定ポイント編集中はここにポイントデータが入る
 let editingLinkedRoutePointId = null; // ルート上の固定ポイント（合成マーカー）を編集中はここにルートポイントIDが入る
+let convertingRoutePointId = null; // 普通のルートポイントを固定ポイントに変換中はここにルートポイントIDが入る
+
+// ===== アイコン選択 =====
+// グループ区切りは見た目だけ（用途は固定しない）
+const ICON_GROUPS = [
+  ['🏨','🍴','🍜','🍣','🥩','🍸','🏮','☕','🍲'],
+  ['🌳','🎡','🦁','📚','🌌','🌃','🌅','🌇','♨️','🏞️'],
+  ['🏛️','🖼️','🏺','🎻','🏟️'],
+  ['⛩️','🏯','🕌'],
+  ['🎭','🎷','🎸','🪩','🍾','🎮','🎌'],
+  ['🤿','🪂','🛹','🚲','🚗','🏋️'],
+  ['⛽','🅿️','🛒','🚓','👗'],
+  ['⚠️','🔞','🚬'],
+  ['📷'],
+  ['⭐','🚩']
+];
+const ICON_LIST = ICON_GROUPS.flat();
+const ICON_COLORS = ['default','#ff3b30','#ff9500','#34c759','#00c7be','#007aff','#af52de','#ff2d95','#ffffff','#1c1c1e'];
+let selectedIcon = '⭐';
+
+// ⭐系なら'star'、🚩系なら'flag'、それ以外はnull
+function iconBase(icon){
+  if(!icon) return null;
+  if(icon==='⭐' || icon.startsWith('star:')) return 'star';
+  if(icon==='🚩' || icon.startsWith('flag:')) return 'flag';
+  return null;
+}
+function iconColor(icon){
+  const m = /^(?:star|flag):(#[0-9a-fA-F]{6})$/.exec(icon||'');
+  return m ? m[1] : 'default';
+}
+// アイコンを表示用HTMLに変換（色付き⭐🚩はSVGで描く）
+function iconHTML(icon, size){
+  icon = icon || '⭐';
+  const m = /^(star|flag):(#[0-9a-fA-F]{6})$/.exec(icon);
+  if(m){
+    const c = m[2];
+    const edge = (c==='#1c1c1e') ? '#fff' : '#000';
+    const shape = m[1]==='star'
+      ? `<path d="M12 1.8l3 6.6 7.2.8-5.4 4.9 1.5 7.1L12 17.6l-6.3 3.6 1.5-7.1L1.8 9.2 9 8.4z" fill="${c}" stroke="${edge}" stroke-opacity="0.55" stroke-width="1.2" stroke-linejoin="round"/>`
+      : `<rect x="4" y="1.5" width="2.2" height="21" rx="1" fill="#777"/><path d="M6.2 2.5h14l-3.4 5 3.4 5h-14z" fill="${c}" stroke="${edge}" stroke-opacity="0.55" stroke-width="1.1" stroke-linejoin="round"/>`;
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" style="vertical-align:middle;">${shape}</svg>`;
+  }
+  return `<span style="font-size:${size}px;line-height:1;">${icon}</span>`;
+}
+
+function buildIconGrid(){
+  const grid = document.getElementById('icon-grid');
+  let idx = 0;
+  grid.innerHTML = ICON_GROUPS.map(g =>
+    `<div class="icon-group">${g.map(ic => `<button type="button" class="icon-cell" data-idx="${idx++}" onclick="pickIconIdx(${idx-1})">${ic}</button>`).join('')}</div>`
+  ).join('');
+}
+
+function refreshIconPicker(){
+  document.getElementById('icon-current-preview').innerHTML = iconHTML(selectedIcon, 26);
+  const base = iconBase(selectedIcon);
+  document.querySelectorAll('#icon-grid .icon-cell').forEach(b=>{
+    const ic = ICON_LIST[parseInt(b.dataset.idx)];
+    const on = base ? (iconBase(ic)===base) : (ic===selectedIcon);
+    b.classList.toggle('selected', on);
+  });
+  const colorRow = document.getElementById('icon-color-row');
+  if(base){
+    const cur = iconColor(selectedIcon);
+    const baseEmoji = base==='star' ? '⭐' : '🚩';
+    colorRow.innerHTML = `<span style="font-size:11px;color:#777;margin-right:2px;">${t('color_label')}</span>` +
+      ICON_COLORS.map(c => {
+        const inner = c==='default' ? baseEmoji : '';
+        const bg = c==='default' ? '#0d0d0d' : c;
+        return `<button type="button" class="color-cell${c===cur?' selected':''}" style="background:${bg};" onclick="pickIconColor('${c}')">${inner}</button>`;
+      }).join('');
+    colorRow.style.display = 'flex';
+  } else {
+    colorRow.style.display = 'none';
+    colorRow.innerHTML = '';
+  }
+}
+
+function pickIconIdx(i){
+  const ic = ICON_LIST[i];
+  // 同じ⭐/🚩を押し直した時は色を保持
+  if(iconBase(ic) && iconBase(ic)===iconBase(selectedIcon)) { refreshIconPicker(); return; }
+  selectedIcon = ic;
+  refreshIconPicker();
+}
+
+function pickIconColor(c){
+  const base = iconBase(selectedIcon);
+  if(!base) return;
+  selectedIcon = (c==='default') ? (base==='star' ? '⭐' : '🚩') : `${base}:${c}`;
+  refreshIconPicker();
+}
+
+function toggleIconGrid(){
+  document.getElementById('icon-grid').classList.toggle('show');
+}
+
+// アイコン選択欄の表示/非表示（icon指定時はその値で初期化）
+function showIconPicker(show, icon){
+  const row = document.getElementById('icon-picker-row');
+  row.style.display = show ? 'block' : 'none';
+  if(!show) return;
+  if(!document.getElementById('icon-grid').children.length) buildIconGrid();
+  document.getElementById('icon-grid').classList.remove('show');
+  selectedIcon = icon || '⭐';
+  refreshIconPicker();
+}
+
+// 固定ポイントのアイコン/名前/メモを、今のルート上の同じ固定ポイントにも反映
+function syncLinkedRoutePoints(fpId, name, memo, icon){
+  let changed = false;
+  points.forEach(rp=>{
+    if(rp.fixedPointId===fpId){ rp.name=name; rp.memo=memo; rp.icon=icon; changed=true; }
+  });
+  if(changed){ refreshAllMarkers(); renderList(); }
+}
 
 // 挿入位置セレクトの中身を構築（ルート追加・固定ポイント+ルート番号付与の両方で共通利用）
 function updatePositionRow(){
@@ -1521,9 +1658,11 @@ function setModalTarget(target){
   if(target === 'fixedpoint'){
     fpToggle.style.display = 'flex';
     document.getElementById('fixedpoint-add-to-route').checked = true;
+    showIconPicker(true, '⭐');
     updatePositionRow();
   } else {
     fpToggle.style.display = 'none';
+    showIconPicker(false);
     updatePositionRow();
   }
 }
@@ -1533,6 +1672,7 @@ function openModal(latlng, id, forceInsertAfter){
   editingId=id;
   editingFixedPoint=null;
   editingLinkedRoutePointId=null;
+  convertingRoutePointId=null;
   modalTarget='route';
   const isEdit=id!==null;
   document.getElementById('modal-title').textContent=isEdit?t('edit_point_modal_title'):t('add_point_modal_title');
@@ -1543,6 +1683,7 @@ function openModal(latlng, id, forceInsertAfter){
   targetRow.style.display = (isEdit || insertAfterIndex!==null) ? 'none' : 'flex';
   if(isEdit){
     document.getElementById('fixedpoint-route-toggle').style.display='none';
+    showIconPicker(false);
     const p=points.find(x=>x.id===id);
     document.getElementById('modal-name').value=p.name;
     document.getElementById('modal-memo-input').value=p.memo;
@@ -1558,7 +1699,7 @@ function openModal(latlng, id, forceInsertAfter){
 
 function cancelModal(){
   document.getElementById('modal-overlay').classList.remove('show');
-  pendingLatLng=null; editingId=null; insertAfterIndex=null; editingFixedPoint=null; editingLinkedRoutePointId=null;
+  pendingLatLng=null; editingId=null; insertAfterIndex=null; editingFixedPoint=null; editingLinkedRoutePointId=null; convertingRoutePointId=null;
   document.querySelectorAll('.insert-btn').forEach(b=>b.classList.remove('active'));
   // addModeは継続（キャンセルしても追加モードは維持）
   if(addMode){
@@ -1591,8 +1732,13 @@ function insertRoutePointAt(name, memo, lat, lng, fixedPointId, icon){
 async function confirmModal(){
   const name=document.getElementById('modal-name').value.trim();
   const memo=document.getElementById('modal-memo-input').value.trim();
+  const icon=selectedIcon || '⭐';
 
-  if(editingLinkedRoutePointId!==null){
+  if(convertingRoutePointId!==null){
+    // 普通のルートポイントを固定ポイントに変換
+    const ok = await convertRoutePointToFixed(convertingRoutePointId, name, memo, icon);
+    if(!ok) return;
+  } else if(editingLinkedRoutePointId!==null){
     // ルート上の固定ポイントを編集：本体（saved_points）を更新し、ルート側の表示も同期
     const rp = points.find(x=>x.id===editingLinkedRoutePointId);
     if(rp){
@@ -1600,11 +1746,10 @@ async function confirmModal(){
         const res = await supabaseFetch(`/rest/v1/saved_points?id=eq.${rp.fixedPointId}`, {
           method: 'PATCH',
           prefer: 'return=minimal',
-          body: JSON.stringify({ name, memo })
+          body: JSON.stringify({ name, memo, icon })
         });
         if(res.ok){
-          rp.name = name; rp.memo = memo;
-          refreshAllMarkers(); renderList();
+          syncLinkedRoutePoints(rp.fixedPointId, name, memo, icon);
           loadSavedPoints();
         } else {
           alert(t('alert_save_fail',{err: await res.text()}));
@@ -1621,9 +1766,10 @@ async function confirmModal(){
       const res = await supabaseFetch(`/rest/v1/saved_points?id=eq.${editingFixedPoint.id}`, {
         method: 'PATCH',
         prefer: 'return=minimal',
-        body: JSON.stringify({ name, memo })
+        body: JSON.stringify({ name, memo, icon })
       });
       if(res.ok){
+        syncLinkedRoutePoints(editingFixedPoint.id, name, memo, icon);
         loadSavedPoints();
       } else {
         alert(t('alert_save_fail',{err: await res.text()}));
@@ -1649,15 +1795,15 @@ async function confirmModal(){
         body: JSON.stringify({
           id: newId,
           user_id: currentUser.id,
-          name, memo, icon: '⭐',
+          name, memo, icon,
           lat: pendingLatLng.lat, lng: pendingLatLng.lng
         })
       });
       if(res.ok){
-        addSavedPointMarker({ id:newId, user_id:currentUser.id, name, memo, icon:'⭐', lat:pendingLatLng.lat, lng:pendingLatLng.lng });
+        addSavedPointMarker({ id:newId, user_id:currentUser.id, name, memo, icon, lat:pendingLatLng.lat, lng:pendingLatLng.lng });
         const addToRoute = document.getElementById('fixedpoint-add-to-route').checked;
         if(addToRoute){
-          insertRoutePointAt(name, memo, pendingLatLng.lat, pendingLatLng.lng, newId, '⭐');
+          insertRoutePointAt(name, memo, pendingLatLng.lat, pendingLatLng.lng, newId, icon);
         }
       } else {
         alert(t('alert_save_fail',{err: await res.text()}));
@@ -1674,7 +1820,7 @@ async function confirmModal(){
 
   document.getElementById('modal-overlay').classList.remove('show');
   const wasInsert=insertAfterIndex!==null;
-  pendingLatLng=null; editingId=null; insertAfterIndex=null; editingFixedPoint=null; editingLinkedRoutePointId=null;
+  pendingLatLng=null; editingId=null; insertAfterIndex=null; editingFixedPoint=null; editingLinkedRoutePointId=null; convertingRoutePointId=null;
   // addModeは常に継続（連続追加可能）
   // 挿入ボタンのハイライトだけ解除
   insertAfterIndex=null;
@@ -1710,6 +1856,7 @@ function openFixedPointEditModal(p){
   pendingLatLng=null;
   editingId=null;
   editingLinkedRoutePointId=null;
+  convertingRoutePointId=null;
   editingFixedPoint=p;
   document.getElementById('modal-title').textContent=t('edit_fixed_point_modal_title');
   document.getElementById('modal-ok').textContent=t('save_btn2');
@@ -1721,6 +1868,7 @@ function openFixedPointEditModal(p){
   document.getElementById('position-row').style.display='none';
   document.getElementById('modal-name').value=p.name||'';
   document.getElementById('modal-memo-input').value=p.memo||'';
+  showIconPicker(true, p.icon);
   document.getElementById('modal-overlay').classList.add('show');
   setTimeout(()=>document.getElementById('modal-ok').focus(),100);
 }
@@ -1732,6 +1880,7 @@ function openLinkedRoutePointModal(routePointId){
   pendingLatLng=null;
   editingId=null;
   editingFixedPoint=null;
+  convertingRoutePointId=null;
   editingLinkedRoutePointId=routePointId;
   document.getElementById('modal-title').textContent=t('edit_fixed_point_modal_title');
   document.getElementById('modal-ok').textContent=t('save_btn2');
@@ -1743,6 +1892,8 @@ function openLinkedRoutePointModal(routePointId){
   document.getElementById('position-row').style.display='none';
   document.getElementById('modal-name').value=rp.name||'';
   document.getElementById('modal-memo-input').value=rp.memo||'';
+  const fp = savedPoints.find(x=>x.id===rp.fixedPointId);
+  showIconPicker(true, (fp && fp.icon) || rp.icon);
   document.getElementById('modal-overlay').classList.add('show');
   setTimeout(()=>document.getElementById('modal-ok').focus(),100);
 }
@@ -1772,7 +1923,7 @@ function makeLinkedIcon(idx,state,starEmoji){
   </svg>`;
   const html=`<div style="display:flex;flex-direction:column;align-items:center;width:34px;">
     ${balloonSvg}
-    <div style="margin-top:-8px;font-size:24px;line-height:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.6));">${starEmoji||'⭐'}</div>
+    <div style="margin-top:-8px;font-size:24px;line-height:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.6));">${iconHTML(starEmoji||'⭐',24)}</div>
   </div>`;
   return L.divIcon({html, iconSize:[34,60], iconAnchor:[17,48], className:''});
 }
@@ -1799,7 +1950,7 @@ function addMarker(p,idx){
 }
 
 function makeTooltip(p,idx){
-  const star = p.fixedPointId ? '⭐ ' : '';
+  const star = p.fixedPointId ? iconHTML(p.icon,14)+' ' : '';
   return `<b>${star}${idx+1}${p.name?' - '+p.name:''}</b>${p.memo?'<br><span style="color:#f0a500">'+p.memo+'</span>':''}`;
 }
 
@@ -1864,7 +2015,7 @@ function renderList(){
     const numClass=state==='done'?'done':'';
     const displayName=p.name||'';
     const isLinked = !!p.fixedPointId;
-    const starPrefix = isLinked ? '<span style="font-size:14px;">⭐</span>' : '';
+    const starPrefix = isLinked ? `<span style="display:inline-flex;align-items:center;">${iconHTML(p.icon,16)}</span>` : '';
     const numOnclick = isLinked
       ? `_suppressMapClick=true; openLinkedRoutePointModal(${p.id})`
       : `_suppressMapClick=true; openEditPopup(${p.id}, this)`;
@@ -2179,14 +2330,33 @@ function closeEditPopup(){
   editPopupId = null;
 }
 
-async function saveRoutePointAsFixed(){
+// ルートポイントの「⭐固定ポイントとして保存」→ アイコンを選べるモーダルを開く
+function openConvertToFixedModal(){
   if(!editPopupId) return;
   if(!currentUser){ showAuthScreen(); return; }
-  const idx = points.findIndex(x=>x.id===editPopupId);
-  if(idx === -1) return;
+  const id = editPopupId;
+  const p = points.find(x=>x.id===id);
+  if(!p) return;
+  closeEditPopup(); // 入力中の名前・メモをルートポイントに反映して閉じる
+  pendingLatLng=null; editingId=null; editingFixedPoint=null; editingLinkedRoutePointId=null;
+  convertingRoutePointId=id;
+  document.getElementById('modal-title').textContent=t('fixed_point_modal_title');
+  document.getElementById('modal-ok').textContent=t('save_btn2');
+  document.getElementById('modal-delete').style.display='none';
+  document.getElementById('modal-target-row').style.display='none';
+  document.getElementById('fixedpoint-route-toggle').style.display='none';
+  document.getElementById('position-row').style.display='none';
+  document.getElementById('modal-name').value=p.name||'';
+  document.getElementById('modal-memo-input').value=p.memo||'';
+  showIconPicker(true, '⭐');
+  document.getElementById('modal-overlay').classList.add('show');
+}
+
+// 変換本体：saved_pointsに保存し、同じ順番の位置に固定ポイントとして入れ直す
+async function convertRoutePointToFixed(routePointId, name, memo, icon){
+  const idx = points.findIndex(x=>x.id===routePointId);
+  if(idx === -1) return true;
   const p = points[idx];
-  const name = document.getElementById('edit-popup-name').value.trim();
-  const memo = document.getElementById('edit-popup-memo').value.trim();
   try{
     const newId = crypto.randomUUID();
     const res = await supabaseFetch('/rest/v1/saved_points', {
@@ -2195,30 +2365,27 @@ async function saveRoutePointAsFixed(){
       body: JSON.stringify({
         id: newId,
         user_id: currentUser.id,
-        name, memo, icon: '⭐',
+        name, memo, icon,
         lat: p.lat, lng: p.lng
       })
     });
     if(res.ok){
-      const newSavedPoint = { id:newId, user_id:currentUser.id, name, memo, icon:'⭐', lat:p.lat, lng:p.lng };
+      const newSavedPoint = { id:newId, user_id:currentUser.id, name, memo, icon, lat:p.lat, lng:p.lng };
       addSavedPointMarker(newSavedPoint);
-      // 元のルートポイントを削除し、同じ位置に「動作確認済みの固定ポイント組み込み処理」で入れ直す
       if(p.marker) map.removeLayer(p.marker);
       points.splice(idx, 1);
       const savedInsertAfterIndex = insertAfterIndex;
       insertAfterIndex = idx - 1;
       addFixedPointToRoute(newSavedPoint);
       insertAfterIndex = savedInsertAfterIndex;
-
-      document.getElementById('edit-popup').classList.remove('show');
-      document.getElementById('edit-popup').style.transform = '';
-      editPopupId = null;
-      alert(t('alert_save_success',{name: name || '⭐'}));
+      return true;
     } else {
       alert(t('alert_save_fail',{err: await res.text()}));
+      return false;
     }
   }catch(e){
     alert(t('err_network'));
+    return false;
   }
 }
 
@@ -2621,7 +2788,7 @@ let savedPointMarkers = [];
 
 function addSavedPointMarker(p){
   const icon = L.divIcon({
-    html: `<div style="font-size:26px;line-height:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.6));">${p.icon||'⭐'}</div>`,
+    html: `<div style="font-size:26px;line-height:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.6));">${iconHTML(p.icon||'⭐',26)}</div>`,
     iconSize:[30,30], iconAnchor:[15,26], className:''
   });
   const marker = L.marker([p.lat,p.lng],{icon}).addTo(map);
