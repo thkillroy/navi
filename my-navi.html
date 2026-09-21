@@ -2190,7 +2190,7 @@ async function saveRoutePointAsFixed(){
   const idx = points.findIndex(x=>x.id===editPopupId);
   if(idx === -1) return;
   const p = points[idx];
-  console.log('[DEBUG] saveRoutePointAsFixed開始', {editPopupId, idx, pBefore: JSON.parse(JSON.stringify(p))});
+  console.log('[DEBUG] saveRoutePointAsFixed開始', {editPopupId, idx, pBefore: {id:p.id, lat:p.lat, lng:p.lng, name:p.name, memo:p.memo, fixedPointId:p.fixedPointId}});
   const name = document.getElementById('edit-popup-name').value.trim();
   const memo = document.getElementById('edit-popup-memo').value.trim();
   try{
