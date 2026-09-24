@@ -1606,6 +1606,9 @@ function applyEditMode(){
     else p.marker.dragging.disable();
   });
   renderList();
+  // 検索結果の＋ボタンを出し入れする
+  if(typeof searchResults!=='undefined' && searchResults.length) renderSearchResults();
+  map.closePopup();
 }
 
 // 編集モードでない時に出す、見るだけの吹き出し
@@ -1792,6 +1795,8 @@ function updatePositionRow(){
 }
 
 function toggleFixedPointRouteRow(){
+  // 既存の固定ポイントを編集中は、常に末尾に組み込むので挿入位置は出さない
+  if(editingFixedPoint){ document.getElementById('position-row').style.display='none'; return; }
   const checked = document.getElementById('fixedpoint-add-to-route').checked;
   if(checked){ updatePositionRow(); }
   else { document.getElementById('position-row').style.display='none'; }
@@ -1918,6 +1923,9 @@ async function confirmModal(){
       });
       if(res.ok){
         syncLinkedRoutePoints(editingFixedPoint.id, name, memo, icon);
+        const addToRoute = document.getElementById('fixedpoint-route-toggle').style.display!=='none'
+          && document.getElementById('fixedpoint-add-to-route').checked;
+        if(addToRoute) addFixedPointToRoute({ ...editingFixedPoint, name, memo, icon, ...fpMeta });
         loadSavedPoints();
       } else {
         alert(t('alert_save_fail',{err: await res.text()}));
@@ -2013,7 +2021,11 @@ function openFixedPointEditModal(p){
   delBtn.style.display='';
   delBtn.textContent=t('delete_btn');
   document.getElementById('modal-target-row').style.display='none';
-  document.getElementById('fixedpoint-route-toggle').style.display='none';
+  // 編集モードで、まだルートに入っていない固定ポイントなら「ルートに組み込む」を出す（デフォルトON・末尾）
+  const canAddToRoute = addMode && !isFixedPointLinked(p.id);
+  const fpToggle = document.getElementById('fixedpoint-route-toggle');
+  fpToggle.style.display = canAddToRoute ? 'flex' : 'none';
+  if(canAddToRoute) document.getElementById('fixedpoint-add-to-route').checked = true;
   document.getElementById('position-row').style.display='none';
   document.getElementById('modal-name').value=p.name||'';
   document.getElementById('modal-memo-input').value=p.memo||'';
@@ -2267,7 +2279,7 @@ async function searchAddress(){
 
   // 自分の固定ポイント
   savedPoints.forEach(p=>{
-    if(hit(p.name,p.memo)) results.push({ kind:'fixed', name:p.name||'—', memo:p.memo||'', icon:p.icon,
+    if(hit(p.name,p.memo)) results.push({ kind:'fixed', name:p.name||'—', memo:p.memo||'', icon:p.icon, ref:p,
       lat:p.lat, lng:p.lng, dist:calcDist(center.lat,center.lng,p.lat,p.lng) });
   });
   // 今のルートのポイント
@@ -2305,10 +2317,11 @@ async function searchAddress(){
   results.sort((a,b)=>a.dist-b.dist);
   searchResults = results;
   renderSearchResults();
-  // 一番近い候補へ移動
-  map.setView([results[0].lat, results[0].lng], 16);
   followMode=false;
   document.getElementById('follow-btn').classList.remove('active');
+  // 候補が全部入るように地図を広げる（1件だけならその場所へ移動）
+  if(results.length===1) map.setView([results[0].lat, results[0].lng], 16);
+  else map.fitBounds(results.map(r=>[r.lat,r.lng]), {padding:[60,60], maxZoom:16});
 }
 
 function renderSearchResults(){
@@ -2317,7 +2330,7 @@ function renderSearchResults(){
   searchMarkers = searchResults.map((r,i)=>{
     const m = L.marker([r.lat,r.lng],{icon:makeSearchIcon(), zIndexOffset:500}).addTo(map);
     m.bindTooltip(r.name,{direction:'top',offset:[0,-34]});
-    m.on('click', e=>{ L.DomEvent.stopPropagation(e); showInfoPopup(e.latlng, r.name, r.memo); });
+    m.on('click', e=>{ L.DomEvent.stopPropagation(e); showSearchPopup(e.latlng, i); });
     return m;
   });
   const mark = { fixed:'⭐', route:'🛣', place:'📍' };
@@ -2326,9 +2339,20 @@ function renderSearchResults(){
     searchResults.map((r,i)=>`<div class="sr-row">
       <div class="sr-name" onclick="gotoSearchResult(${i})">${mark[r.kind]} ${fEsc(r.name)}</div>
       <span class="sr-dist">${formatDist(r.dist)}</span>
-      ${addMode && r.kind==='place' ? `<button class="ml-btn" onclick="addSearchResult(${i})">＋</button>` : ''}
+      ${(addMode && r.kind!=='route') ? `<button class="ml-btn" style="background:#f0a500;border-color:#f0a500;color:#000;font-weight:700;" onclick="addSearchResult(${i})">＋</button>` : ''}
     </div>`).join('');
   el.classList.add('show');
+}
+
+// 検索結果のピンの吹き出し（名前・メモ・ルートに追加）
+function showSearchPopup(latlng, i){
+  const r = searchResults[i]; if(!r) return;
+  const addBtn = (!addMode || r.kind==='route') ? '' :
+    `<button onclick="addSearchResult(${i})" style="margin-top:8px;background:#f0a500;border:none;color:#000;font-weight:700;font-size:12px;padding:6px 12px;border-radius:6px;cursor:pointer;">＋ ${t('add_btn')}</button>`;
+  L.popup({closeButton:true, autoPan:true})
+    .setLatLng(latlng)
+    .setContent(`<div style="min-width:140px;"><b style="color:#f0a500;">${fEsc(r.name)}</b>${r.memo?'<br><span style="white-space:pre-wrap;">'+fEsc(r.memo)+'</span>':''}<br>${addBtn}</div>`)
+    .openOn(map);
 }
 
 function gotoSearchResult(i){
@@ -2339,10 +2363,15 @@ function gotoSearchResult(i){
   if(searchMarkers[i]) searchMarkers[i].openTooltip();
 }
 
-// 編集モードの時だけ、検索結果をルートに追加できる
+// 検索結果をルートに追加（固定ポイントはそのまま組み込み、地図の場所は新しいポイントとして追加）
 function addSearchResult(i){
   const r = searchResults[i]; if(!r) return;
-  document.getElementById('modal-name').value = r.name || '';
+  map.closePopup();
+  if(r.kind==='fixed' && r.ref){
+    addFixedPointToRoute(r.ref);
+    clearSearchResults();
+    return;
+  }
   openModal({lat:r.lat, lng:r.lng}, null, points.length>=2?null:points.length);
   document.getElementById('modal-name').value = r.name || '';
 }
@@ -3055,8 +3084,7 @@ function addSavedPointMarker(p){
   if(p.name) marker.bindTooltip(p.name, {direction:'top', offset:[0,-24]});
   marker.on('click', (e)=>{
     if(!addMode){ showInfoPopup(e.latlng || [p.lat,p.lng], p.name, p.memo); return; }
-    if(addMode){ addFixedPointToRoute(p); }
-    else { openFixedPointEditModal(p); }
+    openFixedPointEditModal(p);
   });
   savedPointMarkers.push(marker);
   savedPoints.push(p);
