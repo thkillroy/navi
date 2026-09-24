@@ -360,6 +360,22 @@ body { background:#0d0d0d; color:#fff; font-family:'Helvetica Neue',Arial,sans-s
     <button onclick="saveUsername()"
       style="width:100%;padding:10px;background:#f0a500;border:none;color:#000;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:20px;" data-i18n="save_btn2">保存</button>
 
+    <label style="font-size:11px;color:#555;display:block;margin-bottom:5px;" data-i18n="avatar_label">プロフィール画像</label>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+      <div id="avatar-preview" style="width:48px;height:48px;border-radius:50%;background:#0d0d0d;border:1px solid #333;display:flex;align-items:center;justify-content:center;font-size:22px;overflow:hidden;flex-shrink:0;">👤</div>
+      <input type="file" id="avatar-file" accept="image/*" style="display:none;" onchange="onAvatarPicked(this)">
+      <button onclick="document.getElementById('avatar-file').click()" style="flex:1;padding:8px;background:#222;border:1px solid #444;color:#ddd;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;" data-i18n="icon_choose">画像を選ぶ</button>
+      <button onclick="resetAvatar()" style="padding:8px 10px;background:#222;border:1px solid #444;color:#aaa;border-radius:8px;font-size:12px;cursor:pointer;" data-i18n="icon_reset">戻す</button>
+    </div>
+
+    <label style="font-size:11px;color:#555;display:block;margin-bottom:5px;" data-i18n="gps_icon_label">現在位置のアイコン（この端末だけ・透過画像OK）</label>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
+      <div id="gps-icon-preview" style="width:48px;height:48px;border-radius:8px;background:#0d0d0d;border:1px solid #333;display:flex;align-items:center;justify-content:center;font-size:20px;overflow:hidden;flex-shrink:0;">🔵</div>
+      <input type="file" id="gps-icon-file" accept="image/*" style="display:none;" onchange="onGpsIconPicked(this)">
+      <button onclick="document.getElementById('gps-icon-file').click()" style="flex:1;padding:8px;background:#222;border:1px solid #444;color:#ddd;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;" data-i18n="icon_choose">画像を選ぶ</button>
+      <button onclick="resetGpsIcon()" style="padding:8px 10px;background:#222;border:1px solid #444;color:#aaa;border-radius:8px;font-size:12px;cursor:pointer;" data-i18n="icon_reset">戻す</button>
+    </div>
+
     <label style="font-size:11px;color:#555;display:block;margin-bottom:5px;" data-i18n="lang_setting_label">言語</label>
     <select id="lang-select" style="width:100%;background:#0d0d0d;border:1px solid #333;border-radius:8px;color:#fff;padding:10px 12px;font-size:14px;margin-bottom:20px;box-sizing:border-box;"></select>
 
@@ -618,7 +634,7 @@ ja: {
   point_label:'ポイント {n}', google_map_not_loaded:'Googleマップが読み込まれていません',
   modal_name_placeholder:'例: ○○工場、△△倉庫', modal_memo_placeholder:'例: 右折して200m先\n門の前で停車',
   confirm_lang_change_reload:'言語を変更すると地図が再読み込みされます。保存していないポイントは消えます。続けますか？',
-  settings_title:'ユーザー設定', lang_setting_label:'言語', new_password_label:'新しいパスワード', change_password_btn:'パスワードを変更', password_change_success:'パスワードを変更しました', forgot_password_link:'パスワードをお忘れですか？', forgot_password_title:'パスワード再設定', send_reset_btn:'送信', password_reset_sent:'パスワード再設定メールを送信しました', map_type_label:'地図の種類', map_type_default:'標準', map_type_satellite:'航空写真', map_type_terrain:'地形', layers_label:'表示', biking_label:'自転車', traffic_label:'渋滞', transit_label:'公共交通機関', fixed_point_btn:'⭐ 固定ポイント', fixed_point_modal_title:'固定ポイントを保存', confirm_delete_point:'このポイントを削除しますか？', target_route_label:'ルート', target_fixedpoint_label:'⭐ 固定ポイント', edit_fixed_point_modal_title:'固定ポイントを編集', delete_btn:'削除', save_as_fixed_btn:'⭐ 固定ポイントとして保存', assign_route_number_label:'ルート番号を付ける', remove_from_route_btn:'ルートから外す', icon_label:'アイコン', color_label:'色', follow_btn:'👥 フォロー', follow_title:'フォロー', follow_tab_search:'検索', follow_tab_following:'フォロー中', follow_tab_followers:'フォロワー', follow_tab_requests:'申請', follow_search_placeholder:'ユーザー名で検索', follow_do:'フォローする', follow_requested:'申請中（取消）', follow_following:'フォロー中（解除）', follow_approve:'承認', follow_reject:'拒否', follow_remove:'削除', follow_no_users:'見つかりません', follow_empty:'まだいません', follow_confirm_unfollow:'フォローを解除しますか？', follow_confirm_remove:'このフォロワーを削除しますか？', mylist_btn:'📂 マイリスト', mylist_title:'マイリスト', tab_routes:'ルート', tab_points:'固定ポイント', vis_private:'🔒 非公開', vis_followers:'👥 フォロワー', vis_public:'🌐 公開', visibility_label:'公開範囲', group_label:'フォルダ', group_root:'（フォルダなし）', new_folder_btn:'＋ フォルダ', new_folder_prompt:'フォルダ名', subfolder_btn:'＋ サブフォルダ', rename_btn:'名前変更', rename_prompt:'新しい名前', move_to_label:'移動先', edit_btn:'編集', confirm_delete_folder:'このフォルダを削除しますか？（中身は1つ上のフォルダに移ります）', confirm_apply_children:'中のフォルダと項目にも同じ公開範囲を反映しますか？', tab_everyone:'みんな', ev_following_users:'フォロー中のユーザー', ev_back:'← 戻る', ev_no_following:'フォロー中のユーザーはいません。ユーザー名で検索できます', preview_dest:'保存先', preview_include_points:'中の固定ポイントも自分の固定ポイントとして保存', preview_back_list:'一覧に戻る', preview_save:'保存', preview_count_points:'固定ポイント{n}件', preview_count_routes:'ルート{n}本', preview_result:'{n}件保存しました（保存済みの{m}件はスキップ）', panel_list_only:'欄だけ', panel_show_buttons:'ボタンを出す', edit_mode_btn:'✏️ 編集', edit_mode_btn_active:'✕ 編集終了', search_results_title:'検索結果 {n}件',
+  settings_title:'ユーザー設定', lang_setting_label:'言語', new_password_label:'新しいパスワード', change_password_btn:'パスワードを変更', password_change_success:'パスワードを変更しました', forgot_password_link:'パスワードをお忘れですか？', forgot_password_title:'パスワード再設定', send_reset_btn:'送信', password_reset_sent:'パスワード再設定メールを送信しました', map_type_label:'地図の種類', map_type_default:'標準', map_type_satellite:'航空写真', map_type_terrain:'地形', layers_label:'表示', biking_label:'自転車', traffic_label:'渋滞', transit_label:'公共交通機関', fixed_point_btn:'⭐ 固定ポイント', fixed_point_modal_title:'固定ポイントを保存', confirm_delete_point:'このポイントを削除しますか？', target_route_label:'ルート', target_fixedpoint_label:'⭐ 固定ポイント', edit_fixed_point_modal_title:'固定ポイントを編集', delete_btn:'削除', save_as_fixed_btn:'⭐ 固定ポイントとして保存', assign_route_number_label:'ルート番号を付ける', remove_from_route_btn:'ルートから外す', icon_label:'アイコン', color_label:'色', follow_btn:'👥 フォロー', follow_title:'フォロー', follow_tab_search:'検索', follow_tab_following:'フォロー中', follow_tab_followers:'フォロワー', follow_tab_requests:'申請', follow_search_placeholder:'ユーザー名で検索', follow_do:'フォローする', follow_requested:'申請中（取消）', follow_following:'フォロー中（解除）', follow_approve:'承認', follow_reject:'拒否', follow_remove:'削除', follow_no_users:'見つかりません', follow_empty:'まだいません', follow_confirm_unfollow:'フォローを解除しますか？', follow_confirm_remove:'このフォロワーを削除しますか？', mylist_btn:'📂 マイリスト', mylist_title:'マイリスト', tab_routes:'ルート', tab_points:'固定ポイント', vis_private:'🔒 非公開', vis_followers:'👥 フォロワー', vis_public:'🌐 公開', visibility_label:'公開範囲', group_label:'フォルダ', group_root:'（フォルダなし）', new_folder_btn:'＋ フォルダ', new_folder_prompt:'フォルダ名', subfolder_btn:'＋ サブフォルダ', rename_btn:'名前変更', rename_prompt:'新しい名前', move_to_label:'移動先', edit_btn:'編集', confirm_delete_folder:'このフォルダを削除しますか？（中身は1つ上のフォルダに移ります）', confirm_apply_children:'中のフォルダと項目にも同じ公開範囲を反映しますか？', tab_everyone:'みんな', ev_following_users:'フォロー中のユーザー', ev_back:'← 戻る', ev_no_following:'フォロー中のユーザーはいません。ユーザー名で検索できます', preview_dest:'保存先', preview_include_points:'中の固定ポイントも自分の固定ポイントとして保存', preview_back_list:'一覧に戻る', preview_save:'保存', preview_count_points:'固定ポイント{n}件', preview_count_routes:'ルート{n}本', preview_result:'{n}件保存しました（保存済みの{m}件はスキップ）', panel_list_only:'欄だけ', panel_show_buttons:'ボタンを出す', edit_mode_btn:'✏️ 編集', edit_mode_btn_active:'✕ 編集終了', search_results_title:'検索結果 {n}件', link_copy_btn:'🔗 リンク', link_copied:'リンクをコピーしました', link_private_warn:'このリンクは非公開です。公開範囲を変えないと、他の人は開けません', link_not_visible:'このリンクは見られません（非公開か、権限がありません）', avatar_label:'プロフィール画像', gps_icon_label:'現在位置のアイコン（この端末だけ・透過画像OK）', icon_choose:'画像を選ぶ', icon_reset:'戻す', icon_upload_fail:'画像を保存できませんでした',
 },
 en: {
   gps_waiting:'📡 Waiting for GPS', gps_error:'📡 GPS failed', gps_accuracy:'📡 Accuracy ±{m}m',
@@ -672,7 +688,7 @@ en: {
   point_label:'Point {n}', google_map_not_loaded:'Google Maps has not loaded',
   modal_name_placeholder:'e.g. Factory A, Warehouse B', modal_memo_placeholder:'e.g. Turn right, 200m ahead\nStop at the gate',
   confirm_lang_change_reload:'Changing language reloads the map. Unsaved points will be lost. Continue?',
-  settings_title:'User Settings', lang_setting_label:'Language', new_password_label:'New password', change_password_btn:'Change password', password_change_success:'Password changed', forgot_password_link:'Forgot password?', forgot_password_title:'Reset password', send_reset_btn:'Send', password_reset_sent:'Password reset email sent', map_type_label:'Map type', map_type_default:'Default', map_type_satellite:'Satellite', map_type_terrain:'Terrain', layers_label:'Layers', biking_label:'Biking', traffic_label:'Traffic', transit_label:'Transit', fixed_point_btn:'⭐ Save Point', fixed_point_modal_title:'Save fixed point', confirm_delete_point:'Delete this point?', target_route_label:'Route', target_fixedpoint_label:'⭐ Saved Point', edit_fixed_point_modal_title:'Edit saved point', delete_btn:'Delete', save_as_fixed_btn:'⭐ Save as fixed point', assign_route_number_label:'Assign a route number', remove_from_route_btn:'Remove from route', icon_label:'Icon', color_label:'Color', follow_btn:'👥 Follow', follow_title:'Follow', follow_tab_search:'Search', follow_tab_following:'Following', follow_tab_followers:'Followers', follow_tab_requests:'Requests', follow_search_placeholder:'Search by username', follow_do:'Follow', follow_requested:'Requested (cancel)', follow_following:'Following (unfollow)', follow_approve:'Approve', follow_reject:'Decline', follow_remove:'Remove', follow_no_users:'No users found', follow_empty:'No one yet', follow_confirm_unfollow:'Unfollow?', follow_confirm_remove:'Remove this follower?', mylist_btn:'📂 My List', mylist_title:'My List', tab_routes:'Routes', tab_points:'Saved Points', vis_private:'🔒 Private', vis_followers:'👥 Followers', vis_public:'🌐 Public', visibility_label:'Visibility', group_label:'Folder', group_root:'(No folder)', new_folder_btn:'+ Folder', new_folder_prompt:'Folder name', subfolder_btn:'+ Subfolder', rename_btn:'Rename', rename_prompt:'New name', move_to_label:'Move to', edit_btn:'Edit', confirm_delete_folder:'Delete this folder? (Its contents move up one level)', confirm_apply_children:'Apply the same visibility to everything inside?', tab_everyone:'Everyone', ev_following_users:'Users you follow', ev_back:'← Back', ev_no_following:'You are not following anyone. Search by username.', preview_dest:'Save to', preview_include_points:'Also save the points inside as my saved points', preview_back_list:'Back to list', preview_save:'Save', preview_count_points:'{n} points', preview_count_routes:'{n} routes', preview_result:'Saved {n} (skipped {m} already saved)', panel_list_only:'List only', panel_show_buttons:'Show buttons', edit_mode_btn:'✏️ Edit', edit_mode_btn_active:'✕ End edit', search_results_title:'{n} results',
+  settings_title:'User Settings', lang_setting_label:'Language', new_password_label:'New password', change_password_btn:'Change password', password_change_success:'Password changed', forgot_password_link:'Forgot password?', forgot_password_title:'Reset password', send_reset_btn:'Send', password_reset_sent:'Password reset email sent', map_type_label:'Map type', map_type_default:'Default', map_type_satellite:'Satellite', map_type_terrain:'Terrain', layers_label:'Layers', biking_label:'Biking', traffic_label:'Traffic', transit_label:'Transit', fixed_point_btn:'⭐ Save Point', fixed_point_modal_title:'Save fixed point', confirm_delete_point:'Delete this point?', target_route_label:'Route', target_fixedpoint_label:'⭐ Saved Point', edit_fixed_point_modal_title:'Edit saved point', delete_btn:'Delete', save_as_fixed_btn:'⭐ Save as fixed point', assign_route_number_label:'Assign a route number', remove_from_route_btn:'Remove from route', icon_label:'Icon', color_label:'Color', follow_btn:'👥 Follow', follow_title:'Follow', follow_tab_search:'Search', follow_tab_following:'Following', follow_tab_followers:'Followers', follow_tab_requests:'Requests', follow_search_placeholder:'Search by username', follow_do:'Follow', follow_requested:'Requested (cancel)', follow_following:'Following (unfollow)', follow_approve:'Approve', follow_reject:'Decline', follow_remove:'Remove', follow_no_users:'No users found', follow_empty:'No one yet', follow_confirm_unfollow:'Unfollow?', follow_confirm_remove:'Remove this follower?', mylist_btn:'📂 My List', mylist_title:'My List', tab_routes:'Routes', tab_points:'Saved Points', vis_private:'🔒 Private', vis_followers:'👥 Followers', vis_public:'🌐 Public', visibility_label:'Visibility', group_label:'Folder', group_root:'(No folder)', new_folder_btn:'+ Folder', new_folder_prompt:'Folder name', subfolder_btn:'+ Subfolder', rename_btn:'Rename', rename_prompt:'New name', move_to_label:'Move to', edit_btn:'Edit', confirm_delete_folder:'Delete this folder? (Its contents move up one level)', confirm_apply_children:'Apply the same visibility to everything inside?', tab_everyone:'Everyone', ev_following_users:'Users you follow', ev_back:'← Back', ev_no_following:'You are not following anyone. Search by username.', preview_dest:'Save to', preview_include_points:'Also save the points inside as my saved points', preview_back_list:'Back to list', preview_save:'Save', preview_count_points:'{n} points', preview_count_routes:'{n} routes', preview_result:'Saved {n} (skipped {m} already saved)', panel_list_only:'List only', panel_show_buttons:'Show buttons', edit_mode_btn:'✏️ Edit', edit_mode_btn_active:'✕ End edit', search_results_title:'{n} results', link_copy_btn:'🔗 Link', link_copied:'Link copied', link_private_warn:'This item is private. Others cannot open it unless you change its visibility.', link_not_visible:'You cannot view this link (private, or no permission).', avatar_label:'Profile picture', gps_icon_label:'Current position icon (this device only, transparent OK)', icon_choose:'Choose image', icon_reset:'Reset', icon_upload_fail:'Could not save the image',
 },
 'zh-CN': {
   gps_waiting:'📡 等待GPS', gps_error:'📡 GPS失败', gps_accuracy:'📡 精度 ±{m}米',
@@ -726,7 +742,7 @@ en: {
   point_label:'地点 {n}', google_map_not_loaded:'谷歌地图尚未加载',
   modal_name_placeholder:'例: A工厂、B仓库', modal_memo_placeholder:'例: 右转200米\n在大门前停车',
   confirm_lang_change_reload:'切换语言将重新加载地图，未保存的地点会丢失。要继续吗？',
-  settings_title:'用户设置', lang_setting_label:'语言', new_password_label:'新密码', change_password_btn:'修改密码', password_change_success:'密码已修改', forgot_password_link:'忘记密码？', forgot_password_title:'重置密码', send_reset_btn:'发送', password_reset_sent:'密码重置邮件已发送', map_type_label:'地图类型', map_type_default:'标准', map_type_satellite:'卫星', map_type_terrain:'地形', layers_label:'图层', biking_label:'自行车', traffic_label:'路况', transit_label:'公共交通', fixed_point_btn:'⭐ 收藏地点', fixed_point_modal_title:'保存收藏地点', confirm_delete_point:'要删除这个地点吗？', target_route_label:'路线', target_fixedpoint_label:'⭐ 收藏地点', edit_fixed_point_modal_title:'编辑收藏地点', delete_btn:'删除', save_as_fixed_btn:'⭐ 另存为收藏地点', assign_route_number_label:'分配路线编号', remove_from_route_btn:'从路线中移除', icon_label:'图标', color_label:'颜色', follow_btn:'👥 关注', follow_title:'关注', follow_tab_search:'搜索', follow_tab_following:'正在关注', follow_tab_followers:'粉丝', follow_tab_requests:'申请', follow_search_placeholder:'按用户名搜索', follow_do:'关注', follow_requested:'已申请（取消）', follow_following:'正在关注（取消关注）', follow_approve:'批准', follow_reject:'拒绝', follow_remove:'移除', follow_no_users:'未找到用户', follow_empty:'暂无', follow_confirm_unfollow:'要取消关注吗？', follow_confirm_remove:'要移除这位粉丝吗？', mylist_btn:'📂 我的列表', mylist_title:'我的列表', tab_routes:'路线', tab_points:'收藏地点', vis_private:'🔒 私密', vis_followers:'👥 粉丝可见', vis_public:'🌐 公开', visibility_label:'可见范围', group_label:'文件夹', group_root:'（无文件夹）', new_folder_btn:'＋ 文件夹', new_folder_prompt:'文件夹名称', subfolder_btn:'＋ 子文件夹', rename_btn:'重命名', rename_prompt:'新名称', move_to_label:'移动到', edit_btn:'编辑', confirm_delete_folder:'要删除此文件夹吗？（内容将移到上一级）', confirm_apply_children:'要将相同的可见范围应用到其中所有内容吗？', tab_everyone:'大家', ev_following_users:'已关注的用户', ev_back:'← 返回', ev_no_following:'还没有关注任何人。可按用户名搜索', preview_dest:'保存到', preview_include_points:'同时将其中的地点保存为我的收藏地点', preview_back_list:'返回列表', preview_save:'保存', preview_count_points:'{n}个收藏地点', preview_count_routes:'{n}条路线', preview_result:'已保存{n}项（跳过已保存的{m}项）', panel_list_only:'仅列表', panel_show_buttons:'显示按钮', edit_mode_btn:'✏️ 编辑', edit_mode_btn_active:'✕ 结束编辑', search_results_title:'{n}个结果',
+  settings_title:'用户设置', lang_setting_label:'语言', new_password_label:'新密码', change_password_btn:'修改密码', password_change_success:'密码已修改', forgot_password_link:'忘记密码？', forgot_password_title:'重置密码', send_reset_btn:'发送', password_reset_sent:'密码重置邮件已发送', map_type_label:'地图类型', map_type_default:'标准', map_type_satellite:'卫星', map_type_terrain:'地形', layers_label:'图层', biking_label:'自行车', traffic_label:'路况', transit_label:'公共交通', fixed_point_btn:'⭐ 收藏地点', fixed_point_modal_title:'保存收藏地点', confirm_delete_point:'要删除这个地点吗？', target_route_label:'路线', target_fixedpoint_label:'⭐ 收藏地点', edit_fixed_point_modal_title:'编辑收藏地点', delete_btn:'删除', save_as_fixed_btn:'⭐ 另存为收藏地点', assign_route_number_label:'分配路线编号', remove_from_route_btn:'从路线中移除', icon_label:'图标', color_label:'颜色', follow_btn:'👥 关注', follow_title:'关注', follow_tab_search:'搜索', follow_tab_following:'正在关注', follow_tab_followers:'粉丝', follow_tab_requests:'申请', follow_search_placeholder:'按用户名搜索', follow_do:'关注', follow_requested:'已申请（取消）', follow_following:'正在关注（取消关注）', follow_approve:'批准', follow_reject:'拒绝', follow_remove:'移除', follow_no_users:'未找到用户', follow_empty:'暂无', follow_confirm_unfollow:'要取消关注吗？', follow_confirm_remove:'要移除这位粉丝吗？', mylist_btn:'📂 我的列表', mylist_title:'我的列表', tab_routes:'路线', tab_points:'收藏地点', vis_private:'🔒 私密', vis_followers:'👥 粉丝可见', vis_public:'🌐 公开', visibility_label:'可见范围', group_label:'文件夹', group_root:'（无文件夹）', new_folder_btn:'＋ 文件夹', new_folder_prompt:'文件夹名称', subfolder_btn:'＋ 子文件夹', rename_btn:'重命名', rename_prompt:'新名称', move_to_label:'移动到', edit_btn:'编辑', confirm_delete_folder:'要删除此文件夹吗？（内容将移到上一级）', confirm_apply_children:'要将相同的可见范围应用到其中所有内容吗？', tab_everyone:'大家', ev_following_users:'已关注的用户', ev_back:'← 返回', ev_no_following:'还没有关注任何人。可按用户名搜索', preview_dest:'保存到', preview_include_points:'同时将其中的地点保存为我的收藏地点', preview_back_list:'返回列表', preview_save:'保存', preview_count_points:'{n}个收藏地点', preview_count_routes:'{n}条路线', preview_result:'已保存{n}项（跳过已保存的{m}项）', panel_list_only:'仅列表', panel_show_buttons:'显示按钮', edit_mode_btn:'✏️ 编辑', edit_mode_btn_active:'✕ 结束编辑', search_results_title:'{n}个结果', link_copy_btn:'🔗 链接', link_copied:'已复制链接', link_private_warn:'该项为私密。除非更改可见范围，否则他人无法打开', link_not_visible:'无法查看此链接（私密或没有权限）', avatar_label:'头像', gps_icon_label:'当前位置图标（仅此设备，支持透明图片）', icon_choose:'选择图片', icon_reset:'恢复', icon_upload_fail:'无法保存图片',
 },
 'zh-TW': {
   gps_waiting:'📡 等待GPS', gps_error:'📡 GPS失敗', gps_accuracy:'📡 精度 ±{m}公尺',
@@ -780,7 +796,7 @@ en: {
   point_label:'地點 {n}', google_map_not_loaded:'Google地圖尚未載入',
   modal_name_placeholder:'例: A工廠、B倉庫', modal_memo_placeholder:'例: 右轉200公尺\n在大門前停車',
   confirm_lang_change_reload:'切換語言將重新載入地圖，未儲存的地點會遺失。要繼續嗎？',
-  settings_title:'使用者設定', lang_setting_label:'語言', new_password_label:'新密碼', change_password_btn:'修改密碼', password_change_success:'密碼已修改', forgot_password_link:'忘記密碼？', forgot_password_title:'重設密碼', send_reset_btn:'傳送', password_reset_sent:'密碼重設郵件已寄出', map_type_label:'地圖類型', map_type_default:'標準', map_type_satellite:'衛星', map_type_terrain:'地形', layers_label:'圖層', biking_label:'自行車', traffic_label:'路況', transit_label:'大眾運輸', fixed_point_btn:'⭐ 收藏地點', fixed_point_modal_title:'儲存收藏地點', confirm_delete_point:'要刪除這個地點嗎？', target_route_label:'路線', target_fixedpoint_label:'⭐ 收藏地點', edit_fixed_point_modal_title:'編輯收藏地點', delete_btn:'刪除', save_as_fixed_btn:'⭐ 另存為收藏地點', assign_route_number_label:'分配路線編號', remove_from_route_btn:'從路線中移除', icon_label:'圖示', color_label:'顏色', follow_btn:'👥 追蹤', follow_title:'追蹤', follow_tab_search:'搜尋', follow_tab_following:'追蹤中', follow_tab_followers:'粉絲', follow_tab_requests:'申請', follow_search_placeholder:'以使用者名稱搜尋', follow_do:'追蹤', follow_requested:'已申請（取消）', follow_following:'追蹤中（取消追蹤）', follow_approve:'核准', follow_reject:'拒絕', follow_remove:'移除', follow_no_users:'找不到使用者', follow_empty:'目前沒有', follow_confirm_unfollow:'要取消追蹤嗎？', follow_confirm_remove:'要移除這位粉絲嗎？', mylist_btn:'📂 我的清單', mylist_title:'我的清單', tab_routes:'路線', tab_points:'收藏地點', vis_private:'🔒 私人', vis_followers:'👥 粉絲可見', vis_public:'🌐 公開', visibility_label:'公開範圍', group_label:'資料夾', group_root:'（無資料夾）', new_folder_btn:'＋ 資料夾', new_folder_prompt:'資料夾名稱', subfolder_btn:'＋ 子資料夾', rename_btn:'重新命名', rename_prompt:'新名稱', move_to_label:'移動到', edit_btn:'編輯', confirm_delete_folder:'要刪除此資料夾嗎？（內容會移到上一層）', confirm_apply_children:'要將相同的公開範圍套用到其中所有內容嗎？', tab_everyone:'大家', ev_following_users:'追蹤中的使用者', ev_back:'← 返回', ev_no_following:'尚未追蹤任何人。可用使用者名稱搜尋', preview_dest:'儲存到', preview_include_points:'同時將其中的地點儲存為我的收藏地點', preview_back_list:'返回清單', preview_save:'儲存', preview_count_points:'{n}個收藏地點', preview_count_routes:'{n}條路線', preview_result:'已儲存{n}項（略過已儲存的{m}項）', panel_list_only:'僅清單', panel_show_buttons:'顯示按鈕', edit_mode_btn:'✏️ 編輯', edit_mode_btn_active:'✕ 結束編輯', search_results_title:'{n}個結果',
+  settings_title:'使用者設定', lang_setting_label:'語言', new_password_label:'新密碼', change_password_btn:'修改密碼', password_change_success:'密碼已修改', forgot_password_link:'忘記密碼？', forgot_password_title:'重設密碼', send_reset_btn:'傳送', password_reset_sent:'密碼重設郵件已寄出', map_type_label:'地圖類型', map_type_default:'標準', map_type_satellite:'衛星', map_type_terrain:'地形', layers_label:'圖層', biking_label:'自行車', traffic_label:'路況', transit_label:'大眾運輸', fixed_point_btn:'⭐ 收藏地點', fixed_point_modal_title:'儲存收藏地點', confirm_delete_point:'要刪除這個地點嗎？', target_route_label:'路線', target_fixedpoint_label:'⭐ 收藏地點', edit_fixed_point_modal_title:'編輯收藏地點', delete_btn:'刪除', save_as_fixed_btn:'⭐ 另存為收藏地點', assign_route_number_label:'分配路線編號', remove_from_route_btn:'從路線中移除', icon_label:'圖示', color_label:'顏色', follow_btn:'👥 追蹤', follow_title:'追蹤', follow_tab_search:'搜尋', follow_tab_following:'追蹤中', follow_tab_followers:'粉絲', follow_tab_requests:'申請', follow_search_placeholder:'以使用者名稱搜尋', follow_do:'追蹤', follow_requested:'已申請（取消）', follow_following:'追蹤中（取消追蹤）', follow_approve:'核准', follow_reject:'拒絕', follow_remove:'移除', follow_no_users:'找不到使用者', follow_empty:'目前沒有', follow_confirm_unfollow:'要取消追蹤嗎？', follow_confirm_remove:'要移除這位粉絲嗎？', mylist_btn:'📂 我的清單', mylist_title:'我的清單', tab_routes:'路線', tab_points:'收藏地點', vis_private:'🔒 私人', vis_followers:'👥 粉絲可見', vis_public:'🌐 公開', visibility_label:'公開範圍', group_label:'資料夾', group_root:'（無資料夾）', new_folder_btn:'＋ 資料夾', new_folder_prompt:'資料夾名稱', subfolder_btn:'＋ 子資料夾', rename_btn:'重新命名', rename_prompt:'新名稱', move_to_label:'移動到', edit_btn:'編輯', confirm_delete_folder:'要刪除此資料夾嗎？（內容會移到上一層）', confirm_apply_children:'要將相同的公開範圍套用到其中所有內容嗎？', tab_everyone:'大家', ev_following_users:'追蹤中的使用者', ev_back:'← 返回', ev_no_following:'尚未追蹤任何人。可用使用者名稱搜尋', preview_dest:'儲存到', preview_include_points:'同時將其中的地點儲存為我的收藏地點', preview_back_list:'返回清單', preview_save:'儲存', preview_count_points:'{n}個收藏地點', preview_count_routes:'{n}條路線', preview_result:'已儲存{n}項（略過已儲存的{m}項）', panel_list_only:'僅清單', panel_show_buttons:'顯示按鈕', edit_mode_btn:'✏️ 編輯', edit_mode_btn_active:'✕ 結束編輯', search_results_title:'{n}個結果', link_copy_btn:'🔗 連結', link_copied:'已複製連結', link_private_warn:'此項目為私人。除非變更公開範圍，否則他人無法開啟', link_not_visible:'無法檢視此連結（私人或沒有權限）', avatar_label:'大頭貼', gps_icon_label:'目前位置圖示（僅此裝置，支援透明圖片）', icon_choose:'選擇圖片', icon_reset:'還原', icon_upload_fail:'無法儲存圖片',
 },
 ko: {
   gps_waiting:'📡 GPS 대기 중', gps_error:'📡 GPS 실패', gps_accuracy:'📡 정확도 ±{m}m',
@@ -834,7 +850,7 @@ ko: {
   point_label:'지점 {n}', google_map_not_loaded:'Google 지도가 로드되지 않았습니다',
   modal_name_placeholder:'예: A공장, B창고', modal_memo_placeholder:'예: 우회전 후 200m\n정문 앞에서 정차',
   confirm_lang_change_reload:'언어를 변경하면 지도가 새로고침됩니다. 저장하지 않은 지점은 사라집니다. 계속하시겠습니까？',
-  settings_title:'사용자 설정', lang_setting_label:'언어', new_password_label:'새 비밀번호', change_password_btn:'비밀번호 변경', password_change_success:'비밀번호가 변경되었습니다', forgot_password_link:'비밀번호를 잊으셨나요?', forgot_password_title:'비밀번호 재설정', send_reset_btn:'보내기', password_reset_sent:'비밀번호 재설정 이메일을 보냈습니다', map_type_label:'지도 종류', map_type_default:'기본', map_type_satellite:'위성', map_type_terrain:'지형', layers_label:'레이어', biking_label:'자전거', traffic_label:'교통정보', transit_label:'대중교통', fixed_point_btn:'⭐ 즐겨찾기', fixed_point_modal_title:'즐겨찾기 저장', confirm_delete_point:'이 지점을 삭제하시겠습니까?', target_route_label:'경로', target_fixedpoint_label:'⭐ 즐겨찾기', edit_fixed_point_modal_title:'즐겨찾기 편집', delete_btn:'삭제', save_as_fixed_btn:'⭐ 즐겨찾기로 저장', assign_route_number_label:'경로 번호 지정', remove_from_route_btn:'경로에서 제거', icon_label:'아이콘', color_label:'색상', follow_btn:'👥 팔로우', follow_title:'팔로우', follow_tab_search:'검색', follow_tab_following:'팔로잉', follow_tab_followers:'팔로워', follow_tab_requests:'요청', follow_search_placeholder:'사용자 이름으로 검색', follow_do:'팔로우', follow_requested:'요청됨(취소)', follow_following:'팔로잉(언팔로우)', follow_approve:'승인', follow_reject:'거절', follow_remove:'삭제', follow_no_users:'사용자를 찾을 수 없습니다', follow_empty:'아직 없습니다', follow_confirm_unfollow:'팔로우를 취소하시겠습니까?', follow_confirm_remove:'이 팔로워를 삭제하시겠습니까?', mylist_btn:'📂 내 목록', mylist_title:'내 목록', tab_routes:'경로', tab_points:'즐겨찾기', vis_private:'🔒 비공개', vis_followers:'👥 팔로워', vis_public:'🌐 공개', visibility_label:'공개 범위', group_label:'폴더', group_root:'(폴더 없음)', new_folder_btn:'+ 폴더', new_folder_prompt:'폴더 이름', subfolder_btn:'+ 하위 폴더', rename_btn:'이름 변경', rename_prompt:'새 이름', move_to_label:'이동', edit_btn:'편집', confirm_delete_folder:'이 폴더를 삭제하시겠습니까? (내용은 한 단계 위로 이동합니다)', confirm_apply_children:'안의 모든 항목에도 같은 공개 범위를 적용하시겠습니까?', tab_everyone:'모두', ev_following_users:'팔로우 중인 사용자', ev_back:'← 뒤로', ev_no_following:'팔로우 중인 사용자가 없습니다. 사용자 이름으로 검색하세요', preview_dest:'저장 위치', preview_include_points:'안의 지점도 내 즐겨찾기로 저장', preview_back_list:'목록으로', preview_save:'저장', preview_count_points:'즐겨찾기 {n}개', preview_count_routes:'경로 {n}개', preview_result:'{n}개 저장했습니다 (이미 저장된 {m}개는 건너뜀)', panel_list_only:'목록만', panel_show_buttons:'버튼 표시', edit_mode_btn:'✏️ 편집', edit_mode_btn_active:'✕ 편집 종료', search_results_title:'검색 결과 {n}개',
+  settings_title:'사용자 설정', lang_setting_label:'언어', new_password_label:'새 비밀번호', change_password_btn:'비밀번호 변경', password_change_success:'비밀번호가 변경되었습니다', forgot_password_link:'비밀번호를 잊으셨나요?', forgot_password_title:'비밀번호 재설정', send_reset_btn:'보내기', password_reset_sent:'비밀번호 재설정 이메일을 보냈습니다', map_type_label:'지도 종류', map_type_default:'기본', map_type_satellite:'위성', map_type_terrain:'지형', layers_label:'레이어', biking_label:'자전거', traffic_label:'교통정보', transit_label:'대중교통', fixed_point_btn:'⭐ 즐겨찾기', fixed_point_modal_title:'즐겨찾기 저장', confirm_delete_point:'이 지점을 삭제하시겠습니까?', target_route_label:'경로', target_fixedpoint_label:'⭐ 즐겨찾기', edit_fixed_point_modal_title:'즐겨찾기 편집', delete_btn:'삭제', save_as_fixed_btn:'⭐ 즐겨찾기로 저장', assign_route_number_label:'경로 번호 지정', remove_from_route_btn:'경로에서 제거', icon_label:'아이콘', color_label:'색상', follow_btn:'👥 팔로우', follow_title:'팔로우', follow_tab_search:'검색', follow_tab_following:'팔로잉', follow_tab_followers:'팔로워', follow_tab_requests:'요청', follow_search_placeholder:'사용자 이름으로 검색', follow_do:'팔로우', follow_requested:'요청됨(취소)', follow_following:'팔로잉(언팔로우)', follow_approve:'승인', follow_reject:'거절', follow_remove:'삭제', follow_no_users:'사용자를 찾을 수 없습니다', follow_empty:'아직 없습니다', follow_confirm_unfollow:'팔로우를 취소하시겠습니까?', follow_confirm_remove:'이 팔로워를 삭제하시겠습니까?', mylist_btn:'📂 내 목록', mylist_title:'내 목록', tab_routes:'경로', tab_points:'즐겨찾기', vis_private:'🔒 비공개', vis_followers:'👥 팔로워', vis_public:'🌐 공개', visibility_label:'공개 범위', group_label:'폴더', group_root:'(폴더 없음)', new_folder_btn:'+ 폴더', new_folder_prompt:'폴더 이름', subfolder_btn:'+ 하위 폴더', rename_btn:'이름 변경', rename_prompt:'새 이름', move_to_label:'이동', edit_btn:'편집', confirm_delete_folder:'이 폴더를 삭제하시겠습니까? (내용은 한 단계 위로 이동합니다)', confirm_apply_children:'안의 모든 항목에도 같은 공개 범위를 적용하시겠습니까?', tab_everyone:'모두', ev_following_users:'팔로우 중인 사용자', ev_back:'← 뒤로', ev_no_following:'팔로우 중인 사용자가 없습니다. 사용자 이름으로 검색하세요', preview_dest:'저장 위치', preview_include_points:'안의 지점도 내 즐겨찾기로 저장', preview_back_list:'목록으로', preview_save:'저장', preview_count_points:'즐겨찾기 {n}개', preview_count_routes:'경로 {n}개', preview_result:'{n}개 저장했습니다 (이미 저장된 {m}개는 건너뜀)', panel_list_only:'목록만', panel_show_buttons:'버튼 표시', edit_mode_btn:'✏️ 편집', edit_mode_btn_active:'✕ 편집 종료', search_results_title:'검색 결과 {n}개', link_copy_btn:'🔗 링크', link_copied:'링크를 복사했습니다', link_private_warn:'이 항목은 비공개입니다. 공개 범위를 바꾸지 않으면 다른 사람은 열 수 없습니다', link_not_visible:'이 링크를 볼 수 없습니다 (비공개이거나 권한 없음)', avatar_label:'프로필 사진', gps_icon_label:'현재 위치 아이콘 (이 기기만, 투명 이미지 가능)', icon_choose:'이미지 선택', icon_reset:'되돌리기', icon_upload_fail:'이미지를 저장하지 못했습니다',
 },
 es: {
   gps_waiting:'📡 Esperando GPS', gps_error:'📡 Error de GPS', gps_accuracy:'📡 Precisión ±{m}m',
@@ -888,7 +904,7 @@ es: {
   point_label:'Punto {n}', google_map_not_loaded:'Google Maps no se ha cargado',
   modal_name_placeholder:'ej: Fábrica A, Almacén B', modal_memo_placeholder:'ej: Gira a la derecha, 200m adelante\nDetente en la puerta',
   confirm_lang_change_reload:'Cambiar el idioma recargará el mapa. Se perderán los puntos no guardados. ¿Continuar?',
-  settings_title:'Configuración de usuario', lang_setting_label:'Idioma', new_password_label:'Nueva contraseña', change_password_btn:'Cambiar contraseña', password_change_success:'Contraseña cambiada', forgot_password_link:'¿Olvidaste tu contraseña?', forgot_password_title:'Restablecer contraseña', send_reset_btn:'Enviar', password_reset_sent:'Se envió el correo de restablecimiento', map_type_label:'Tipo de mapa', map_type_default:'Estándar', map_type_satellite:'Satélite', map_type_terrain:'Relieve', layers_label:'Capas', biking_label:'Bicicleta', traffic_label:'Tráfico', transit_label:'Transporte público', fixed_point_btn:'⭐ Guardar punto', fixed_point_modal_title:'Guardar punto favorito', confirm_delete_point:'¿Eliminar este punto?', target_route_label:'Ruta', target_fixedpoint_label:'⭐ Punto favorito', edit_fixed_point_modal_title:'Editar punto favorito', delete_btn:'Eliminar', save_as_fixed_btn:'⭐ Guardar como punto favorito', assign_route_number_label:'Asignar número de ruta', remove_from_route_btn:'Quitar de la ruta', icon_label:'Icono', color_label:'Color', follow_btn:'👥 Seguir', follow_title:'Seguir', follow_tab_search:'Buscar', follow_tab_following:'Siguiendo', follow_tab_followers:'Seguidores', follow_tab_requests:'Solicitudes', follow_search_placeholder:'Buscar por nombre de usuario', follow_do:'Seguir', follow_requested:'Solicitado (cancelar)', follow_following:'Siguiendo (dejar de seguir)', follow_approve:'Aprobar', follow_reject:'Rechazar', follow_remove:'Eliminar', follow_no_users:'No se encontraron usuarios', follow_empty:'Nadie todavía', follow_confirm_unfollow:'¿Dejar de seguir?', follow_confirm_remove:'¿Eliminar a este seguidor?', mylist_btn:'📂 Mi lista', mylist_title:'Mi lista', tab_routes:'Rutas', tab_points:'Puntos favoritos', vis_private:'🔒 Privado', vis_followers:'👥 Seguidores', vis_public:'🌐 Público', visibility_label:'Visibilidad', group_label:'Carpeta', group_root:'(Sin carpeta)', new_folder_btn:'+ Carpeta', new_folder_prompt:'Nombre de la carpeta', subfolder_btn:'+ Subcarpeta', rename_btn:'Renombrar', rename_prompt:'Nuevo nombre', move_to_label:'Mover a', edit_btn:'Editar', confirm_delete_folder:'¿Eliminar esta carpeta? (Su contenido sube un nivel)', confirm_apply_children:'¿Aplicar la misma visibilidad a todo su contenido?', tab_everyone:'Todos', ev_following_users:'Usuarios que sigues', ev_back:'← Volver', ev_no_following:'No sigues a nadie. Busca por nombre de usuario.', preview_dest:'Guardar en', preview_include_points:'Guardar también los puntos como mis puntos favoritos', preview_back_list:'Volver a la lista', preview_save:'Guardar', preview_count_points:'{n} puntos', preview_count_routes:'{n} rutas', preview_result:'Guardados {n} (omitidos {m} ya guardados)', panel_list_only:'Solo lista', panel_show_buttons:'Mostrar botones', edit_mode_btn:'✏️ Editar', edit_mode_btn_active:'✕ Terminar', search_results_title:'{n} resultados',
+  settings_title:'Configuración de usuario', lang_setting_label:'Idioma', new_password_label:'Nueva contraseña', change_password_btn:'Cambiar contraseña', password_change_success:'Contraseña cambiada', forgot_password_link:'¿Olvidaste tu contraseña?', forgot_password_title:'Restablecer contraseña', send_reset_btn:'Enviar', password_reset_sent:'Se envió el correo de restablecimiento', map_type_label:'Tipo de mapa', map_type_default:'Estándar', map_type_satellite:'Satélite', map_type_terrain:'Relieve', layers_label:'Capas', biking_label:'Bicicleta', traffic_label:'Tráfico', transit_label:'Transporte público', fixed_point_btn:'⭐ Guardar punto', fixed_point_modal_title:'Guardar punto favorito', confirm_delete_point:'¿Eliminar este punto?', target_route_label:'Ruta', target_fixedpoint_label:'⭐ Punto favorito', edit_fixed_point_modal_title:'Editar punto favorito', delete_btn:'Eliminar', save_as_fixed_btn:'⭐ Guardar como punto favorito', assign_route_number_label:'Asignar número de ruta', remove_from_route_btn:'Quitar de la ruta', icon_label:'Icono', color_label:'Color', follow_btn:'👥 Seguir', follow_title:'Seguir', follow_tab_search:'Buscar', follow_tab_following:'Siguiendo', follow_tab_followers:'Seguidores', follow_tab_requests:'Solicitudes', follow_search_placeholder:'Buscar por nombre de usuario', follow_do:'Seguir', follow_requested:'Solicitado (cancelar)', follow_following:'Siguiendo (dejar de seguir)', follow_approve:'Aprobar', follow_reject:'Rechazar', follow_remove:'Eliminar', follow_no_users:'No se encontraron usuarios', follow_empty:'Nadie todavía', follow_confirm_unfollow:'¿Dejar de seguir?', follow_confirm_remove:'¿Eliminar a este seguidor?', mylist_btn:'📂 Mi lista', mylist_title:'Mi lista', tab_routes:'Rutas', tab_points:'Puntos favoritos', vis_private:'🔒 Privado', vis_followers:'👥 Seguidores', vis_public:'🌐 Público', visibility_label:'Visibilidad', group_label:'Carpeta', group_root:'(Sin carpeta)', new_folder_btn:'+ Carpeta', new_folder_prompt:'Nombre de la carpeta', subfolder_btn:'+ Subcarpeta', rename_btn:'Renombrar', rename_prompt:'Nuevo nombre', move_to_label:'Mover a', edit_btn:'Editar', confirm_delete_folder:'¿Eliminar esta carpeta? (Su contenido sube un nivel)', confirm_apply_children:'¿Aplicar la misma visibilidad a todo su contenido?', tab_everyone:'Todos', ev_following_users:'Usuarios que sigues', ev_back:'← Volver', ev_no_following:'No sigues a nadie. Busca por nombre de usuario.', preview_dest:'Guardar en', preview_include_points:'Guardar también los puntos como mis puntos favoritos', preview_back_list:'Volver a la lista', preview_save:'Guardar', preview_count_points:'{n} puntos', preview_count_routes:'{n} rutas', preview_result:'Guardados {n} (omitidos {m} ya guardados)', panel_list_only:'Solo lista', panel_show_buttons:'Mostrar botones', edit_mode_btn:'✏️ Editar', edit_mode_btn_active:'✕ Terminar', search_results_title:'{n} resultados', link_copy_btn:'🔗 Enlace', link_copied:'Enlace copiado', link_private_warn:'Este elemento es privado. Los demás no podrán abrirlo si no cambias su visibilidad.', link_not_visible:'No puedes ver este enlace (privado o sin permiso).', avatar_label:'Foto de perfil', gps_icon_label:'Icono de posición actual (solo este dispositivo, admite transparencia)', icon_choose:'Elegir imagen', icon_reset:'Restablecer', icon_upload_fail:'No se pudo guardar la imagen',
 },
 fr: {
   gps_waiting:'📡 En attente du GPS', gps_error:'📡 Échec du GPS', gps_accuracy:'📡 Précision ±{m}m',
@@ -942,7 +958,7 @@ fr: {
   point_label:'Point {n}', google_map_not_loaded:'Google Maps n\'a pas été chargé',
   modal_name_placeholder:'ex : Usine A, Entrepôt B', modal_memo_placeholder:'ex : Tourner à droite, 200m plus loin\nS\'arrêter devant le portail',
   confirm_lang_change_reload:'Changer de langue rechargera la carte. Les points non enregistrés seront perdus. Continuer ?',
-  settings_title:'Paramètres utilisateur', lang_setting_label:'Langue', new_password_label:'Nouveau mot de passe', change_password_btn:'Changer le mot de passe', password_change_success:'Mot de passe modifié', forgot_password_link:'Mot de passe oublié ?', forgot_password_title:'Réinitialiser le mot de passe', send_reset_btn:'Envoyer', password_reset_sent:'E-mail de réinitialisation envoyé', map_type_label:'Type de carte', map_type_default:'Standard', map_type_satellite:'Satellite', map_type_terrain:'Relief', layers_label:'Calques', biking_label:'Vélo', traffic_label:'Trafic', transit_label:'Transports en commun', fixed_point_btn:'⭐ Enregistrer', fixed_point_modal_title:'Enregistrer un point favori', confirm_delete_point:'Supprimer ce point ?', target_route_label:'Itinéraire', target_fixedpoint_label:'⭐ Point favori', edit_fixed_point_modal_title:'Modifier le point favori', delete_btn:'Supprimer', save_as_fixed_btn:'⭐ Enregistrer comme point favori', assign_route_number_label:'Attribuer un numéro d\'itinéraire', remove_from_route_btn:'Retirer de l\'itinéraire', icon_label:'Icône', color_label:'Couleur', follow_btn:'👥 Suivre', follow_title:'Suivre', follow_tab_search:'Rechercher', follow_tab_following:'Abonnements', follow_tab_followers:'Abonnés', follow_tab_requests:'Demandes', follow_search_placeholder:'Rechercher par nom d\'utilisateur', follow_do:'Suivre', follow_requested:'Demandé (annuler)', follow_following:'Abonné (ne plus suivre)', follow_approve:'Accepter', follow_reject:'Refuser', follow_remove:'Retirer', follow_no_users:'Aucun utilisateur trouvé', follow_empty:'Personne pour l\'instant', follow_confirm_unfollow:'Ne plus suivre ?', follow_confirm_remove:'Retirer cet abonné ?', mylist_btn:'📂 Ma liste', mylist_title:'Ma liste', tab_routes:'Itinéraires', tab_points:'Points favoris', vis_private:'🔒 Privé', vis_followers:'👥 Abonnés', vis_public:'🌐 Public', visibility_label:'Visibilité', group_label:'Dossier', group_root:'(Aucun dossier)', new_folder_btn:'+ Dossier', new_folder_prompt:'Nom du dossier', subfolder_btn:'+ Sous-dossier', rename_btn:'Renommer', rename_prompt:'Nouveau nom', move_to_label:'Déplacer vers', edit_btn:'Modifier', confirm_delete_folder:'Supprimer ce dossier ? (Son contenu remonte d\'un niveau)', confirm_apply_children:'Appliquer la même visibilité à tout son contenu ?', tab_everyone:'Tout le monde', ev_following_users:'Utilisateurs suivis', ev_back:'← Retour', ev_no_following:'Vous ne suivez personne. Recherchez par nom d\'utilisateur.', preview_dest:'Enregistrer dans', preview_include_points:'Enregistrer aussi les points comme mes points favoris', preview_back_list:'Retour à la liste', preview_save:'Enregistrer', preview_count_points:'{n} points', preview_count_routes:'{n} itinéraires', preview_result:'{n} enregistrés ({m} déjà enregistrés ignorés)', panel_list_only:'Liste seule', panel_show_buttons:'Afficher les boutons', edit_mode_btn:'✏️ Modifier', edit_mode_btn_active:'✕ Terminer', search_results_title:'{n} résultats',
+  settings_title:'Paramètres utilisateur', lang_setting_label:'Langue', new_password_label:'Nouveau mot de passe', change_password_btn:'Changer le mot de passe', password_change_success:'Mot de passe modifié', forgot_password_link:'Mot de passe oublié ?', forgot_password_title:'Réinitialiser le mot de passe', send_reset_btn:'Envoyer', password_reset_sent:'E-mail de réinitialisation envoyé', map_type_label:'Type de carte', map_type_default:'Standard', map_type_satellite:'Satellite', map_type_terrain:'Relief', layers_label:'Calques', biking_label:'Vélo', traffic_label:'Trafic', transit_label:'Transports en commun', fixed_point_btn:'⭐ Enregistrer', fixed_point_modal_title:'Enregistrer un point favori', confirm_delete_point:'Supprimer ce point ?', target_route_label:'Itinéraire', target_fixedpoint_label:'⭐ Point favori', edit_fixed_point_modal_title:'Modifier le point favori', delete_btn:'Supprimer', save_as_fixed_btn:'⭐ Enregistrer comme point favori', assign_route_number_label:'Attribuer un numéro d\'itinéraire', remove_from_route_btn:'Retirer de l\'itinéraire', icon_label:'Icône', color_label:'Couleur', follow_btn:'👥 Suivre', follow_title:'Suivre', follow_tab_search:'Rechercher', follow_tab_following:'Abonnements', follow_tab_followers:'Abonnés', follow_tab_requests:'Demandes', follow_search_placeholder:'Rechercher par nom d\'utilisateur', follow_do:'Suivre', follow_requested:'Demandé (annuler)', follow_following:'Abonné (ne plus suivre)', follow_approve:'Accepter', follow_reject:'Refuser', follow_remove:'Retirer', follow_no_users:'Aucun utilisateur trouvé', follow_empty:'Personne pour l\'instant', follow_confirm_unfollow:'Ne plus suivre ?', follow_confirm_remove:'Retirer cet abonné ?', mylist_btn:'📂 Ma liste', mylist_title:'Ma liste', tab_routes:'Itinéraires', tab_points:'Points favoris', vis_private:'🔒 Privé', vis_followers:'👥 Abonnés', vis_public:'🌐 Public', visibility_label:'Visibilité', group_label:'Dossier', group_root:'(Aucun dossier)', new_folder_btn:'+ Dossier', new_folder_prompt:'Nom du dossier', subfolder_btn:'+ Sous-dossier', rename_btn:'Renommer', rename_prompt:'Nouveau nom', move_to_label:'Déplacer vers', edit_btn:'Modifier', confirm_delete_folder:'Supprimer ce dossier ? (Son contenu remonte d\'un niveau)', confirm_apply_children:'Appliquer la même visibilité à tout son contenu ?', tab_everyone:'Tout le monde', ev_following_users:'Utilisateurs suivis', ev_back:'← Retour', ev_no_following:'Vous ne suivez personne. Recherchez par nom d\'utilisateur.', preview_dest:'Enregistrer dans', preview_include_points:'Enregistrer aussi les points comme mes points favoris', preview_back_list:'Retour à la liste', preview_save:'Enregistrer', preview_count_points:'{n} points', preview_count_routes:'{n} itinéraires', preview_result:'{n} enregistrés ({m} déjà enregistrés ignorés)', panel_list_only:'Liste seule', panel_show_buttons:'Afficher les boutons', edit_mode_btn:'✏️ Modifier', edit_mode_btn_active:'✕ Terminer', search_results_title:'{n} résultats', link_copy_btn:'🔗 Lien', link_copied:'Lien copié', link_private_warn:'Cet élément est privé. Les autres ne pourront pas l\'ouvrir sans changer sa visibilité.', link_not_visible:'Vous ne pouvez pas voir ce lien (privé ou sans autorisation).', avatar_label:'Photo de profil', gps_icon_label:'Icône de position actuelle (cet appareil uniquement, transparence OK)', icon_choose:'Choisir une image', icon_reset:'Réinitialiser', icon_upload_fail:'Impossible d\'enregistrer l\'image',
 },
 th: {
   gps_waiting:'📡 กำลังรอ GPS', gps_error:'📡 GPS ล้มเหลว', gps_accuracy:'📡 ความแม่นยำ ±{m}ม.',
@@ -996,7 +1012,7 @@ th: {
   point_label:'จุด {n}', google_map_not_loaded:'Google Maps ยังไม่โหลด',
   modal_name_placeholder:'เช่น โรงงาน A, คลังสินค้า B', modal_memo_placeholder:'เช่น เลี้ยวขวา 200 ม.\nจอดที่หน้าประตู',
   confirm_lang_change_reload:'การเปลี่ยนภาษาจะโหลดแผนที่ใหม่ จุดที่ยังไม่บันทึกจะหายไป ต้องการดำเนินการต่อหรือไม่?',
-  settings_title:'การตั้งค่าผู้ใช้', lang_setting_label:'ภาษา', new_password_label:'รหัสผ่านใหม่', change_password_btn:'เปลี่ยนรหัสผ่าน', password_change_success:'เปลี่ยนรหัสผ่านแล้ว', forgot_password_link:'ลืมรหัสผ่าน?', forgot_password_title:'รีเซ็ตรหัสผ่าน', send_reset_btn:'ส่ง', password_reset_sent:'ส่งอีเมลรีเซ็ตรหัสผ่านแล้ว', map_type_label:'ประเภทแผนที่', map_type_default:'มาตรฐาน', map_type_satellite:'ดาวเทียม', map_type_terrain:'ภูมิประเทศ', layers_label:'เลเยอร์', biking_label:'จักรยาน', traffic_label:'การจราจร', transit_label:'ขนส่งสาธารณะ', fixed_point_btn:'⭐ บันทึกจุด', fixed_point_modal_title:'บันทึกจุดโปรด', confirm_delete_point:'ลบจุดนี้หรือไม่?', target_route_label:'เส้นทาง', target_fixedpoint_label:'⭐ จุดโปรด', edit_fixed_point_modal_title:'แก้ไขจุดโปรด', delete_btn:'ลบ', save_as_fixed_btn:'⭐ บันทึกเป็นจุดโปรด', assign_route_number_label:'กำหนดหมายเลขเส้นทาง', remove_from_route_btn:'นำออกจากเส้นทาง', icon_label:'ไอคอน', color_label:'สี', follow_btn:'👥 ติดตาม', follow_title:'ติดตาม', follow_tab_search:'ค้นหา', follow_tab_following:'กำลังติดตาม', follow_tab_followers:'ผู้ติดตาม', follow_tab_requests:'คำขอ', follow_search_placeholder:'ค้นหาด้วยชื่อผู้ใช้', follow_do:'ติดตาม', follow_requested:'ส่งคำขอแล้ว (ยกเลิก)', follow_following:'กำลังติดตาม (เลิกติดตาม)', follow_approve:'อนุมัติ', follow_reject:'ปฏิเสธ', follow_remove:'ลบ', follow_no_users:'ไม่พบผู้ใช้', follow_empty:'ยังไม่มี', follow_confirm_unfollow:'เลิกติดตามหรือไม่?', follow_confirm_remove:'ลบผู้ติดตามคนนี้หรือไม่?', mylist_btn:'📂 รายการของฉัน', mylist_title:'รายการของฉัน', tab_routes:'เส้นทาง', tab_points:'จุดโปรด', vis_private:'🔒 ส่วนตัว', vis_followers:'👥 ผู้ติดตาม', vis_public:'🌐 สาธารณะ', visibility_label:'การมองเห็น', group_label:'โฟลเดอร์', group_root:'(ไม่มีโฟลเดอร์)', new_folder_btn:'+ โฟลเดอร์', new_folder_prompt:'ชื่อโฟลเดอร์', subfolder_btn:'+ โฟลเดอร์ย่อย', rename_btn:'เปลี่ยนชื่อ', rename_prompt:'ชื่อใหม่', move_to_label:'ย้ายไปที่', edit_btn:'แก้ไข', confirm_delete_folder:'ลบโฟลเดอร์นี้หรือไม่? (เนื้อหาจะย้ายขึ้นไปหนึ่งระดับ)', confirm_apply_children:'ใช้การมองเห็นเดียวกันกับทุกอย่างข้างในหรือไม่?', tab_everyone:'ทุกคน', ev_following_users:'ผู้ใช้ที่กำลังติดตาม', ev_back:'← กลับ', ev_no_following:'ยังไม่ได้ติดตามใคร ค้นหาด้วยชื่อผู้ใช้ได้', preview_dest:'บันทึกไปที่', preview_include_points:'บันทึกจุดข้างในเป็นจุดโปรดของฉันด้วย', preview_back_list:'กลับไปที่รายการ', preview_save:'บันทึก', preview_count_points:'{n} จุดโปรด', preview_count_routes:'{n} เส้นทาง', preview_result:'บันทึกแล้ว {n} รายการ (ข้าม {m} รายการที่บันทึกไว้แล้ว)', panel_list_only:'เฉพาะรายการ', panel_show_buttons:'แสดงปุ่ม', edit_mode_btn:'✏️ แก้ไข', edit_mode_btn_active:'✕ จบการแก้ไข', search_results_title:'ผลลัพธ์ {n} รายการ',
+  settings_title:'การตั้งค่าผู้ใช้', lang_setting_label:'ภาษา', new_password_label:'รหัสผ่านใหม่', change_password_btn:'เปลี่ยนรหัสผ่าน', password_change_success:'เปลี่ยนรหัสผ่านแล้ว', forgot_password_link:'ลืมรหัสผ่าน?', forgot_password_title:'รีเซ็ตรหัสผ่าน', send_reset_btn:'ส่ง', password_reset_sent:'ส่งอีเมลรีเซ็ตรหัสผ่านแล้ว', map_type_label:'ประเภทแผนที่', map_type_default:'มาตรฐาน', map_type_satellite:'ดาวเทียม', map_type_terrain:'ภูมิประเทศ', layers_label:'เลเยอร์', biking_label:'จักรยาน', traffic_label:'การจราจร', transit_label:'ขนส่งสาธารณะ', fixed_point_btn:'⭐ บันทึกจุด', fixed_point_modal_title:'บันทึกจุดโปรด', confirm_delete_point:'ลบจุดนี้หรือไม่?', target_route_label:'เส้นทาง', target_fixedpoint_label:'⭐ จุดโปรด', edit_fixed_point_modal_title:'แก้ไขจุดโปรด', delete_btn:'ลบ', save_as_fixed_btn:'⭐ บันทึกเป็นจุดโปรด', assign_route_number_label:'กำหนดหมายเลขเส้นทาง', remove_from_route_btn:'นำออกจากเส้นทาง', icon_label:'ไอคอน', color_label:'สี', follow_btn:'👥 ติดตาม', follow_title:'ติดตาม', follow_tab_search:'ค้นหา', follow_tab_following:'กำลังติดตาม', follow_tab_followers:'ผู้ติดตาม', follow_tab_requests:'คำขอ', follow_search_placeholder:'ค้นหาด้วยชื่อผู้ใช้', follow_do:'ติดตาม', follow_requested:'ส่งคำขอแล้ว (ยกเลิก)', follow_following:'กำลังติดตาม (เลิกติดตาม)', follow_approve:'อนุมัติ', follow_reject:'ปฏิเสธ', follow_remove:'ลบ', follow_no_users:'ไม่พบผู้ใช้', follow_empty:'ยังไม่มี', follow_confirm_unfollow:'เลิกติดตามหรือไม่?', follow_confirm_remove:'ลบผู้ติดตามคนนี้หรือไม่?', mylist_btn:'📂 รายการของฉัน', mylist_title:'รายการของฉัน', tab_routes:'เส้นทาง', tab_points:'จุดโปรด', vis_private:'🔒 ส่วนตัว', vis_followers:'👥 ผู้ติดตาม', vis_public:'🌐 สาธารณะ', visibility_label:'การมองเห็น', group_label:'โฟลเดอร์', group_root:'(ไม่มีโฟลเดอร์)', new_folder_btn:'+ โฟลเดอร์', new_folder_prompt:'ชื่อโฟลเดอร์', subfolder_btn:'+ โฟลเดอร์ย่อย', rename_btn:'เปลี่ยนชื่อ', rename_prompt:'ชื่อใหม่', move_to_label:'ย้ายไปที่', edit_btn:'แก้ไข', confirm_delete_folder:'ลบโฟลเดอร์นี้หรือไม่? (เนื้อหาจะย้ายขึ้นไปหนึ่งระดับ)', confirm_apply_children:'ใช้การมองเห็นเดียวกันกับทุกอย่างข้างในหรือไม่?', tab_everyone:'ทุกคน', ev_following_users:'ผู้ใช้ที่กำลังติดตาม', ev_back:'← กลับ', ev_no_following:'ยังไม่ได้ติดตามใคร ค้นหาด้วยชื่อผู้ใช้ได้', preview_dest:'บันทึกไปที่', preview_include_points:'บันทึกจุดข้างในเป็นจุดโปรดของฉันด้วย', preview_back_list:'กลับไปที่รายการ', preview_save:'บันทึก', preview_count_points:'{n} จุดโปรด', preview_count_routes:'{n} เส้นทาง', preview_result:'บันทึกแล้ว {n} รายการ (ข้าม {m} รายการที่บันทึกไว้แล้ว)', panel_list_only:'เฉพาะรายการ', panel_show_buttons:'แสดงปุ่ม', edit_mode_btn:'✏️ แก้ไข', edit_mode_btn_active:'✕ จบการแก้ไข', search_results_title:'ผลลัพธ์ {n} รายการ', link_copy_btn:'🔗 ลิงก์', link_copied:'คัดลอกลิงก์แล้ว', link_private_warn:'รายการนี้เป็นส่วนตัว ผู้อื่นจะเปิดไม่ได้จนกว่าจะเปลี่ยนการมองเห็น', link_not_visible:'คุณไม่สามารถดูลิงก์นี้ได้ (ส่วนตัวหรือไม่มีสิทธิ์)', avatar_label:'รูปโปรไฟล์', gps_icon_label:'ไอคอนตำแหน่งปัจจุบัน (เฉพาะเครื่องนี้ รองรับภาพโปร่งใส)', icon_choose:'เลือกรูปภาพ', icon_reset:'รีเซ็ต', icon_upload_fail:'บันทึกรูปภาพไม่สำเร็จ',
 },
 de: {
   gps_waiting:'📡 Warte auf GPS', gps_error:'📡 GPS-Fehler', gps_accuracy:'📡 Genauigkeit ±{m}m',
@@ -1050,7 +1066,7 @@ de: {
   point_label:'Punkt {n}', google_map_not_loaded:'Google Maps wurde nicht geladen',
   modal_name_placeholder:'z. B. Fabrik A, Lager B', modal_memo_placeholder:'z. B. Rechts abbiegen, 200m voraus\nAm Tor anhalten',
   confirm_lang_change_reload:'Sprachwechsel lädt die Karte neu. Nicht gespeicherte Punkte gehen verloren. Fortfahren?',
-  settings_title:'Benutzereinstellungen', lang_setting_label:'Sprache', new_password_label:'Neues Passwort', change_password_btn:'Passwort ändern', password_change_success:'Passwort geändert', forgot_password_link:'Passwort vergessen?', forgot_password_title:'Passwort zurücksetzen', send_reset_btn:'Senden', password_reset_sent:'E-Mail zum Zurücksetzen gesendet', map_type_label:'Kartentyp', map_type_default:'Standard', map_type_satellite:'Satellit', map_type_terrain:'Gelände', layers_label:'Ebenen', biking_label:'Fahrrad', traffic_label:'Verkehr', transit_label:'Öffentlicher Verkehr', fixed_point_btn:'⭐ Punkt speichern', fixed_point_modal_title:'Favoritenpunkt speichern', confirm_delete_point:'Diesen Punkt löschen?', target_route_label:'Route', target_fixedpoint_label:'⭐ Favoritenpunkt', edit_fixed_point_modal_title:'Favoritenpunkt bearbeiten', delete_btn:'Löschen', save_as_fixed_btn:'⭐ Als Favoritenpunkt speichern', assign_route_number_label:'Routennummer zuweisen', remove_from_route_btn:'Aus Route entfernen', icon_label:'Symbol', color_label:'Farbe', follow_btn:'👥 Folgen', follow_title:'Folgen', follow_tab_search:'Suchen', follow_tab_following:'Folge ich', follow_tab_followers:'Follower', follow_tab_requests:'Anfragen', follow_search_placeholder:'Nach Benutzernamen suchen', follow_do:'Folgen', follow_requested:'Angefragt (zurückziehen)', follow_following:'Folge ich (entfolgen)', follow_approve:'Annehmen', follow_reject:'Ablehnen', follow_remove:'Entfernen', follow_no_users:'Keine Benutzer gefunden', follow_empty:'Noch niemand', follow_confirm_unfollow:'Nicht mehr folgen?', follow_confirm_remove:'Diesen Follower entfernen?', mylist_btn:'📂 Meine Liste', mylist_title:'Meine Liste', tab_routes:'Routen', tab_points:'Favoritenpunkte', vis_private:'🔒 Privat', vis_followers:'👥 Follower', vis_public:'🌐 Öffentlich', visibility_label:'Sichtbarkeit', group_label:'Ordner', group_root:'(Kein Ordner)', new_folder_btn:'+ Ordner', new_folder_prompt:'Ordnername', subfolder_btn:'+ Unterordner', rename_btn:'Umbenennen', rename_prompt:'Neuer Name', move_to_label:'Verschieben nach', edit_btn:'Bearbeiten', confirm_delete_folder:'Diesen Ordner löschen? (Der Inhalt wird eine Ebene nach oben verschoben)', confirm_apply_children:'Dieselbe Sichtbarkeit auf den gesamten Inhalt anwenden?', tab_everyone:'Alle', ev_following_users:'Benutzer, denen du folgst', ev_back:'← Zurück', ev_no_following:'Du folgst niemandem. Suche nach Benutzernamen.', preview_dest:'Speichern in', preview_include_points:'Punkte darin auch als meine Favoritenpunkte speichern', preview_back_list:'Zurück zur Liste', preview_save:'Speichern', preview_count_points:'{n} Punkte', preview_count_routes:'{n} Routen', preview_result:'{n} gespeichert ({m} bereits gespeicherte übersprungen)', panel_list_only:'Nur Liste', panel_show_buttons:'Tasten zeigen', edit_mode_btn:'✏️ Bearbeiten', edit_mode_btn_active:'✕ Beenden', search_results_title:'{n} Ergebnisse'
+  settings_title:'Benutzereinstellungen', lang_setting_label:'Sprache', new_password_label:'Neues Passwort', change_password_btn:'Passwort ändern', password_change_success:'Passwort geändert', forgot_password_link:'Passwort vergessen?', forgot_password_title:'Passwort zurücksetzen', send_reset_btn:'Senden', password_reset_sent:'E-Mail zum Zurücksetzen gesendet', map_type_label:'Kartentyp', map_type_default:'Standard', map_type_satellite:'Satellit', map_type_terrain:'Gelände', layers_label:'Ebenen', biking_label:'Fahrrad', traffic_label:'Verkehr', transit_label:'Öffentlicher Verkehr', fixed_point_btn:'⭐ Punkt speichern', fixed_point_modal_title:'Favoritenpunkt speichern', confirm_delete_point:'Diesen Punkt löschen?', target_route_label:'Route', target_fixedpoint_label:'⭐ Favoritenpunkt', edit_fixed_point_modal_title:'Favoritenpunkt bearbeiten', delete_btn:'Löschen', save_as_fixed_btn:'⭐ Als Favoritenpunkt speichern', assign_route_number_label:'Routennummer zuweisen', remove_from_route_btn:'Aus Route entfernen', icon_label:'Symbol', color_label:'Farbe', follow_btn:'👥 Folgen', follow_title:'Folgen', follow_tab_search:'Suchen', follow_tab_following:'Folge ich', follow_tab_followers:'Follower', follow_tab_requests:'Anfragen', follow_search_placeholder:'Nach Benutzernamen suchen', follow_do:'Folgen', follow_requested:'Angefragt (zurückziehen)', follow_following:'Folge ich (entfolgen)', follow_approve:'Annehmen', follow_reject:'Ablehnen', follow_remove:'Entfernen', follow_no_users:'Keine Benutzer gefunden', follow_empty:'Noch niemand', follow_confirm_unfollow:'Nicht mehr folgen?', follow_confirm_remove:'Diesen Follower entfernen?', mylist_btn:'📂 Meine Liste', mylist_title:'Meine Liste', tab_routes:'Routen', tab_points:'Favoritenpunkte', vis_private:'🔒 Privat', vis_followers:'👥 Follower', vis_public:'🌐 Öffentlich', visibility_label:'Sichtbarkeit', group_label:'Ordner', group_root:'(Kein Ordner)', new_folder_btn:'+ Ordner', new_folder_prompt:'Ordnername', subfolder_btn:'+ Unterordner', rename_btn:'Umbenennen', rename_prompt:'Neuer Name', move_to_label:'Verschieben nach', edit_btn:'Bearbeiten', confirm_delete_folder:'Diesen Ordner löschen? (Der Inhalt wird eine Ebene nach oben verschoben)', confirm_apply_children:'Dieselbe Sichtbarkeit auf den gesamten Inhalt anwenden?', tab_everyone:'Alle', ev_following_users:'Benutzer, denen du folgst', ev_back:'← Zurück', ev_no_following:'Du folgst niemandem. Suche nach Benutzernamen.', preview_dest:'Speichern in', preview_include_points:'Punkte darin auch als meine Favoritenpunkte speichern', preview_back_list:'Zurück zur Liste', preview_save:'Speichern', preview_count_points:'{n} Punkte', preview_count_routes:'{n} Routen', preview_result:'{n} gespeichert ({m} bereits gespeicherte übersprungen)', panel_list_only:'Nur Liste', panel_show_buttons:'Tasten zeigen', edit_mode_btn:'✏️ Bearbeiten', edit_mode_btn_active:'✕ Beenden', search_results_title:'{n} Ergebnisse', link_copy_btn:'🔗 Link', link_copied:'Link kopiert', link_private_warn:'Dieses Element ist privat. Andere können es erst öffnen, wenn du die Sichtbarkeit änderst.', link_not_visible:'Du kannst diesen Link nicht sehen (privat oder keine Berechtigung).', avatar_label:'Profilbild', gps_icon_label:'Symbol für aktuelle Position (nur dieses Gerät, Transparenz möglich)', icon_choose:'Bild wählen', icon_reset:'Zurücksetzen', icon_upload_fail:'Bild konnte nicht gespeichert werden'
 },
 ru: {
   gps_waiting:'📡 Ожидание GPS', gps_error:'📡 Ошибка GPS', gps_accuracy:'📡 Точность ±{m}м',
@@ -1104,7 +1120,7 @@ ru: {
   point_label:'Точка {n}', google_map_not_loaded:'Google Maps не загружен',
   modal_name_placeholder:'напр. Завод A, Склад B', modal_memo_placeholder:'напр. Поворот направо, через 200м\nОстановиться у ворот',
   confirm_lang_change_reload:'Смена языка перезагрузит карту. Несохранённые точки будут потеряны. Продолжить?',
-  settings_title:'Настройки пользователя', lang_setting_label:'Язык', new_password_label:'Новый пароль', change_password_btn:'Изменить пароль', password_change_success:'Пароль изменён', forgot_password_link:'Забыли пароль?', forgot_password_title:'Сброс пароля', send_reset_btn:'Отправить', password_reset_sent:'Письмо для сброса пароля отправлено', map_type_label:'Тип карты', map_type_default:'Обычная', map_type_satellite:'Спутник', map_type_terrain:'Рельеф', layers_label:'Слои', biking_label:'Велосипед', traffic_label:'Пробки', transit_label:'Общественный транспорт', fixed_point_btn:'⭐ Сохранить точку', fixed_point_modal_title:'Сохранить избранную точку', confirm_delete_point:'Удалить эту точку?', target_route_label:'Маршрут', target_fixedpoint_label:'⭐ Избранная точка', edit_fixed_point_modal_title:'Изменить избранную точку', delete_btn:'Удалить', save_as_fixed_btn:'⭐ Сохранить как избранную точку', assign_route_number_label:'Присвоить номер маршрута', remove_from_route_btn:'Убрать из маршрута', icon_label:'Значок', color_label:'Цвет', follow_btn:'👥 Подписки', follow_title:'Подписки', follow_tab_search:'Поиск', follow_tab_following:'Подписки', follow_tab_followers:'Подписчики', follow_tab_requests:'Запросы', follow_search_placeholder:'Поиск по имени пользователя', follow_do:'Подписаться', follow_requested:'Запрос отправлен (отменить)', follow_following:'Вы подписаны (отписаться)', follow_approve:'Принять', follow_reject:'Отклонить', follow_remove:'Удалить', follow_no_users:'Пользователи не найдены', follow_empty:'Пока никого нет', follow_confirm_unfollow:'Отписаться?', follow_confirm_remove:'Удалить этого подписчика?', mylist_btn:'📂 Мой список', mylist_title:'Мой список', tab_routes:'Маршруты', tab_points:'Избранные точки', vis_private:'🔒 Приватно', vis_followers:'👥 Подписчики', vis_public:'🌐 Публично', visibility_label:'Видимость', group_label:'Папка', group_root:'(Без папки)', new_folder_btn:'+ Папка', new_folder_prompt:'Название папки', subfolder_btn:'+ Подпапка', rename_btn:'Переименовать', rename_prompt:'Новое название', move_to_label:'Переместить в', edit_btn:'Изменить', confirm_delete_folder:'Удалить эту папку? (Содержимое переместится на уровень выше)', confirm_apply_children:'Применить эту видимость ко всему содержимому?', tab_everyone:'Все', ev_following_users:'Ваши подписки', ev_back:'← Назад', ev_no_following:'Вы ни на кого не подписаны. Ищите по имени пользователя.', preview_dest:'Сохранить в', preview_include_points:'Также сохранить точки как мои избранные', preview_back_list:'Назад к списку', preview_save:'Сохранить', preview_count_points:'Точек: {n}', preview_count_routes:'Маршрутов: {n}', preview_result:'Сохранено: {n} (пропущено уже сохранённых: {m})', panel_list_only:'Только список', panel_show_buttons:'Показать кнопки', edit_mode_btn:'✏️ Правка', edit_mode_btn_active:'✕ Завершить', search_results_title:'Результатов: {n}'
+  settings_title:'Настройки пользователя', lang_setting_label:'Язык', new_password_label:'Новый пароль', change_password_btn:'Изменить пароль', password_change_success:'Пароль изменён', forgot_password_link:'Забыли пароль?', forgot_password_title:'Сброс пароля', send_reset_btn:'Отправить', password_reset_sent:'Письмо для сброса пароля отправлено', map_type_label:'Тип карты', map_type_default:'Обычная', map_type_satellite:'Спутник', map_type_terrain:'Рельеф', layers_label:'Слои', biking_label:'Велосипед', traffic_label:'Пробки', transit_label:'Общественный транспорт', fixed_point_btn:'⭐ Сохранить точку', fixed_point_modal_title:'Сохранить избранную точку', confirm_delete_point:'Удалить эту точку?', target_route_label:'Маршрут', target_fixedpoint_label:'⭐ Избранная точка', edit_fixed_point_modal_title:'Изменить избранную точку', delete_btn:'Удалить', save_as_fixed_btn:'⭐ Сохранить как избранную точку', assign_route_number_label:'Присвоить номер маршрута', remove_from_route_btn:'Убрать из маршрута', icon_label:'Значок', color_label:'Цвет', follow_btn:'👥 Подписки', follow_title:'Подписки', follow_tab_search:'Поиск', follow_tab_following:'Подписки', follow_tab_followers:'Подписчики', follow_tab_requests:'Запросы', follow_search_placeholder:'Поиск по имени пользователя', follow_do:'Подписаться', follow_requested:'Запрос отправлен (отменить)', follow_following:'Вы подписаны (отписаться)', follow_approve:'Принять', follow_reject:'Отклонить', follow_remove:'Удалить', follow_no_users:'Пользователи не найдены', follow_empty:'Пока никого нет', follow_confirm_unfollow:'Отписаться?', follow_confirm_remove:'Удалить этого подписчика?', mylist_btn:'📂 Мой список', mylist_title:'Мой список', tab_routes:'Маршруты', tab_points:'Избранные точки', vis_private:'🔒 Приватно', vis_followers:'👥 Подписчики', vis_public:'🌐 Публично', visibility_label:'Видимость', group_label:'Папка', group_root:'(Без папки)', new_folder_btn:'+ Папка', new_folder_prompt:'Название папки', subfolder_btn:'+ Подпапка', rename_btn:'Переименовать', rename_prompt:'Новое название', move_to_label:'Переместить в', edit_btn:'Изменить', confirm_delete_folder:'Удалить эту папку? (Содержимое переместится на уровень выше)', confirm_apply_children:'Применить эту видимость ко всему содержимому?', tab_everyone:'Все', ev_following_users:'Ваши подписки', ev_back:'← Назад', ev_no_following:'Вы ни на кого не подписаны. Ищите по имени пользователя.', preview_dest:'Сохранить в', preview_include_points:'Также сохранить точки как мои избранные', preview_back_list:'Назад к списку', preview_save:'Сохранить', preview_count_points:'Точек: {n}', preview_count_routes:'Маршрутов: {n}', preview_result:'Сохранено: {n} (пропущено уже сохранённых: {m})', panel_list_only:'Только список', panel_show_buttons:'Показать кнопки', edit_mode_btn:'✏️ Правка', edit_mode_btn_active:'✕ Завершить', search_results_title:'Результатов: {n}', link_copy_btn:'🔗 Ссылка', link_copied:'Ссылка скопирована', link_private_warn:'Этот элемент приватный. Другие не смогут его открыть, пока вы не измените видимость.', link_not_visible:'Вы не можете открыть эту ссылку (приватно или нет доступа).', avatar_label:'Фото профиля', gps_icon_label:'Значок текущего положения (только на этом устройстве, прозрачность поддерживается)', icon_choose:'Выбрать изображение', icon_reset:'Сбросить', icon_upload_fail:'Не удалось сохранить изображение'
 },
 pt: {
   gps_waiting:'📡 Aguardando GPS', gps_error:'📡 Falha no GPS', gps_accuracy:'📡 Precisão ±{m}m',
@@ -1158,7 +1174,7 @@ pt: {
   point_label:'Ponto {n}', google_map_not_loaded:'O Google Maps não foi carregado',
   modal_name_placeholder:'ex: Fábrica A, Depósito B', modal_memo_placeholder:'ex: Vire à direita, 200m à frente\nPare no portão',
   confirm_lang_change_reload:'Mudar o idioma recarregará o mapa. Pontos não salvos serão perdidos. Continuar?',
-  settings_title:'Configurações do usuário', lang_setting_label:'Idioma', new_password_label:'Nova senha', change_password_btn:'Alterar senha', password_change_success:'Senha alterada', forgot_password_link:'Esqueceu a senha?', forgot_password_title:'Redefinir senha', send_reset_btn:'Enviar', password_reset_sent:'E-mail de redefinição enviado', map_type_label:'Tipo de mapa', map_type_default:'Padrão', map_type_satellite:'Satélite', map_type_terrain:'Relevo', layers_label:'Camadas', biking_label:'Bicicleta', traffic_label:'Trânsito', transit_label:'Transporte público', fixed_point_btn:'⭐ Salvar ponto', fixed_point_modal_title:'Salvar ponto favorito', confirm_delete_point:'Excluir este ponto?', target_route_label:'Rota', target_fixedpoint_label:'⭐ Ponto favorito', edit_fixed_point_modal_title:'Editar ponto favorito', delete_btn:'Excluir', save_as_fixed_btn:'⭐ Salvar como ponto favorito', assign_route_number_label:'Atribuir número de rota', remove_from_route_btn:'Remover da rota', icon_label:'Ícone', color_label:'Cor', follow_btn:'👥 Seguir', follow_title:'Seguir', follow_tab_search:'Buscar', follow_tab_following:'Seguindo', follow_tab_followers:'Seguidores', follow_tab_requests:'Solicitações', follow_search_placeholder:'Buscar por nome de usuário', follow_do:'Seguir', follow_requested:'Solicitado (cancelar)', follow_following:'Seguindo (deixar de seguir)', follow_approve:'Aprovar', follow_reject:'Recusar', follow_remove:'Remover', follow_no_users:'Nenhum usuário encontrado', follow_empty:'Ninguém ainda', follow_confirm_unfollow:'Deixar de seguir?', follow_confirm_remove:'Remover este seguidor?', mylist_btn:'📂 Minha lista', mylist_title:'Minha lista', tab_routes:'Rotas', tab_points:'Pontos favoritos', vis_private:'🔒 Privado', vis_followers:'👥 Seguidores', vis_public:'🌐 Público', visibility_label:'Visibilidade', group_label:'Pasta', group_root:'(Sem pasta)', new_folder_btn:'+ Pasta', new_folder_prompt:'Nome da pasta', subfolder_btn:'+ Subpasta', rename_btn:'Renomear', rename_prompt:'Novo nome', move_to_label:'Mover para', edit_btn:'Editar', confirm_delete_folder:'Excluir esta pasta? (O conteúdo sobe um nível)', confirm_apply_children:'Aplicar a mesma visibilidade a todo o conteúdo?', tab_everyone:'Todos', ev_following_users:'Usuários que você segue', ev_back:'← Voltar', ev_no_following:'Você não segue ninguém. Busque por nome de usuário.', preview_dest:'Salvar em', preview_include_points:'Salvar também os pontos como meus pontos favoritos', preview_back_list:'Voltar à lista', preview_save:'Salvar', preview_count_points:'{n} pontos', preview_count_routes:'{n} rotas', preview_result:'{n} salvos ({m} já salvos ignorados)', panel_list_only:'Somente lista', panel_show_buttons:'Mostrar botões', edit_mode_btn:'✏️ Editar', edit_mode_btn_active:'✕ Terminar', search_results_title:'{n} resultados'
+  settings_title:'Configurações do usuário', lang_setting_label:'Idioma', new_password_label:'Nova senha', change_password_btn:'Alterar senha', password_change_success:'Senha alterada', forgot_password_link:'Esqueceu a senha?', forgot_password_title:'Redefinir senha', send_reset_btn:'Enviar', password_reset_sent:'E-mail de redefinição enviado', map_type_label:'Tipo de mapa', map_type_default:'Padrão', map_type_satellite:'Satélite', map_type_terrain:'Relevo', layers_label:'Camadas', biking_label:'Bicicleta', traffic_label:'Trânsito', transit_label:'Transporte público', fixed_point_btn:'⭐ Salvar ponto', fixed_point_modal_title:'Salvar ponto favorito', confirm_delete_point:'Excluir este ponto?', target_route_label:'Rota', target_fixedpoint_label:'⭐ Ponto favorito', edit_fixed_point_modal_title:'Editar ponto favorito', delete_btn:'Excluir', save_as_fixed_btn:'⭐ Salvar como ponto favorito', assign_route_number_label:'Atribuir número de rota', remove_from_route_btn:'Remover da rota', icon_label:'Ícone', color_label:'Cor', follow_btn:'👥 Seguir', follow_title:'Seguir', follow_tab_search:'Buscar', follow_tab_following:'Seguindo', follow_tab_followers:'Seguidores', follow_tab_requests:'Solicitações', follow_search_placeholder:'Buscar por nome de usuário', follow_do:'Seguir', follow_requested:'Solicitado (cancelar)', follow_following:'Seguindo (deixar de seguir)', follow_approve:'Aprovar', follow_reject:'Recusar', follow_remove:'Remover', follow_no_users:'Nenhum usuário encontrado', follow_empty:'Ninguém ainda', follow_confirm_unfollow:'Deixar de seguir?', follow_confirm_remove:'Remover este seguidor?', mylist_btn:'📂 Minha lista', mylist_title:'Minha lista', tab_routes:'Rotas', tab_points:'Pontos favoritos', vis_private:'🔒 Privado', vis_followers:'👥 Seguidores', vis_public:'🌐 Público', visibility_label:'Visibilidade', group_label:'Pasta', group_root:'(Sem pasta)', new_folder_btn:'+ Pasta', new_folder_prompt:'Nome da pasta', subfolder_btn:'+ Subpasta', rename_btn:'Renomear', rename_prompt:'Novo nome', move_to_label:'Mover para', edit_btn:'Editar', confirm_delete_folder:'Excluir esta pasta? (O conteúdo sobe um nível)', confirm_apply_children:'Aplicar a mesma visibilidade a todo o conteúdo?', tab_everyone:'Todos', ev_following_users:'Usuários que você segue', ev_back:'← Voltar', ev_no_following:'Você não segue ninguém. Busque por nome de usuário.', preview_dest:'Salvar em', preview_include_points:'Salvar também os pontos como meus pontos favoritos', preview_back_list:'Voltar à lista', preview_save:'Salvar', preview_count_points:'{n} pontos', preview_count_routes:'{n} rotas', preview_result:'{n} salvos ({m} já salvos ignorados)', panel_list_only:'Somente lista', panel_show_buttons:'Mostrar botões', edit_mode_btn:'✏️ Editar', edit_mode_btn_active:'✕ Terminar', search_results_title:'{n} resultados', link_copy_btn:'🔗 Link', link_copied:'Link copiado', link_private_warn:'Este item é privado. Os outros não poderão abri-lo sem mudar a visibilidade.', link_not_visible:'Você não pode ver este link (privado ou sem permissão).', avatar_label:'Foto de perfil', gps_icon_label:'Ícone da posição atual (somente neste aparelho, transparência OK)', icon_choose:'Escolher imagem', icon_reset:'Restaurar', icon_upload_fail:'Não foi possível salvar a imagem'
 },
 ar: {
   gps_waiting:'📡 في انتظار GPS', gps_error:'📡 فشل GPS', gps_accuracy:'📡 الدقة ±{m} م',
@@ -1212,7 +1228,7 @@ ar: {
   point_label:'نقطة {n}', google_map_not_loaded:'لم يتم تحميل خرائط Google',
   modal_name_placeholder:'مثال: مصنع A، مستودع B', modal_memo_placeholder:'مثال: انعطف يمينًا، بعد 200م\nتوقف عند البوابة',
   confirm_lang_change_reload:'سيؤدي تغيير اللغة إلى إعادة تحميل الخريطة. ستُفقد النقاط غير المحفوظة. متابعة؟',
-  settings_title:'إعدادات المستخدم', lang_setting_label:'اللغة', new_password_label:'كلمة مرور جديدة', change_password_btn:'تغيير كلمة المرور', password_change_success:'تم تغيير كلمة المرور', forgot_password_link:'هل نسيت كلمة المرور؟', forgot_password_title:'إعادة تعيين كلمة المرور', send_reset_btn:'إرسال', password_reset_sent:'تم إرسال بريد إعادة التعيين', map_type_label:'نوع الخريطة', map_type_default:'عادي', map_type_satellite:'قمر صناعي', map_type_terrain:'التضاريس', layers_label:'الطبقات', biking_label:'الدراجات', traffic_label:'حركة المرور', transit_label:'وسائل النقل العام', fixed_point_btn:'⭐ حفظ نقطة', fixed_point_modal_title:'حفظ نقطة مفضلة', confirm_delete_point:'حذف هذه النقطة؟', target_route_label:'المسار', target_fixedpoint_label:'⭐ نقطة مفضلة', edit_fixed_point_modal_title:'تعديل النقطة المفضلة', delete_btn:'حذف', save_as_fixed_btn:'⭐ حفظ كنقطة مفضلة', assign_route_number_label:'تعيين رقم المسار', remove_from_route_btn:'إزالة من المسار', icon_label:'الأيقونة', color_label:'اللون', follow_btn:'👥 المتابعة', follow_title:'المتابعة', follow_tab_search:'بحث', follow_tab_following:'أتابعهم', follow_tab_followers:'المتابِعون', follow_tab_requests:'الطلبات', follow_search_placeholder:'البحث باسم المستخدم', follow_do:'متابعة', follow_requested:'تم الطلب (إلغاء)', follow_following:'تتابعه (إلغاء المتابعة)', follow_approve:'قبول', follow_reject:'رفض', follow_remove:'إزالة', follow_no_users:'لم يتم العثور على مستخدمين', follow_empty:'لا أحد بعد', follow_confirm_unfollow:'إلغاء المتابعة؟', follow_confirm_remove:'إزالة هذا المتابِع؟', mylist_btn:'📂 قائمتي', mylist_title:'قائمتي', tab_routes:'المسارات', tab_points:'النقاط المفضلة', vis_private:'🔒 خاص', vis_followers:'👥 المتابِعون', vis_public:'🌐 عام', visibility_label:'الظهور', group_label:'مجلد', group_root:'(بدون مجلد)', new_folder_btn:'+ مجلد', new_folder_prompt:'اسم المجلد', subfolder_btn:'+ مجلد فرعي', rename_btn:'إعادة تسمية', rename_prompt:'اسم جديد', move_to_label:'نقل إلى', edit_btn:'تعديل', confirm_delete_folder:'حذف هذا المجلد؟ (سينتقل محتواه مستوى واحدًا للأعلى)', confirm_apply_children:'تطبيق نفس الظهور على كل المحتوى بداخله؟', tab_everyone:'الجميع', ev_following_users:'المستخدمون الذين تتابعهم', ev_back:'← رجوع', ev_no_following:'لا تتابع أحدًا. ابحث باسم المستخدم.', preview_dest:'حفظ في', preview_include_points:'حفظ النقاط بداخلها كنقاطي المفضلة أيضًا', preview_back_list:'العودة إلى القائمة', preview_save:'حفظ', preview_count_points:'{n} نقاط', preview_count_routes:'{n} مسارات', preview_result:'تم حفظ {n} (تم تخطي {m} محفوظة مسبقًا)', panel_list_only:'القائمة فقط', panel_show_buttons:'إظهار الأزرار', edit_mode_btn:'✏️ تحرير', edit_mode_btn_active:'✕ إنهاء التحرير', search_results_title:'{n} نتائج'
+  settings_title:'إعدادات المستخدم', lang_setting_label:'اللغة', new_password_label:'كلمة مرور جديدة', change_password_btn:'تغيير كلمة المرور', password_change_success:'تم تغيير كلمة المرور', forgot_password_link:'هل نسيت كلمة المرور؟', forgot_password_title:'إعادة تعيين كلمة المرور', send_reset_btn:'إرسال', password_reset_sent:'تم إرسال بريد إعادة التعيين', map_type_label:'نوع الخريطة', map_type_default:'عادي', map_type_satellite:'قمر صناعي', map_type_terrain:'التضاريس', layers_label:'الطبقات', biking_label:'الدراجات', traffic_label:'حركة المرور', transit_label:'وسائل النقل العام', fixed_point_btn:'⭐ حفظ نقطة', fixed_point_modal_title:'حفظ نقطة مفضلة', confirm_delete_point:'حذف هذه النقطة؟', target_route_label:'المسار', target_fixedpoint_label:'⭐ نقطة مفضلة', edit_fixed_point_modal_title:'تعديل النقطة المفضلة', delete_btn:'حذف', save_as_fixed_btn:'⭐ حفظ كنقطة مفضلة', assign_route_number_label:'تعيين رقم المسار', remove_from_route_btn:'إزالة من المسار', icon_label:'الأيقونة', color_label:'اللون', follow_btn:'👥 المتابعة', follow_title:'المتابعة', follow_tab_search:'بحث', follow_tab_following:'أتابعهم', follow_tab_followers:'المتابِعون', follow_tab_requests:'الطلبات', follow_search_placeholder:'البحث باسم المستخدم', follow_do:'متابعة', follow_requested:'تم الطلب (إلغاء)', follow_following:'تتابعه (إلغاء المتابعة)', follow_approve:'قبول', follow_reject:'رفض', follow_remove:'إزالة', follow_no_users:'لم يتم العثور على مستخدمين', follow_empty:'لا أحد بعد', follow_confirm_unfollow:'إلغاء المتابعة؟', follow_confirm_remove:'إزالة هذا المتابِع؟', mylist_btn:'📂 قائمتي', mylist_title:'قائمتي', tab_routes:'المسارات', tab_points:'النقاط المفضلة', vis_private:'🔒 خاص', vis_followers:'👥 المتابِعون', vis_public:'🌐 عام', visibility_label:'الظهور', group_label:'مجلد', group_root:'(بدون مجلد)', new_folder_btn:'+ مجلد', new_folder_prompt:'اسم المجلد', subfolder_btn:'+ مجلد فرعي', rename_btn:'إعادة تسمية', rename_prompt:'اسم جديد', move_to_label:'نقل إلى', edit_btn:'تعديل', confirm_delete_folder:'حذف هذا المجلد؟ (سينتقل محتواه مستوى واحدًا للأعلى)', confirm_apply_children:'تطبيق نفس الظهور على كل المحتوى بداخله؟', tab_everyone:'الجميع', ev_following_users:'المستخدمون الذين تتابعهم', ev_back:'← رجوع', ev_no_following:'لا تتابع أحدًا. ابحث باسم المستخدم.', preview_dest:'حفظ في', preview_include_points:'حفظ النقاط بداخلها كنقاطي المفضلة أيضًا', preview_back_list:'العودة إلى القائمة', preview_save:'حفظ', preview_count_points:'{n} نقاط', preview_count_routes:'{n} مسارات', preview_result:'تم حفظ {n} (تم تخطي {m} محفوظة مسبقًا)', panel_list_only:'القائمة فقط', panel_show_buttons:'إظهار الأزرار', edit_mode_btn:'✏️ تحرير', edit_mode_btn_active:'✕ إنهاء التحرير', search_results_title:'{n} نتائج', link_copy_btn:'🔗 رابط', link_copied:'تم نسخ الرابط', link_private_warn:'هذا العنصر خاص. لن يتمكن الآخرون من فتحه ما لم تغيّر نطاق ظهوره.', link_not_visible:'لا يمكنك عرض هذا الرابط (خاص أو بدون صلاحية).', avatar_label:'صورة الملف الشخصي', gps_icon_label:'أيقونة الموقع الحالي (هذا الجهاز فقط، تدعم الشفافية)', icon_choose:'اختيار صورة', icon_reset:'إعادة تعيين', icon_upload_fail:'تعذّر حفظ الصورة'
 },
 it: {
   gps_waiting:'📡 In attesa del GPS', gps_error:'📡 GPS non riuscito', gps_accuracy:'📡 Precisione ±{m}m',
@@ -1266,7 +1282,7 @@ it: {
   point_label:'Punto {n}', google_map_not_loaded:'Google Maps non è stato caricato',
   modal_name_placeholder:'es. Fabbrica A, Magazzino B', modal_memo_placeholder:'es. Gira a destra, 200m avanti\nFermati al cancello',
   confirm_lang_change_reload:'Il cambio di lingua ricaricherà la mappa. I punti non salvati andranno persi. Continuare?',
-  settings_title:'Impostazioni utente', lang_setting_label:'Lingua', new_password_label:'Nuova password', change_password_btn:'Cambia password', password_change_success:'Password modificata', forgot_password_link:'Password dimenticata?', forgot_password_title:'Reimposta password', send_reset_btn:'Invia', password_reset_sent:'E-mail di reimpostazione inviata', map_type_label:'Tipo di mappa', map_type_default:'Predefinito', map_type_satellite:'Satellite', map_type_terrain:'Rilievo', layers_label:'Livelli', biking_label:'Bicicletta', traffic_label:'Traffico', transit_label:'Trasporto pubblico', fixed_point_btn:'⭐ Salva punto', fixed_point_modal_title:'Salva punto preferito', confirm_delete_point:'Eliminare questo punto?', target_route_label:'Percorso', target_fixedpoint_label:'⭐ Punto preferito', edit_fixed_point_modal_title:'Modifica punto preferito', delete_btn:'Elimina', save_as_fixed_btn:'⭐ Salva come punto preferito', assign_route_number_label:'Assegna un numero di percorso', remove_from_route_btn:'Rimuovi dal percorso', icon_label:'Icona', color_label:'Colore', follow_btn:'👥 Segui', follow_title:'Segui', follow_tab_search:'Cerca', follow_tab_following:'Seguiti', follow_tab_followers:'Follower', follow_tab_requests:'Richieste', follow_search_placeholder:'Cerca per nome utente', follow_do:'Segui', follow_requested:'Richiesto (annulla)', follow_following:'Segui già (smetti di seguire)', follow_approve:'Approva', follow_reject:'Rifiuta', follow_remove:'Rimuovi', follow_no_users:'Nessun utente trovato', follow_empty:'Ancora nessuno', follow_confirm_unfollow:'Smettere di seguire?', follow_confirm_remove:'Rimuovere questo follower?', mylist_btn:'📂 La mia lista', mylist_title:'La mia lista', tab_routes:'Percorsi', tab_points:'Punti preferiti', vis_private:'🔒 Privato', vis_followers:'👥 Follower', vis_public:'🌐 Pubblico', visibility_label:'Visibilità', group_label:'Cartella', group_root:'(Nessuna cartella)', new_folder_btn:'+ Cartella', new_folder_prompt:'Nome cartella', subfolder_btn:'+ Sottocartella', rename_btn:'Rinomina', rename_prompt:'Nuovo nome', move_to_label:'Sposta in', edit_btn:'Modifica', confirm_delete_folder:'Eliminare questa cartella? (Il contenuto sale di un livello)', confirm_apply_children:'Applicare la stessa visibilità a tutto il contenuto?', tab_everyone:'Tutti', ev_following_users:'Utenti che segui', ev_back:'← Indietro', ev_no_following:'Non segui nessuno. Cerca per nome utente.', preview_dest:'Salva in', preview_include_points:'Salva anche i punti come miei punti preferiti', preview_back_list:'Torna alla lista', preview_save:'Salva', preview_count_points:'{n} punti', preview_count_routes:'{n} percorsi', preview_result:'Salvati {n} (saltati {m} già salvati)', panel_list_only:'Solo elenco', panel_show_buttons:'Mostra pulsanti', edit_mode_btn:'✏️ Modifica', edit_mode_btn_active:'✕ Termina', search_results_title:'{n} risultati'
+  settings_title:'Impostazioni utente', lang_setting_label:'Lingua', new_password_label:'Nuova password', change_password_btn:'Cambia password', password_change_success:'Password modificata', forgot_password_link:'Password dimenticata?', forgot_password_title:'Reimposta password', send_reset_btn:'Invia', password_reset_sent:'E-mail di reimpostazione inviata', map_type_label:'Tipo di mappa', map_type_default:'Predefinito', map_type_satellite:'Satellite', map_type_terrain:'Rilievo', layers_label:'Livelli', biking_label:'Bicicletta', traffic_label:'Traffico', transit_label:'Trasporto pubblico', fixed_point_btn:'⭐ Salva punto', fixed_point_modal_title:'Salva punto preferito', confirm_delete_point:'Eliminare questo punto?', target_route_label:'Percorso', target_fixedpoint_label:'⭐ Punto preferito', edit_fixed_point_modal_title:'Modifica punto preferito', delete_btn:'Elimina', save_as_fixed_btn:'⭐ Salva come punto preferito', assign_route_number_label:'Assegna un numero di percorso', remove_from_route_btn:'Rimuovi dal percorso', icon_label:'Icona', color_label:'Colore', follow_btn:'👥 Segui', follow_title:'Segui', follow_tab_search:'Cerca', follow_tab_following:'Seguiti', follow_tab_followers:'Follower', follow_tab_requests:'Richieste', follow_search_placeholder:'Cerca per nome utente', follow_do:'Segui', follow_requested:'Richiesto (annulla)', follow_following:'Segui già (smetti di seguire)', follow_approve:'Approva', follow_reject:'Rifiuta', follow_remove:'Rimuovi', follow_no_users:'Nessun utente trovato', follow_empty:'Ancora nessuno', follow_confirm_unfollow:'Smettere di seguire?', follow_confirm_remove:'Rimuovere questo follower?', mylist_btn:'📂 La mia lista', mylist_title:'La mia lista', tab_routes:'Percorsi', tab_points:'Punti preferiti', vis_private:'🔒 Privato', vis_followers:'👥 Follower', vis_public:'🌐 Pubblico', visibility_label:'Visibilità', group_label:'Cartella', group_root:'(Nessuna cartella)', new_folder_btn:'+ Cartella', new_folder_prompt:'Nome cartella', subfolder_btn:'+ Sottocartella', rename_btn:'Rinomina', rename_prompt:'Nuovo nome', move_to_label:'Sposta in', edit_btn:'Modifica', confirm_delete_folder:'Eliminare questa cartella? (Il contenuto sale di un livello)', confirm_apply_children:'Applicare la stessa visibilità a tutto il contenuto?', tab_everyone:'Tutti', ev_following_users:'Utenti che segui', ev_back:'← Indietro', ev_no_following:'Non segui nessuno. Cerca per nome utente.', preview_dest:'Salva in', preview_include_points:'Salva anche i punti come miei punti preferiti', preview_back_list:'Torna alla lista', preview_save:'Salva', preview_count_points:'{n} punti', preview_count_routes:'{n} percorsi', preview_result:'Salvati {n} (saltati {m} già salvati)', panel_list_only:'Solo elenco', panel_show_buttons:'Mostra pulsanti', edit_mode_btn:'✏️ Modifica', edit_mode_btn_active:'✕ Termina', search_results_title:'{n} risultati', link_copy_btn:'🔗 Link', link_copied:'Link copiato', link_private_warn:'Questo elemento è privato. Gli altri non potranno aprirlo finché non cambi la visibilità.', link_not_visible:'Non puoi vedere questo link (privato o senza permesso).', avatar_label:'Immagine del profilo', gps_icon_label:'Icona della posizione attuale (solo su questo dispositivo, trasparenza OK)', icon_choose:'Scegli immagine', icon_reset:'Ripristina', icon_upload_fail:'Impossibile salvare l’immagine'
 },
 id: {
   gps_waiting:'📡 Menunggu GPS', gps_error:'📡 GPS gagal', gps_accuracy:'📡 Akurasi ±{m}m',
@@ -1320,7 +1336,7 @@ id: {
   point_label:'Titik {n}', google_map_not_loaded:'Google Maps belum dimuat',
   modal_name_placeholder:'contoh: Pabrik A, Gudang B', modal_memo_placeholder:'contoh: Belok kanan, 200m di depan\nBerhenti di gerbang',
   confirm_lang_change_reload:'Mengubah bahasa akan memuat ulang peta. Titik yang belum disimpan akan hilang. Lanjutkan?',
-  settings_title:'Pengaturan pengguna', lang_setting_label:'Bahasa', new_password_label:'Kata sandi baru', change_password_btn:'Ubah kata sandi', password_change_success:'Kata sandi diubah', forgot_password_link:'Lupa kata sandi?', forgot_password_title:'Atur ulang kata sandi', send_reset_btn:'Kirim', password_reset_sent:'Email reset kata sandi terkirim', map_type_label:'Jenis peta', map_type_default:'Standar', map_type_satellite:'Satelit', map_type_terrain:'Medan', layers_label:'Lapisan', biking_label:'Sepeda', traffic_label:'Lalu lintas', transit_label:'Transportasi umum', fixed_point_btn:'⭐ Simpan titik', fixed_point_modal_title:'Simpan titik favorit', confirm_delete_point:'Hapus titik ini?', target_route_label:'Rute', target_fixedpoint_label:'⭐ Titik favorit', edit_fixed_point_modal_title:'Edit titik favorit', delete_btn:'Hapus', save_as_fixed_btn:'⭐ Simpan sebagai titik favorit', assign_route_number_label:'Tetapkan nomor rute', remove_from_route_btn:'Hapus dari rute', icon_label:'Ikon', color_label:'Warna', follow_btn:'👥 Ikuti', follow_title:'Ikuti', follow_tab_search:'Cari', follow_tab_following:'Mengikuti', follow_tab_followers:'Pengikut', follow_tab_requests:'Permintaan', follow_search_placeholder:'Cari berdasarkan nama pengguna', follow_do:'Ikuti', follow_requested:'Diminta (batalkan)', follow_following:'Mengikuti (berhenti mengikuti)', follow_approve:'Setujui', follow_reject:'Tolak', follow_remove:'Hapus', follow_no_users:'Pengguna tidak ditemukan', follow_empty:'Belum ada', follow_confirm_unfollow:'Berhenti mengikuti?', follow_confirm_remove:'Hapus pengikut ini?', mylist_btn:'📂 Daftar Saya', mylist_title:'Daftar Saya', tab_routes:'Rute', tab_points:'Titik favorit', vis_private:'🔒 Pribadi', vis_followers:'👥 Pengikut', vis_public:'🌐 Publik', visibility_label:'Visibilitas', group_label:'Folder', group_root:'(Tanpa folder)', new_folder_btn:'+ Folder', new_folder_prompt:'Nama folder', subfolder_btn:'+ Subfolder', rename_btn:'Ganti nama', rename_prompt:'Nama baru', move_to_label:'Pindahkan ke', edit_btn:'Edit', confirm_delete_folder:'Hapus folder ini? (Isinya naik satu tingkat)', confirm_apply_children:'Terapkan visibilitas yang sama ke semua isinya?', tab_everyone:'Semua', ev_following_users:'Pengguna yang Anda ikuti', ev_back:'← Kembali', ev_no_following:'Anda belum mengikuti siapa pun. Cari berdasarkan nama pengguna.', preview_dest:'Simpan ke', preview_include_points:'Simpan juga titik di dalamnya sebagai titik favorit saya', preview_back_list:'Kembali ke daftar', preview_save:'Simpan', preview_count_points:'{n} titik', preview_count_routes:'{n} rute', preview_result:'{n} disimpan ({m} yang sudah tersimpan dilewati)', panel_list_only:'Hanya daftar', panel_show_buttons:'Tampilkan tombol', edit_mode_btn:'✏️ Edit', edit_mode_btn_active:'✕ Selesai', search_results_title:'{n} hasil'
+  settings_title:'Pengaturan pengguna', lang_setting_label:'Bahasa', new_password_label:'Kata sandi baru', change_password_btn:'Ubah kata sandi', password_change_success:'Kata sandi diubah', forgot_password_link:'Lupa kata sandi?', forgot_password_title:'Atur ulang kata sandi', send_reset_btn:'Kirim', password_reset_sent:'Email reset kata sandi terkirim', map_type_label:'Jenis peta', map_type_default:'Standar', map_type_satellite:'Satelit', map_type_terrain:'Medan', layers_label:'Lapisan', biking_label:'Sepeda', traffic_label:'Lalu lintas', transit_label:'Transportasi umum', fixed_point_btn:'⭐ Simpan titik', fixed_point_modal_title:'Simpan titik favorit', confirm_delete_point:'Hapus titik ini?', target_route_label:'Rute', target_fixedpoint_label:'⭐ Titik favorit', edit_fixed_point_modal_title:'Edit titik favorit', delete_btn:'Hapus', save_as_fixed_btn:'⭐ Simpan sebagai titik favorit', assign_route_number_label:'Tetapkan nomor rute', remove_from_route_btn:'Hapus dari rute', icon_label:'Ikon', color_label:'Warna', follow_btn:'👥 Ikuti', follow_title:'Ikuti', follow_tab_search:'Cari', follow_tab_following:'Mengikuti', follow_tab_followers:'Pengikut', follow_tab_requests:'Permintaan', follow_search_placeholder:'Cari berdasarkan nama pengguna', follow_do:'Ikuti', follow_requested:'Diminta (batalkan)', follow_following:'Mengikuti (berhenti mengikuti)', follow_approve:'Setujui', follow_reject:'Tolak', follow_remove:'Hapus', follow_no_users:'Pengguna tidak ditemukan', follow_empty:'Belum ada', follow_confirm_unfollow:'Berhenti mengikuti?', follow_confirm_remove:'Hapus pengikut ini?', mylist_btn:'📂 Daftar Saya', mylist_title:'Daftar Saya', tab_routes:'Rute', tab_points:'Titik favorit', vis_private:'🔒 Pribadi', vis_followers:'👥 Pengikut', vis_public:'🌐 Publik', visibility_label:'Visibilitas', group_label:'Folder', group_root:'(Tanpa folder)', new_folder_btn:'+ Folder', new_folder_prompt:'Nama folder', subfolder_btn:'+ Subfolder', rename_btn:'Ganti nama', rename_prompt:'Nama baru', move_to_label:'Pindahkan ke', edit_btn:'Edit', confirm_delete_folder:'Hapus folder ini? (Isinya naik satu tingkat)', confirm_apply_children:'Terapkan visibilitas yang sama ke semua isinya?', tab_everyone:'Semua', ev_following_users:'Pengguna yang Anda ikuti', ev_back:'← Kembali', ev_no_following:'Anda belum mengikuti siapa pun. Cari berdasarkan nama pengguna.', preview_dest:'Simpan ke', preview_include_points:'Simpan juga titik di dalamnya sebagai titik favorit saya', preview_back_list:'Kembali ke daftar', preview_save:'Simpan', preview_count_points:'{n} titik', preview_count_routes:'{n} rute', preview_result:'{n} disimpan ({m} yang sudah tersimpan dilewati)', panel_list_only:'Hanya daftar', panel_show_buttons:'Tampilkan tombol', edit_mode_btn:'✏️ Edit', edit_mode_btn_active:'✕ Selesai', search_results_title:'{n} hasil', link_copy_btn:'🔗 Tautan', link_copied:'Tautan disalin', link_private_warn:'Item ini bersifat pribadi. Orang lain tidak bisa membukanya sebelum Anda mengubah visibilitasnya.', link_not_visible:'Anda tidak dapat melihat tautan ini (pribadi atau tidak punya izin).', avatar_label:'Foto profil', gps_icon_label:'Ikon posisi saat ini (hanya perangkat ini, mendukung transparansi)', icon_choose:'Pilih gambar', icon_reset:'Setel ulang', icon_upload_fail:'Tidak dapat menyimpan gambar'
 },
 vi: {
   gps_waiting:'📡 Đang chờ GPS', gps_error:'📡 GPS lỗi', gps_accuracy:'📡 Độ chính xác ±{m}m',
@@ -1374,7 +1390,7 @@ vi: {
   point_label:'Điểm {n}', google_map_not_loaded:'Google Maps chưa tải xong',
   modal_name_placeholder:'vd: Nhà máy A, Kho B', modal_memo_placeholder:'vd: Rẽ phải, 200m phía trước\nDừng trước cổng',
   confirm_lang_change_reload:'Đổi ngôn ngữ sẽ tải lại bản đồ. Các điểm chưa lưu sẽ bị mất. Tiếp tục?',
-  settings_title:'Cài đặt người dùng', lang_setting_label:'Ngôn ngữ', new_password_label:'Mật khẩu mới', change_password_btn:'Đổi mật khẩu', password_change_success:'Đã đổi mật khẩu', forgot_password_link:'Quên mật khẩu?', forgot_password_title:'Đặt lại mật khẩu', send_reset_btn:'Gửi', password_reset_sent:'Đã gửi email đặt lại mật khẩu', map_type_label:'Loại bản đồ', map_type_default:'Mặc định', map_type_satellite:'Vệ tinh', map_type_terrain:'Địa hình', layers_label:'Lớp', biking_label:'Xe đạp', traffic_label:'Giao thông', transit_label:'Giao thông công cộng', fixed_point_btn:'⭐ Lưu điểm', fixed_point_modal_title:'Lưu điểm yêu thích', confirm_delete_point:'Xóa điểm này?', target_route_label:'Lộ trình', target_fixedpoint_label:'⭐ Điểm yêu thích', edit_fixed_point_modal_title:'Sửa điểm yêu thích', delete_btn:'Xóa', save_as_fixed_btn:'⭐ Lưu thành điểm yêu thích', assign_route_number_label:'Gán số lộ trình', remove_from_route_btn:'Xóa khỏi lộ trình', icon_label:'Biểu tượng', color_label:'Màu', follow_btn:'👥 Theo dõi', follow_title:'Theo dõi', follow_tab_search:'Tìm kiếm', follow_tab_following:'Đang theo dõi', follow_tab_followers:'Người theo dõi', follow_tab_requests:'Yêu cầu', follow_search_placeholder:'Tìm theo tên người dùng', follow_do:'Theo dõi', follow_requested:'Đã gửi yêu cầu (hủy)', follow_following:'Đang theo dõi (bỏ theo dõi)', follow_approve:'Chấp nhận', follow_reject:'Từ chối', follow_remove:'Xóa', follow_no_users:'Không tìm thấy người dùng', follow_empty:'Chưa có ai', follow_confirm_unfollow:'Bỏ theo dõi?', follow_confirm_remove:'Xóa người theo dõi này?', mylist_btn:'📂 Danh sách của tôi', mylist_title:'Danh sách của tôi', tab_routes:'Lộ trình', tab_points:'Điểm yêu thích', vis_private:'🔒 Riêng tư', vis_followers:'👥 Người theo dõi', vis_public:'🌐 Công khai', visibility_label:'Phạm vi hiển thị', group_label:'Thư mục', group_root:'(Không có thư mục)', new_folder_btn:'+ Thư mục', new_folder_prompt:'Tên thư mục', subfolder_btn:'+ Thư mục con', rename_btn:'Đổi tên', rename_prompt:'Tên mới', move_to_label:'Chuyển đến', edit_btn:'Sửa', confirm_delete_folder:'Xóa thư mục này? (Nội dung sẽ chuyển lên một cấp)', confirm_apply_children:'Áp dụng cùng phạm vi hiển thị cho mọi thứ bên trong?', tab_everyone:'Mọi người', ev_following_users:'Người bạn đang theo dõi', ev_back:'← Quay lại', ev_no_following:'Bạn chưa theo dõi ai. Hãy tìm theo tên người dùng.', preview_dest:'Lưu vào', preview_include_points:'Lưu cả các điểm bên trong thành điểm yêu thích của tôi', preview_back_list:'Quay lại danh sách', preview_save:'Lưu', preview_count_points:'{n} điểm', preview_count_routes:'{n} lộ trình', preview_result:'Đã lưu {n} (bỏ qua {m} đã lưu)', panel_list_only:'Chỉ danh sách', panel_show_buttons:'Hiện nút', edit_mode_btn:'✏️ Sửa', edit_mode_btn_active:'✕ Kết thúc', search_results_title:'{n} kết quả',
+  settings_title:'Cài đặt người dùng', lang_setting_label:'Ngôn ngữ', new_password_label:'Mật khẩu mới', change_password_btn:'Đổi mật khẩu', password_change_success:'Đã đổi mật khẩu', forgot_password_link:'Quên mật khẩu?', forgot_password_title:'Đặt lại mật khẩu', send_reset_btn:'Gửi', password_reset_sent:'Đã gửi email đặt lại mật khẩu', map_type_label:'Loại bản đồ', map_type_default:'Mặc định', map_type_satellite:'Vệ tinh', map_type_terrain:'Địa hình', layers_label:'Lớp', biking_label:'Xe đạp', traffic_label:'Giao thông', transit_label:'Giao thông công cộng', fixed_point_btn:'⭐ Lưu điểm', fixed_point_modal_title:'Lưu điểm yêu thích', confirm_delete_point:'Xóa điểm này?', target_route_label:'Lộ trình', target_fixedpoint_label:'⭐ Điểm yêu thích', edit_fixed_point_modal_title:'Sửa điểm yêu thích', delete_btn:'Xóa', save_as_fixed_btn:'⭐ Lưu thành điểm yêu thích', assign_route_number_label:'Gán số lộ trình', remove_from_route_btn:'Xóa khỏi lộ trình', icon_label:'Biểu tượng', color_label:'Màu', follow_btn:'👥 Theo dõi', follow_title:'Theo dõi', follow_tab_search:'Tìm kiếm', follow_tab_following:'Đang theo dõi', follow_tab_followers:'Người theo dõi', follow_tab_requests:'Yêu cầu', follow_search_placeholder:'Tìm theo tên người dùng', follow_do:'Theo dõi', follow_requested:'Đã gửi yêu cầu (hủy)', follow_following:'Đang theo dõi (bỏ theo dõi)', follow_approve:'Chấp nhận', follow_reject:'Từ chối', follow_remove:'Xóa', follow_no_users:'Không tìm thấy người dùng', follow_empty:'Chưa có ai', follow_confirm_unfollow:'Bỏ theo dõi?', follow_confirm_remove:'Xóa người theo dõi này?', mylist_btn:'📂 Danh sách của tôi', mylist_title:'Danh sách của tôi', tab_routes:'Lộ trình', tab_points:'Điểm yêu thích', vis_private:'🔒 Riêng tư', vis_followers:'👥 Người theo dõi', vis_public:'🌐 Công khai', visibility_label:'Phạm vi hiển thị', group_label:'Thư mục', group_root:'(Không có thư mục)', new_folder_btn:'+ Thư mục', new_folder_prompt:'Tên thư mục', subfolder_btn:'+ Thư mục con', rename_btn:'Đổi tên', rename_prompt:'Tên mới', move_to_label:'Chuyển đến', edit_btn:'Sửa', confirm_delete_folder:'Xóa thư mục này? (Nội dung sẽ chuyển lên một cấp)', confirm_apply_children:'Áp dụng cùng phạm vi hiển thị cho mọi thứ bên trong?', tab_everyone:'Mọi người', ev_following_users:'Người bạn đang theo dõi', ev_back:'← Quay lại', ev_no_following:'Bạn chưa theo dõi ai. Hãy tìm theo tên người dùng.', preview_dest:'Lưu vào', preview_include_points:'Lưu cả các điểm bên trong thành điểm yêu thích của tôi', preview_back_list:'Quay lại danh sách', preview_save:'Lưu', preview_count_points:'{n} điểm', preview_count_routes:'{n} lộ trình', preview_result:'Đã lưu {n} (bỏ qua {m} đã lưu)', panel_list_only:'Chỉ danh sách', panel_show_buttons:'Hiện nút', edit_mode_btn:'✏️ Sửa', edit_mode_btn_active:'✕ Kết thúc', search_results_title:'{n} kết quả', link_copy_btn:'🔗 Liên kết', link_copied:'Đã sao chép liên kết', link_private_warn:'Mục này ở chế độ riêng tư. Người khác không mở được cho đến khi bạn đổi phạm vi hiển thị.', link_not_visible:'Bạn không thể xem liên kết này (riêng tư hoặc không có quyền).', avatar_label:'Ảnh đại diện', gps_icon_label:'Biểu tượng vị trí hiện tại (chỉ thiết bị này, hỗ trợ ảnh trong suốt)', icon_choose:'Chọn ảnh', icon_reset:'Đặt lại', icon_upload_fail:'Không thể lưu ảnh',
 }
 };
 
@@ -1531,6 +1547,26 @@ L.control.zoom({ position:'topright' }).addTo(map);
 let points=[], polylines=[], addMode=false;
 let navActive=false, navIndex=0;
 let followMode=false, gpsMarker=null, gpsCircle=null, gpsInitialized=false;
+let gpsIconData = localStorage.getItem('navi_gps_icon') || null; // 自分で貼った現在位置アイコン（この端末だけ）
+
+function createGpsMarker(lat,lng){
+  if(gpsIconData){
+    const icon = L.divIcon({
+      html:`<img src="${gpsIconData}" style="width:48px;height:48px;object-fit:contain;display:block;">`,
+      iconSize:[48,48], iconAnchor:[24,24], className:''
+    });
+    return L.marker([lat,lng],{icon, interactive:false, zIndexOffset:1000}).addTo(map);
+  }
+  return L.circleMarker([lat,lng],{radius:9,color:'#00aaff',fillColor:'#00aaff',fillOpacity:1,weight:3}).addTo(map);
+}
+
+// アイコンを変えた時にマーカーを作り直す
+function rebuildGpsMarker(){
+  if(!gpsMarker) return;
+  const ll = gpsMarker.getLatLng();
+  map.removeLayer(gpsMarker);
+  gpsMarker = createGpsMarker(ll.lat, ll.lng);
+}
 let pendingLatLng=null, editingId=null, insertAfterIndex=null;
 let useRoad=true;
 
@@ -1547,7 +1583,7 @@ function onGPS(pos){
   // 初回だけ現在地に移動
   if(!gpsInitialized){ map.setView([lat,lng],16); gpsInitialized=true; }
   if(!gpsMarker){
-    gpsMarker=L.circleMarker([lat,lng],{radius:9,color:'#00aaff',fillColor:'#00aaff',fillOpacity:1,weight:3}).addTo(map);
+    gpsMarker=createGpsMarker(lat,lng);
     gpsCircle=L.circle([lat,lng],{radius:accuracy,color:'#00aaff',fillColor:'#00aaff',fillOpacity:0.08,weight:1}).addTo(map);
   }else{ gpsMarker.setLatLng([lat,lng]); gpsCircle.setLatLng([lat,lng]).setRadius(accuracy); }
   if(followMode)map.panTo([lat,lng]);
@@ -2872,7 +2908,8 @@ function updateUserBar(){
   const btn = document.getElementById('btn-auth');
   if(currentUser){
     if(btn){
-      btn.textContent = '👤 ' + (currentUser.username || currentUser.email.split('@')[0]);
+      const nm = currentUser.username || currentUser.email.split('@')[0];
+      btn.innerHTML = `<span style="display:inline-flex;align-items:center;gap:6px;">${userAvatarHTML(currentUser.id,18)}${fEsc(nm)}</span>`;
       btn.style.cssText = 'background:#1a2a3a;border:1px solid #2a4a6a;color:#66aaff;padding:8px 12px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;';
     }
   } else {
@@ -2895,6 +2932,7 @@ function handleAuthBtn(){
     document.getElementById('password-success').style.display='none';
     const langSel = document.getElementById('lang-select');
     if(langSel) langSel.value = currentLang;
+    refreshIconPreviews();
     dialog.style.display='flex';
     setTimeout(()=>input.focus(), 100);
   } else {
@@ -3064,9 +3102,13 @@ async function saveUsername(){
 async function loadUserProfile(){
   if(!currentUser) return;
   try {
-    const res = await supabaseFetch(`/rest/v1/profiles?id=eq.${currentUser.id}`);
+    const res = await supabaseFetch(`/rest/v1/profiles?id=eq.${currentUser.id}&select=username,avatar_url`);
     const data = await res.json();
-    if(data && data[0]) currentUser.username = data[0].username;
+    if(data && data[0]){
+      currentUser.username = data[0].username;
+      if(data[0].avatar_url) avatarCache[currentUser.id] = data[0].avatar_url;
+      refreshIconPreviews();
+    }
   } catch(e){}
 }
 
@@ -3175,7 +3217,8 @@ function onAuthChangedFollow(){
   if(uid !== _followUserId){
     _followUserId = uid;
     myFollows = [];
-    if(uid) loadFollows();
+    if(uid){ loadFollows(); loadLikes(); }
+    else { myLikes = new Set(); }
   }
   updateFollowBtn();
 }
@@ -3209,8 +3252,8 @@ async function loadFollows(){
     const ids = [...new Set(myFollows.flatMap(f=>[f.follower_id, f.following_id]))]
       .filter(id=>id!==currentUser.id && !usernameCache[id]);
     if(ids.length){
-      const r2 = await supabaseFetch(`/rest/v1/profiles?select=id,username&id=in.(${ids.join(',')})`);
-      if(r2.ok){ (await r2.json()).forEach(p=>{ usernameCache[p.id]=p.username; }); }
+      const r2 = await supabaseFetch(`/rest/v1/profiles?select=id,username,avatar_url&id=in.(${ids.join(',')})`);
+      if(r2.ok){ (await r2.json()).forEach(p=>{ usernameCache[p.id]=p.username; if(p.avatar_url) avatarCache[p.id]=p.avatar_url; }); }
     }
   }catch(e){
     console.warn('フォロー読み込み失敗', e);
@@ -3258,10 +3301,10 @@ async function searchUsers(){
   if(!q){ followSearchResults = []; renderFollowList(); return; }
   el.innerHTML = `<div style="text-align:center;padding:20px;color:#555;font-size:12px;">${t('loading')}</div>`;
   try{
-    const res = await supabaseFetch(`/rest/v1/profiles?select=id,username&username=ilike.*${q}*&id=neq.${currentUser.id}&order=username&limit=30`);
+    const res = await supabaseFetch(`/rest/v1/profiles?select=id,username,avatar_url&username=ilike.*${q}*&id=neq.${currentUser.id}&order=username&limit=30`);
     const data = res.ok ? await res.json() : [];
     followSearchResults = Array.isArray(data) ? data : [];
-    followSearchResults.forEach(p=>{ usernameCache[p.id]=p.username; });
+    followSearchResults.forEach(p=>{ usernameCache[p.id]=p.username; if(p.avatar_url) avatarCache[p.id]=p.avatar_url; });
   }catch(e){
     followSearchResults = [];
     alert(t('err_network'));
@@ -3279,7 +3322,7 @@ function outgoingButton(uid){
 
 function followRow(uid, buttons){
   const name = usernameCache[uid] || '—';
-  return `<div class="follow-row"><div class="follow-name">👤 ${fEsc(name)}</div>${buttons}</div>`;
+  return `<div class="follow-row"><div class="follow-name" style="display:flex;align-items:center;gap:6px;">${userAvatarHTML(uid,22)}<span style="overflow:hidden;text-overflow:ellipsis;">${fEsc(name)}</span></div>${buttons}</div>`;
 }
 
 function renderFollowList(){
@@ -3582,7 +3625,7 @@ async function loadRouteListTab(tab){
     }
     await loadGroups();
     if(tab==='mine'){
-      const res = await supabaseFetch(`/rest/v1/routes?user_id=eq.${currentUser.id}&select=id,name,points,visibility,group_id,created_at&order=created_at.desc`);
+      const res = await supabaseFetch(`/rest/v1/routes?user_id=eq.${currentUser.id}&select=id,name,points,visibility,group_id,like_count,created_at&order=created_at.desc`);
       myRoutes = res.ok ? await res.json() : [];
     }
     renderMyList();
@@ -3631,6 +3674,7 @@ function groupRowHTML(kind, g, depth){
       ${visButtonsHTML(g.visibility, `setGroupVisibility('${kind}','${g.id}','VAL')`)}
       <button class="ml-btn" onclick="createGroup('${g.id}')">${t('subfolder_btn')}</button>
       <button class="ml-btn" onclick="renameGroup('${kind}','${g.id}')">${t('rename_btn')}</button>
+      <button class="ml-btn" onclick="copyShareLink('${kind==='route'?'rg':'pg'}','${g.id}','${g.visibility}')">${t('link_copy_btn')}</button>
       <span class="ml-sub">${t('move_to_label')}</span>
       <select onchange="moveGroup('${kind}','${g.id}',this.value)">${groupOptionsHTML(kind, g.parent_group_id||null, g.id)}</select>
       <button class="ml-btn" style="color:#ff6666;border-color:#500;" onclick="deleteGroup('${kind}','${g.id}')">🗑</button>
@@ -3653,6 +3697,7 @@ function itemRowHTML(kind, it, depth){
   let html = `<div class="ml-row" style="padding-left:${pad+26}px;">
     ${main}
     <span class="ml-vis" title="${fEsc(visLabel(it.visibility))}">${visIcon(it.visibility)}</span>
+    ${likeBtnHTML(kind, it.id, it.like_count)}
     ${extra}
     <button class="ml-btn" onclick="toggleMlActions('${key}')">⋯</button>
   </div>`;
@@ -3662,6 +3707,7 @@ function itemRowHTML(kind, it, depth){
       ${kind==='route'
         ? `<button class="ml-btn" onclick="renameRoute('${it.id}')">${t('rename_btn')}</button>`
         : `<button class="ml-btn" onclick="editSavedPointFromList('${it.id}')">${t('edit_btn')}</button>`}
+      <button class="ml-btn" onclick="copyShareLink('${kind==='route'?'r':'p'}','${it.id}','${it.visibility}')">${t('link_copy_btn')}</button>
       <span class="ml-sub">${t('move_to_label')}</span>
       <select onchange="moveItem('${kind}','${it.id}',this.value)">${groupOptionsHTML(kind, it.group_id||null, null)}</select>
       <button class="ml-btn" style="color:#ff6666;border-color:#500;" onclick="deleteItemFromList('${kind}','${it.id}')">🗑</button>
@@ -3806,6 +3852,217 @@ function editSavedPointFromList(id){
   openFixedPointEditModal(p);
 }
 
+// ===== いいね =====
+let myLikes = new Set(); // "route:ID" / "point:ID"
+
+async function loadLikes(){
+  myLikes = new Set();
+  if(!currentUser) return;
+  try{
+    const res = await supabaseFetch(`/rest/v1/likes?user_id=eq.${currentUser.id}&select=target_type,target_id`);
+    if(res.ok) (await res.json()).forEach(l=>myLikes.add(l.target_type+':'+l.target_id));
+  }catch(e){ console.warn('いいね読み込み失敗', e); }
+}
+
+function likeBtnHTML(type, id, count){
+  const on = myLikes.has(type+':'+id);
+  return `<button class="ml-btn" style="${on?'color:#ff5a8a;border-color:#803050;':''}" onclick="toggleLike(event,'${type}','${id}')">${on?'❤️':'♡'} ${count||0}</button>`;
+}
+
+// 表示中のデータの件数を書き換える（画面をすぐ更新するため）
+function bumpLocalLikeCount(type, id, delta){
+  const lists = [evData.items, myRoutes, savedPoints, (previewState?previewState.items:[])];
+  lists.forEach(arr=>(arr||[]).forEach(x=>{ if(x.id===id) x.like_count = Math.max(0,(x.like_count||0)+delta); }));
+}
+
+async function toggleLike(ev, type, id){
+  if(ev) ev.stopPropagation();
+  if(!currentUser){ showAuthScreen(); return; }
+  const key = type+':'+id;
+  const on = myLikes.has(key);
+  if(on) myLikes.delete(key); else myLikes.add(key);
+  bumpLocalLikeCount(type, id, on ? -1 : 1);
+  refreshLikeViews();
+  try{
+    const res = on
+      ? await supabaseFetch(`/rest/v1/likes?user_id=eq.${currentUser.id}&target_type=eq.${type}&target_id=eq.${id}`, { method:'DELETE' })
+      : await supabaseFetch('/rest/v1/likes', { method:'POST', prefer:'return=minimal',
+          body: JSON.stringify({ user_id: currentUser.id, target_type: type, target_id: id }) });
+    if(!res.ok) throw new Error(await res.text());
+  }catch(e){
+    // 失敗したら元に戻す
+    if(on) myLikes.add(key); else myLikes.delete(key);
+    bumpLocalLikeCount(type, id, on ? 1 : -1);
+    refreshLikeViews();
+  }
+}
+
+function refreshLikeViews(){
+  const dlg = document.getElementById('route-list-dialog');
+  if(dlg && dlg.style.display==='flex'){
+    if(currentTab==='public'){ if(evUserId) renderEveryoneTree(); }
+    else renderMyList();
+  }
+  if(previewState) showPreviewBar();
+}
+
+// ===== リンク（?r= ルート / ?p= 固定ポイント / ?rg= ルートのフォルダ / ?pg= 固定ポイントのフォルダ） =====
+function buildShareLink(kindParam, id){
+  return location.origin + location.pathname + '?' + kindParam + '=' + id;
+}
+
+async function copyShareLink(kindParam, id, visibility){
+  const url = buildShareLink(kindParam, id);
+  try{
+    await navigator.clipboard.writeText(url);
+    alert(t('link_copied') + '\n' + url + (visibility==='private' ? '\n\n' + t('link_private_warn') : ''));
+  }catch(e){
+    prompt(t('link_copied'), url);
+  }
+}
+
+// リンクで開かれた時：中身を読み込んでプレビュー表示
+async function openSharedLink(){
+  const q = new URLSearchParams(location.search);
+  const pairs = [['r','route','item'],['p','point','item'],['rg','route','group'],['pg','point','group']];
+  for(const [param, kind, type] of pairs){
+    const id = q.get(param);
+    if(!id) continue;
+    try{
+      if(type==='item'){
+        const path = kind==='route'
+          ? `/rest/v1/routes?id=eq.${id}&select=id,user_id,name,points,visibility,group_id,like_count,created_at`
+          : `/rest/v1/saved_points?id=eq.${id}`;
+        const res = await supabaseFetch(path);
+        const data = res.ok ? await res.json() : [];
+        if(!data.length){ alert(t('link_not_visible')); return; }
+        const it = data[0];
+        await cacheUsernames([it.user_id]);
+        evKind = kind; evUserId = it.user_id; evData = { groups:[], items:[it] };
+        startPreview({ kind, type:'item', ownerId:it.user_id, title:it.name, icon:it.icon, visibility:it.visibility, groups:[], items:[it] });
+      } else {
+        const gt = kind==='route' ? 'route_groups' : 'point_groups';
+        const res = await supabaseFetch(`/rest/v1/${gt}?id=eq.${id}`);
+        const data = res.ok ? await res.json() : [];
+        if(!data.length){ alert(t('link_not_visible')); return; }
+        const owner = data[0].user_id;
+        await cacheUsernames([owner]);
+        evKind = kind;
+        await openEvUser(owner);
+        closeRouteList();
+        if(!evFindGroup(id)){ alert(t('link_not_visible')); return; }
+        previewEvGroup(id);
+      }
+    }catch(e){
+      alert(t('link_not_visible'));
+    }
+    return;
+  }
+}
+
+async function cacheUsernames(ids){
+  const need = [...new Set(ids)].filter(id=>id && !usernameCache[id]);
+  if(!need.length) return;
+  try{
+    const res = await supabaseFetch(`/rest/v1/profiles?select=id,username,avatar_url&id=in.(${need.join(',')})`);
+    if(res.ok) (await res.json()).forEach(p=>{ usernameCache[p.id]=p.username; if(p.avatar_url) avatarCache[p.id]=p.avatar_url; });
+  }catch(e){}
+}
+
+// ===== アイコン画像 =====
+let avatarCache = {}; // ユーザーID → 画像URL
+
+function userAvatarHTML(uid, size){
+  const url = avatarCache[uid];
+  return url
+    ? `<img src="${url}" style="width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;vertical-align:middle;flex-shrink:0;">`
+    : `<span style="font-size:${size}px;line-height:1;">👤</span>`;
+}
+
+// 画像を正方形に収めて縮小し、透過を保ったままWebPにする
+async function processImage(file, size){
+  const bitmap = await createImageBitmap(file);
+  const canvas = document.createElement('canvas');
+  canvas.width = size; canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  const scale = Math.min(size / bitmap.width, size / bitmap.height);
+  const w = bitmap.width * scale, h = bitmap.height * scale;
+  ctx.drawImage(bitmap, (size-w)/2, (size-h)/2, w, h); // 背景は塗らない＝透過のまま
+  return await new Promise(r=>canvas.toBlob(r, 'image/webp', 0.9));
+}
+
+function blobToDataURL(blob){
+  return new Promise(r=>{ const fr = new FileReader(); fr.onload = ()=>r(fr.result); fr.readAsDataURL(blob); });
+}
+
+function refreshIconPreviews(){
+  const gp = document.getElementById('gps-icon-preview');
+  if(gp) gp.innerHTML = gpsIconData ? `<img src="${gpsIconData}" style="width:100%;height:100%;object-fit:contain;">` : '🔵';
+  const ap = document.getElementById('avatar-preview');
+  if(ap) ap.innerHTML = (currentUser && avatarCache[currentUser.id])
+    ? `<img src="${avatarCache[currentUser.id]}" style="width:100%;height:100%;object-fit:cover;">` : '👤';
+}
+
+async function onGpsIconPicked(input){
+  const file = input.files && input.files[0];
+  input.value = '';
+  if(!file) return;
+  try{
+    const blob = await processImage(file, 96);
+    gpsIconData = await blobToDataURL(blob);
+    localStorage.setItem('navi_gps_icon', gpsIconData);
+    rebuildGpsMarker();
+    refreshIconPreviews();
+  }catch(e){ alert(t('icon_upload_fail')); }
+}
+
+function resetGpsIcon(){
+  gpsIconData = null;
+  localStorage.removeItem('navi_gps_icon');
+  rebuildGpsMarker();
+  refreshIconPreviews();
+}
+
+async function onAvatarPicked(input){
+  const file = input.files && input.files[0];
+  input.value = '';
+  if(!file) return;
+  if(!currentUser){ showAuthScreen(); return; }
+  try{
+    const blob = await processImage(file, 256);
+    const path = `${currentUser.id}/avatar.webp`;
+    const res = await fetch(`${SUPABASE_URL}/storage/v1/object/avatars/${path}`, {
+      method:'POST',
+      headers:{ 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + (authToken || SUPABASE_KEY), 'x-upsert':'true', 'Content-Type':'image/webp' },
+      body: blob
+    });
+    if(!res.ok) throw new Error(await res.text());
+    const url = `${SUPABASE_URL}/storage/v1/object/public/avatars/${path}?t=${Date.now()}`;
+    const r2 = await supabaseFetch(`/rest/v1/profiles?id=eq.${currentUser.id}`, {
+      method:'PATCH', prefer:'return=minimal', body: JSON.stringify({ avatar_url: url })
+    });
+    if(!r2.ok) throw new Error(await r2.text());
+    avatarCache[currentUser.id] = url;
+    refreshIconPreviews();
+    updateUserBar();
+  }catch(e){
+    console.error(e);
+    alert(t('icon_upload_fail'));
+  }
+}
+
+async function resetAvatar(){
+  if(!currentUser) return;
+  try{
+    await supabaseFetch(`/rest/v1/profiles?id=eq.${currentUser.id}`, {
+      method:'PATCH', prefer:'return=minimal', body: JSON.stringify({ avatar_url: null })
+    });
+    delete avatarCache[currentUser.id];
+    refreshIconPreviews();
+    updateUserBar();
+  }catch(e){ alert(t('icon_upload_fail')); }
+}
+
 // ===== みんな（他のユーザーの公開・フォロワー公開） =====
 // 見られるかどうかはデータベース側で判定（公開＋フォロー承認済みの人のフォロワー公開、A案で親フォルダまで確認）
 let evKind = 'route';       // 'route' | 'point'
@@ -3827,7 +4084,7 @@ function renderEveryone(){
         onkeydown="if(event.key==='Enter')evSearch()">
       <button class="btn btn-orange" onclick="evSearch()">${t('search_btn')}</button>
     </div>`;
-  const userRow = (id) => `<div class="ml-row"><div class="ml-name" onclick="openEvUser('${id}')">👤 ${fEsc(usernameCache[id]||'—')}</div><button class="ml-btn" onclick="openEvUser('${id}')">▶</button></div>`;
+  const userRow = (id) => `<div class="ml-row"><div class="ml-name" style="display:flex;align-items:center;gap:8px;" onclick="openEvUser('${id}')">${userAvatarHTML(id,26)}<span style="overflow:hidden;text-overflow:ellipsis;">${fEsc(usernameCache[id]||'—')}</span></div><button class="ml-btn" onclick="openEvUser('${id}')">▶</button></div>`;
   let html = kindBtns;
   if(evSearchResults.length){
     html += evSearchResults.map(p=>userRow(p.id)).join('');
@@ -3845,11 +4102,11 @@ async function evSearch(){
   const q = (document.getElementById('ev-search-input').value||'').trim().replace(/[^a-zA-Z0-9_]/g,'');
   if(!q){ evSearchResults = []; renderEveryone(); return; }
   try{
-    let path = `/rest/v1/profiles?select=id,username&username=ilike.*${q}*&order=username&limit=30`;
+    let path = `/rest/v1/profiles?select=id,username,avatar_url&username=ilike.*${q}*&order=username&limit=30`;
     if(currentUser) path += `&id=neq.${currentUser.id}`;
     const res = await supabaseFetch(path);
     evSearchResults = res.ok ? await res.json() : [];
-    evSearchResults.forEach(p=>{ usernameCache[p.id]=p.username; });
+    evSearchResults.forEach(p=>{ usernameCache[p.id]=p.username; if(p.avatar_url) avatarCache[p.id]=p.avatar_url; });
   }catch(e){ evSearchResults = []; alert(t('err_network')); }
   renderEveryone();
   const inp = document.getElementById('ev-search-input'); if(inp) inp.value = q;
@@ -3863,7 +4120,7 @@ async function openEvUser(uid){
   try{
     const gt = evKind==='route' ? 'route_groups' : 'point_groups';
     const it = evKind==='route'
-      ? `routes?user_id=eq.${uid}&select=id,user_id,name,points,visibility,group_id,created_at&order=created_at.desc`
+      ? `routes?user_id=eq.${uid}&select=id,user_id,name,points,visibility,group_id,like_count,created_at&order=created_at.desc`
       : `saved_points?user_id=eq.${uid}&order=name`;
     const [r1, r2] = await Promise.all([
       supabaseFetch(`/rest/v1/${gt}?user_id=eq.${uid}&order=name`),
@@ -3887,7 +4144,7 @@ function evGroupOfItem(it){ return (it.group_id && evFindGroup(it.group_id)) ? i
 function renderEveryoneTree(){
   const el = document.getElementById('route-list-items');
   let html = `<div class="ml-row"><button class="ml-btn" onclick="evBack()">${t('ev_back')}</button>
-    <div class="ml-name">👤 ${fEsc(usernameCache[evUserId]||'—')} · ${evKind==='route'?t('tab_routes'):t('tab_points')}</div></div>`;
+    <div class="ml-name" style="display:flex;align-items:center;gap:6px;">${userAvatarHTML(evUserId,22)}<span style="overflow:hidden;text-overflow:ellipsis;">${fEsc(usernameCache[evUserId]||'—')} · ${evKind==='route'?t('tab_routes'):t('tab_points')}</span></div></div>`;
   const walk = (parentId, depth) => {
     evData.groups.filter(g=>evParentOf(g)===parentId).sort((a,b)=>(a.name||'').localeCompare(b.name||'')).forEach(g=>{
       const open = evExpanded.has(g.id);
@@ -3905,6 +4162,7 @@ function renderEveryoneTree(){
       html += `<div class="ml-row" style="padding-left:${depth*16+26}px;">
         <div class="ml-name" onclick="previewEvItem('${it.id}')">${label}</div>
         <span class="ml-vis" title="${fEsc(visLabel(it.visibility))}">${visIcon(it.visibility)}</span>
+        ${likeBtnHTML(evKind, it.id, it.like_count)}
       </div>`;
     });
   };
@@ -3996,7 +4254,9 @@ function showPreviewBar(){
   const count = st.kind==='route'
     ? (st.type==='group' ? t('preview_count_routes',{n:st.items.length}) : t('points_count',{n:(st.items[0].points||[]).length}))
     : t('preview_count_points',{n:st.items.length});
-  document.getElementById('pv-sub').textContent = `👤 ${usernameCache[st.ownerId]||'—'} · ${visLabel(st.visibility)} · ${count}`;
+  const likeHTML = st.type==='item' ? ' ' + likeBtnHTML(st.kind, st.items[0].id, st.items[0].like_count) : '';
+  document.getElementById('pv-sub').innerHTML =
+    `<span style="display:inline-flex;align-items:center;gap:6px;">${userAvatarHTML(st.ownerId,18)}${fEsc(usernameCache[st.ownerId]||'—')} · ${visLabel(st.visibility)} · ${count}${likeHTML}</span>`;
   fillGroupSelect(document.getElementById('pv-dest'), st.kind, st.kind==='route' ? lastRouteGroupId : lastPointGroupId);
   const hasFixed = st.kind==='route' && st.items.some(r=>(r.points||[]).some(d=>d.fixedPointId));
   document.getElementById('pv-include-row').style.display = hasFixed ? 'flex' : 'none';
@@ -4207,6 +4467,7 @@ applyEditMode();
 checkPasswordRecovery();
 initAuth();
 startGPS();
+setTimeout(openSharedLink, 800);
 renderList();
 setTimeout(updateScrollBtns,100);
 </script>
