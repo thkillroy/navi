@@ -3979,16 +3979,19 @@ function userAvatarHTML(uid, size){
     : `<span style="font-size:${size}px;line-height:1;">👤</span>`;
 }
 
-// 画像を正方形に収めて縮小し、透過を保ったままWebPにする
+// 画像を正方形に収めて縮小する。色が変わらないようPNG（可逆）で書き出す
 async function processImage(file, size){
-  const bitmap = await createImageBitmap(file);
+  // 小さい画像はそのまま使う（変換しないので、色も透過も元のまま）
+  if(file.size <= 400*1024) return file;
+  const bitmap = await createImageBitmap(file, { premultiplyAlpha:'none', colorSpaceConversion:'none' });
   const canvas = document.createElement('canvas');
   canvas.width = size; canvas.height = size;
   const ctx = canvas.getContext('2d');
   const scale = Math.min(size / bitmap.width, size / bitmap.height);
   const w = bitmap.width * scale, h = bitmap.height * scale;
   ctx.drawImage(bitmap, (size-w)/2, (size-h)/2, w, h); // 背景は塗らない＝透過のまま
-  return await new Promise(r=>canvas.toBlob(r, 'image/webp', 0.9));
+  const blob = await new Promise(r=>canvas.toBlob(r, 'image/png'));
+  return blob || file;
 }
 
 function blobToDataURL(blob){
@@ -4008,7 +4011,7 @@ async function onGpsIconPicked(input){
   input.value = '';
   if(!file) return;
   try{
-    const blob = await processImage(file, 96);
+    const blob = await processImage(file, 128);
     gpsIconData = await blobToDataURL(blob);
     localStorage.setItem('navi_gps_icon', gpsIconData);
     rebuildGpsMarker();
@@ -4030,10 +4033,12 @@ async function onAvatarPicked(input){
   if(!currentUser){ showAuthScreen(); return; }
   try{
     const blob = await processImage(file, 256);
-    const path = `${currentUser.id}/avatar.webp`;
+    const type = blob.type || 'image/png';
+    const ext = type.includes('png') ? 'png' : type.includes('webp') ? 'webp' : type.includes('gif') ? 'gif' : 'jpg';
+    const path = `${currentUser.id}/avatar.${ext}`;
     const res = await fetch(`${SUPABASE_URL}/storage/v1/object/avatars/${path}`, {
       method:'POST',
-      headers:{ 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + (authToken || SUPABASE_KEY), 'x-upsert':'true', 'Content-Type':'image/webp' },
+      headers:{ 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + (authToken || SUPABASE_KEY), 'x-upsert':'true', 'Content-Type': type },
       body: blob
     });
     if(!res.ok) throw new Error(await res.text());
