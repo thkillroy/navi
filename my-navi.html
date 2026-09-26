@@ -1903,9 +1903,11 @@ function updatePositionRow(){
 }
 
 function toggleFixedPointRouteRow(){
+  const on = document.getElementById('fixedpoint-add-to-route').checked;
+  showModalSegRow(on);
   // 既存の固定ポイントを編集中は、常に末尾に組み込むので挿入位置は出さない
   if(editingFixedPoint){ document.getElementById('position-row').style.display='none'; return; }
-  const checked = document.getElementById('fixedpoint-add-to-route').checked;
+  const checked = on;
   if(checked){ updatePositionRow(); }
   else { document.getElementById('position-row').style.display='none'; }
 }
@@ -1919,7 +1921,7 @@ function setModalTarget(target){
     fpToggle.style.display = 'flex';
     document.getElementById('fixedpoint-add-to-route').checked = true;
     showIconPicker(true, '⭐', {group_id: lastPointGroupId});
-    showModalSegRow(false);
+    showModalSegRow(document.getElementById('fixedpoint-add-to-route').checked);
     updatePositionRow();
   } else {
     fpToggle.style.display = 'none';
@@ -1989,7 +1991,7 @@ function insertRoutePointAt(name, memo, lat, lng, fixedPointId, icon){
   points.splice(insertAt,0,p);
   invalidateSeg(insertAt-1);
   // 前のポイントからこのポイントまでの区間に、選んだ移動手段を使う
-  if(insertAt>0 && points[insertAt-1]) points[insertAt-1].segMode = modalSegMode;
+  if(modalSegRowActive && insertAt>0 && points[insertAt-1]) points[insertAt-1].segMode = modalSegMode;
   rebuildAllMarkers();
   updatePolyline();
   renderList();
@@ -2144,7 +2146,7 @@ function openFixedPointEditModal(p){
   document.getElementById('modal-name').value=p.name||'';
   document.getElementById('modal-memo-input').value=p.memo||'';
   showIconPicker(true, p.icon, p);
-  showModalSegRow(false);
+  showModalSegRow(canAddToRoute);
   document.getElementById('modal-overlay').classList.add('show');
   setTimeout(()=>document.getElementById('modal-ok').focus(),100);
 }
@@ -2573,10 +2575,12 @@ function renderModalSegModes(){
     `<button class="seg-mode-btn${m===modalSegMode?' active':''}" onclick="pickModalSegMode('${m}')">${SEG_ICONS[m]}</button>`).join('');
 }
 function pickModalSegMode(m){ modalSegMode = m; renderModalSegModes(); }
+let modalSegRowActive = false;
 function showModalSegRow(show){
   const row = document.getElementById('modal-seg-row');
-  row.style.display = (show && points.length>0) ? 'block' : 'none';
-  if(show){ modalSegMode = points.length ? segModeOf(points.length-1) : 'car'; renderModalSegModes(); }
+  modalSegRowActive = !!(show && points.length>0);
+  row.style.display = modalSegRowActive ? 'block' : 'none';
+  if(modalSegRowActive){ modalSegMode = segModeOf(points.length-1); renderModalSegModes(); }
 }
 
 // 今の移動手段で、この区間の道を取り直す
@@ -3613,6 +3617,9 @@ function addFixedPointToRoute(p){
   const routePoint = { id:Date.now(), lat:p.lat, lng:p.lng, name:p.name, memo:p.memo, marker:null, fixedPointId:p.id, icon:p.icon };
   const insertAt = determineFixedInsertPosition();
   points.splice(insertAt,0,routePoint);
+  invalidateSeg(insertAt-1);
+  // 前のポイントからこのポイントまでの区間に、選んだ移動手段を使う
+  if(modalSegRowActive && insertAt>0 && points[insertAt-1]) points[insertAt-1].segMode = modalSegMode;
   rebuildAllMarkers();
   updatePolyline();
   renderList();
