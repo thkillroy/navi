@@ -4,7 +4,15 @@
 <meta name="google" content="notranslate">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>マイナビ</title>
+<title>MICHI-SHIRUBE</title>
+<link rel="manifest" href="./manifest.webmanifest">
+<meta name="theme-color" content="#0d0d0d">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="MICHI-SHIRUBE">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<link rel="icon" href="./favicon-32.png" sizes="32x32">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
@@ -3983,7 +3991,7 @@ function userAvatarHTML(uid, size){
 async function processImage(file, size){
   // 小さい画像はそのまま使う（変換しないので、色も透過も元のまま）
   if(file.size <= 400*1024) return file;
-  const bitmap = await createImageBitmap(file, { premultiplyAlpha:'none', colorSpaceConversion:'none' });
+  const bitmap = await createImageBitmap(file);
   const canvas = document.createElement('canvas');
   canvas.width = size; canvas.height = size;
   const ctx = canvas.getContext('2d');
@@ -4473,6 +4481,13 @@ checkPasswordRecovery();
 initAuth();
 startGPS();
 setTimeout(openSharedLink, 800);
+
+// PWA（ホーム画面のアプリとして動かすための登録）
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('./sw.js').catch(e=>console.warn('SW登録失敗', e));
+  });
+}
 renderList();
 setTimeout(updateScrollBtns,100);
 </script>
